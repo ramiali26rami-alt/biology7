@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Cairo", "Lexend", "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Custom scrollbar utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* --- Dark Theme Core Styles & Component Overrides --- */
+.dark {
+  color-scheme: dark;
+}
+
+/* Root backgrounds */
+.dark body,
+.dark .bg-\[\#f8fafc\],
+.dark .bg-\[\#f7f9fb\] {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Header & Navigation panels */
+.dark header,
+.dark nav {
+  background-color: #111a2e !important;
+  border-color: #1c273e !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Cards & containers default state */
+.dark .bg-white {
+  background-color: #121d33 !important;
+  border-color: #1e2d4a !important;
+}
+
+/* Borders */
+.dark .border-slate-50,
+.dark .border-slate-100,
+.dark .border-slate-150,
+.dark .border-slate-200 {
+  border-color: #1e2d4a !important;
+}
+
+/* Secondary states and badge cards */
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+  background-color: #18253e !important;
+  border-color: #223455 !important;
+}
+
+/* Hover effects */
+.dark .hover\:bg-slate-50:hover,
+.dark .group:hover {
+  background-color: #18253e !important;
+}
+
+/* Text overrides */
+.dark .text-slate-950 {
+  color: #ffffff !important;
+}
+.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+.dark .text-slate-850 {
+  color: #e2e8f0 !important;
+}
+.dark .text-slate-800,
+.dark .text-\[\#191c1e\],
+.dark .text-\[\#011\] {
+  color: #cbd5e1 !important;
+}
+.dark .text-slate-705,
+.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+.dark .text-slate-600,
+.dark .text-[#74777f] {
+  color: #94a3b8 !important;
+}
+.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+.dark .text-slate-450 {
+  color: #7d8ea6 !important;
+}
+.dark .text-slate-400 {
+  color: #cbd5e1 !important;
+}
+.dark .text-\[\#002045\] {
+  color: #f1f5f9 !important;
+}
+
+/* Highlights and Badge highlights (blue, purple, amber, emerald) */
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+}
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800 {
+  color: #34d399 !important;
+}
+
+.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #fbbf24 !important;
+}
+.dark .text-amber-500,
+.dark .text-amber-600 {
+  color: #fbbf24 !important;
+}
+
+.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  color: #60a5fa !important;
+}
+.dark .text-blue-900 {
+  color: #93c5fd !important;
+}
+
+.dark .bg-purple-50 {
+  background-color: rgba(168, 85, 247, 0.12) !important;
+  color: #c084fc !important;
+}
+.dark .text-purple-600 {
+  color: #c084fc !important;
+}
+
+.dark .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+  color: #f43f5e !important;
+}
+.dark .bg-rose-100 {
+  background-color: rgba(244, 63, 94, 0.2) !important;
+  color: #fda4af !important;
+}
+.dark .text-rose-600 {
+  color: #fda4af !important;
+}
+
+/* Mind Map Overrides */
+.dark .border-emerald-200 { border-color: rgba(16, 185, 129, 0.3) !important; }
+.dark .bg-emerald-50\/50 { background-color: rgba(16, 185, 129, 0.08) !important; }
+.dark .text-emerald-900 { color: #34d399 !important; }
+
+.dark .border-blue-200 { border-color: rgba(59, 130, 246, 0.3) !important; }
+.dark .bg-blue-50\/50 { background-color: rgba(59, 130, 246, 0.08) !important; }
+.dark .text-blue-900 { color: #60a5fa !important; }
+
+.dark .border-amber-200 { border-color: rgba(245, 158, 11, 0.3) !important; }
+.dark .bg-amber-50\/50 { background-color: rgba(245, 158, 11, 0.08) !important; }
+.dark .text-amber-900 { color: #fbbf24 !important; }
+
+/* Custom items like the timeline or inputs */
+.dark input,
+.dark textarea {
+  background-color: #17243c !important;
+  border-color: #24385a !important;
+  color: #ffffff !important;
+}
+
+/* Adjust shadows in dark mode */
+.dark .shadow-xs,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-xl,
+.dark .shadow-2xl {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Performance mode: Disable motion on low-end hardware */
+.reduce-motion * {
+  animation-duration: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0ms !important;
+  scroll-behavior: auto !important;
+}
+

@@ -1,0 +1,6 @@
+{
+  "name": "منهج الأحياء - الثالث الثانوي",
+  "description": "تطبيق تعليمي لمادة الأحياء للصف الثالث الثانوي يغطي التنظيم العصبي مع فيديوهات توضيحية، خرائط ذهنية واختبارات تفاعلية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "key": "BIOTECH-V201-QJBL",
+    "status": "used",
+    "usedBy": "Marwan Ahmed",
+    "activatedAt": "2026-06-16T17:12:54.641Z"
+  },
+  {
+    "key": "BIOTECH-EE0Z-D3YI",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-O1UE-VUA0",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-75LG-AU15",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-GJMC-LHPP",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-ECKL-VFDR",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-ZKIR-1OGQ",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-D8XK-VMCP",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-XYZ6-AJ8L",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  },
+  {
+    "key": "BIOTECH-8436-9EVC",
+    "status": "unused",
+    "usedBy": "",
+    "activatedAt": ""
+  }
+]
