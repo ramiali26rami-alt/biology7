@@ -817,7 +817,7 @@ export default function StudentProfileScreen({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] w-full max-w-md p-6 overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] w-full max-w-md p-6 overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans flex flex-col max-h-[85vh]"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
@@ -838,7 +838,7 @@ export default function StudentProfileScreen({
               </div>
 
               {/* Body Content */}
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-1.5 scrollbar-thin">
                 {/* Font Size Settings */}
                 <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
                   <div className="flex items-center gap-3">

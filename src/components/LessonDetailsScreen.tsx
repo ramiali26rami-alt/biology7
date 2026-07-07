@@ -44,6 +44,7 @@ import { InteractiveDiagramVisualizer } from './InteractiveDiagramVisualizer';
 import { SecureStorage } from '../utils/security';
 import { isAssetCached, cacheAsset, getCachedAssetUrl } from '../utils/cacheManager';
 import { motion, AnimatePresence } from 'motion/react';
+import { Capacitor } from '@capacitor/core';
 
 interface LockedOverlayProps {
   messageAr: string;
@@ -275,11 +276,6 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     const textToSend = customText || tutorInput.trim();
     if (!textToSend || tutorLoading) return;
 
-    if (!navigator.onLine) {
-      setTutorError(t.aiTutorOffline || 'عذراً، خدمة المساعد الذكي تتطلب اتصالاً بالإنترنت لتعمل.');
-      return;
-    }
-
     const newMessages: Array<{ role: 'user' | 'model', content: string }> = [
       ...tutorMessages,
       { role: 'user' as const, content: textToSend }
@@ -313,7 +309,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
         setTutorError(data.error || t.aiTutorError || 'حدث خطأ أثناء الاتصال بالمعلم الافتراضي.');
       }
     } catch (e) {
-      setTutorError(t.aiTutorError || 'حدث خطأ أثناء الاتصال بالمعلم الافتراضي.');
+      setTutorError(lang === 'ar' ? 'فشل الاتصال. يرجى التأكد من اتصال الإنترنت وصلاحية السيرفر.' : 'Connection failed. Please check your internet connection and server status.');
     } finally {
       setTutorLoading(false);
     }
@@ -445,9 +441,16 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     }
     setLoadingPdf(true);
     try {
-      const fallbackUrl = getAssetUrl(lesson.pdfFile);
-      const url = await getCachedAssetUrl(lesson.id, lesson.pdfFile, fallbackUrl);
-      window.open(url, '_blank');
+      if (Capacitor.isNativePlatform()) {
+        const serverUrl = (import.meta.env.VITE_SERVER_URL || 'https://your-production-app.railway.app').replace(/\/$/, '');
+        const folderPath = lesson.folder || '';
+        const absolutePdfUrl = `${serverUrl}/${folderPath}/${lesson.pdfFile}`;
+        window.open(absolutePdfUrl, '_system');
+      } else {
+        const fallbackUrl = getAssetUrl(lesson.pdfFile);
+        const url = await getCachedAssetUrl(lesson.id, lesson.pdfFile, fallbackUrl);
+        window.open(url, '_blank');
+      }
     } catch (err) {
       console.error(err);
       alert(lang === 'ar' ? 'فشل فك تشفير مذكرة الـ PDF في الذاكرة.' : 'Failed to decrypt PDF notes in memory.');

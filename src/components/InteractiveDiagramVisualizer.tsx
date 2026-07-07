@@ -157,7 +157,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
 
       {/* Main Diagram Area */}
       <div 
-        className="relative w-full h-[450px] border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-slate-950/40 select-none flex items-center justify-center"
+        className="relative w-full h-[450px] border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-slate-950/40 select-none flex items-center justify-center touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

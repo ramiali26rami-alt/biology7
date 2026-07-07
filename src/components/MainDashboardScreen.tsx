@@ -88,11 +88,6 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
     const textToSend = customText || tutorInput.trim();
     if (!textToSend || tutorLoading) return;
 
-    if (!navigator.onLine) {
-      setTutorError(t.aiTutorOffline || 'عذراً، خدمة المساعد الذكي تتطلب اتصالاً بالإنترنت لتعمل.');
-      return;
-    }
-
     const newMessages: Array<{ role: 'user' | 'model', content: string }> = [
       ...tutorMessages, 
       { role: 'user' as const, content: textToSend }
@@ -124,7 +119,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         setTutorError(data.error || t.aiTutorError || 'حدث خطأ أثناء الاتصال بالمعلم الافتراضي.');
       }
     } catch (e) {
-      setTutorError(t.aiTutorError || 'حدث خطأ أثناء الاتصال بالمعلم الافتراضي.');
+      setTutorError(lang === 'ar' ? 'فشل الاتصال. يرجى التأكد من اتصال الإنترنت وصلاحية السيرفر.' : 'Connection failed. Please check your internet connection and server status.');
     } finally {
       setTutorLoading(false);
     }

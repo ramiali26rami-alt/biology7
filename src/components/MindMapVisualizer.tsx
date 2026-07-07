@@ -207,7 +207,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
 
   return (
     <div 
-      className="relative w-full h-[550px] overflow-hidden select-none bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-none rounded-3xl"
+      className="relative w-full h-[550px] overflow-hidden select-none bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-none rounded-3xl touch-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
