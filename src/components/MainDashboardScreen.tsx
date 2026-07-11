@@ -106,7 +106,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
     try {
       const storedKey = localStorage.getItem('gemini_api_key') || '';
       
-      const serverUrl = (import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
+      const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
       const response = await fetch(`${serverUrl}/api/tutor-chat`, {
         method: 'POST',
         headers: {

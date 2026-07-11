@@ -6,7 +6,7 @@
 import { SecureStorage } from './security';
 
 const SERVER_URL = (
-  import.meta.env.VITE_SERVER_URL ?? ''
+  localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || ''
 ).replace(/\/$/, '');
 
 export async function checkAndUpdate(): Promise<{

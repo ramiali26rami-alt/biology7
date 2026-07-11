@@ -35,7 +35,7 @@ export async function loadCurriculum(): Promise<any> {
 
   // 3. Remote fallback if local bundle fails
   try {
-    const SERVER_URL = (import.meta.env.VITE_SERVER_URL ?? '').replace(/\/$/, '');
+    const SERVER_URL = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
     const res = await fetch(`${SERVER_URL}/lessons_config.json?t=${Date.now()}`);
     const text = await res.text();
     let data;

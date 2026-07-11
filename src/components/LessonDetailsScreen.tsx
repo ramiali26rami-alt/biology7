@@ -289,7 +289,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     try {
       const storedKey = localStorage.getItem('gemini_api_key') || '';
       
-      const serverUrl = (import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
+      const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
       const response = await fetch(`${serverUrl}/api/tutor-chat`, {
         method: 'POST',
         headers: {
@@ -825,7 +825,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
               )}
 
               {exploreSubTab === 'diagrams' && (
-                <div className="relative w-full h-[calc(100vh-210px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-hidden shadow-sm relative animate-fadeIn">
+                <div className="relative w-full animate-fadeIn">
                   {lesson.diagramLocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"

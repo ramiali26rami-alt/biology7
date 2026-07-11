@@ -133,7 +133,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   };
 
   return (
-    <div className="w-full h-full bg-white dark:bg-[#0a0e1a] p-1.5 flex flex-col justify-between overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm p-4 space-y-3">
       {/* Tab Navigation if multiple diagrams exist */}
       {diagrams.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
@@ -159,7 +159,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
 
       {/* Main Diagram Area */}
       <div 
-        className="relative w-full flex-1 overflow-hidden bg-white dark:bg-[#0a0e1a] select-none flex items-center justify-center touch-none"
+        className="relative w-full h-[350px] border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none flex items-start pt-2 justify-center touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -197,7 +197,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         {/* Zoomable Inner Canvas */}
         <div
           ref={containerRef}
-          className="relative w-full h-full flex items-center justify-center"
+          className="relative w-full h-full flex items-start pt-2 justify-center"
           style={{
             transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
             transformOrigin: 'center center',
@@ -205,11 +205,11 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           }}
         >
           {/* Sub-wrapper that matches the exact dimensions of the image */}
-          <div className="relative inline-block max-w-full max-h-full">
+          <div className="relative inline-block max-w-full max-h-[325px]">
             <img
               src={getAssetUrl(activeDiagram.imageFile)}
               alt={activeDiagram.titleAr}
-              className="max-w-full max-h-full object-contain block"
+              className="max-w-full max-h-[325px] object-contain block"
               draggable={false}
             />
 

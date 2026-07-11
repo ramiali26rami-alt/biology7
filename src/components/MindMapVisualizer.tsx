@@ -113,14 +113,14 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
 
   // Measure and redraw lines
   const redrawLines = () => {
-    if (!containerRef.current || !rootRef.current) return;
+    if (!canvasRef.current || !rootRef.current) return;
 
-    const containerRect = containerRef.current.getBoundingClientRect();
+    const canvasRect = canvasRef.current.getBoundingClientRect();
     const rootRect = rootRef.current.getBoundingClientRect();
 
     const rootCenter = {
-      x: rootRect.left - containerRect.left + rootRect.width / 2,
-      y: rootRect.top - containerRect.top + rootRect.height / 2
+      x: rootRect.left - canvasRect.left + rootRect.width / 2,
+      y: rootRect.top - canvasRect.top + rootRect.height / 2
     };
 
     const newLines: { d: string; color: string }[] = [];
@@ -139,8 +139,8 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
 
       const dotRect = dotEl.getBoundingClientRect();
       const dotCenter = {
-        x: dotRect.left - containerRect.left + dotRect.width / 2,
-        y: dotRect.top - containerRect.top + dotRect.height / 2
+        x: dotRect.left - canvasRect.left + dotRect.width / 2,
+        y: dotRect.top - canvasRect.top + dotRect.height / 2
       };
 
       const color = branch.color || colors[i % colors.length];
@@ -306,51 +306,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
         ref={containerRef}
         className="w-full h-full relative"
       >
-        {/* SVG lines layer */}
-        <svg 
-          className="absolute inset-0 pointer-events-none z-10 w-full h-full"
-          style={{
-            transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-            transformOrigin: 'center center',
-            transition: isDragging ? 'none' : 'transform 0.15s ease-out'
-          }}
-        >
-          <defs>
-            {lines.map((_, i) => (
-              <filter id={`glow-v-${i}`} key={i}>
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            ))}
-          </defs>
-          {lines.map((line, i) => (
-            <React.Fragment key={i}>
-              {/* Glow line */}
-              <path
-                d={line.d}
-                fill="none"
-                stroke={line.color}
-                strokeWidth="6"
-                strokeOpacity="0.15"
-                filter={`url(#glow-v-${i})`}
-              />
-              {/* Core line */}
-              <path
-                d={line.d}
-                fill="none"
-                stroke={line.color}
-                strokeWidth="2.5"
-                strokeOpacity="0.8"
-                strokeLinecap="round"
-              />
-            </React.Fragment>
-          ))}
-        </svg>
-
-        {/* Nodes Layer */}
+        {/* Nodes Layer (Translated and Zoomed Canvas) */}
         <div
           ref={canvasRef}
           className="absolute inset-0 flex flex-col items-center pt-8 z-20 w-full min-h-max"
@@ -360,6 +316,42 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
             transition: isDragging ? 'none' : 'transform 0.15s ease-out'
           }}
         >
+          {/* SVG lines layer (Drawn inside the translated canvas to inherit coordinate offsets dynamically) */}
+          <svg className="absolute inset-0 pointer-events-none z-10 w-full h-full">
+            <defs>
+              {lines.map((_, i) => (
+                <filter id={`glow-v-${i}`} key={i}>
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              ))}
+            </defs>
+            {lines.map((line, i) => (
+              <React.Fragment key={i}>
+                {/* Glow line */}
+                <path
+                  d={line.d}
+                  fill="none"
+                  stroke={line.color}
+                  strokeWidth="6"
+                  strokeOpacity="0.15"
+                  filter={`url(#glow-v-${i})`}
+                />
+                {/* Core line */}
+                <path
+                  d={line.d}
+                  fill="none"
+                  stroke={line.color}
+                  strokeWidth="2.5"
+                  strokeOpacity="0.8"
+                  strokeLinecap="round"
+                />
+              </React.Fragment>
+            ))}
+          </svg>
           {/* ROOT node */}
           <div className="mb-14">
             <button

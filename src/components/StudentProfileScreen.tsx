@@ -96,6 +96,7 @@ export default function StudentProfileScreen({
   const [activationKey, setActivationKey] = useState('');
   const [activationLoading, setActivationLoading] = useState(false);
   const [activationMessage, setActivationMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [serverUrlInput, setServerUrlInput] = useState(() => localStorage.getItem('server_url') || '');
 
   const handleActivateKey = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +106,7 @@ export default function StudentProfileScreen({
     setActivationMessage(null);
 
     try {
-      const serverUrl = (import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
+      const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
       const res = await fetch(`${serverUrl}/api/activate-key`, {
         method: 'POST',
         headers: {
@@ -448,6 +449,30 @@ export default function StudentProfileScreen({
                 )}
               </form>
             )}
+
+            {/* Advanced Server Settings */}
+            <div className="border-t border-slate-800/80 pt-4 mt-4 space-y-3 text-right">
+              <label className="text-[11px] font-black text-slate-400 block">
+                {lang === 'ar' ? 'عنوان خادم المعلم الافتراضي (اختياري)' : 'AI Tutor Server URL (Optional)'}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={serverUrlInput}
+                  onChange={(e) => {
+                    setServerUrlInput(e.target.value);
+                    localStorage.setItem('server_url', e.target.value.trim());
+                  }}
+                  placeholder="https://biology-server.up.railway.app"
+                  className="flex-1 bg-slate-950/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white placeholder-slate-655 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600"
+                />
+              </div>
+              <p className="text-[9px] text-slate-500 font-bold leading-tight">
+                {lang === 'ar' 
+                  ? 'ملاحظة: اتركه فارغاً لاستخدام خادم التطبيق الافتراضي. مفيد جداً لتشغيل خدمات الذكاء الاصطناعي أوفلاين على الهواتف.'
+                  : 'Note: Leave blank to use default application server. Helpful for offline AI features on mobile apps.'}
+              </p>
+            </div>
           </div>
         </section>
 
