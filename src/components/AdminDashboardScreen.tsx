@@ -37,6 +37,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { validateExcelData } from '../utils/excelValidator';
 import * as XLSX from 'xlsx';
 import { SecureStorage } from '../utils/security';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 interface AdminDashboardScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -917,7 +919,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     reader.readAsBinaryString(file);
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     const getUL = (lessonId: string, fallbackUnit = 1) => {
       if (lessonId.startsWith('u') && lessonId.includes('-l')) {
         const parts = lessonId.substring(1).split('-l');
@@ -1127,7 +1129,31 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(diagramsInteractiveData), "Diagrams_Interactive");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(mindmapsInteractiveData), "MindMaps_Interactive");
 
-    XLSX.writeFile(wb, `biology_curriculum_${new Date().toISOString().split('T')[0]}.xlsx`);
+    const fileName = `biology_curriculum_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const base64Data = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+        await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: Directory.Documents,
+          recursive: true
+        });
+        alert(lang === 'ar'
+          ? `تم تصدير المنهج وحفظ الملف بنجاح في مجلد المستندات بجهازك باسم: \n${fileName}`
+          : `Curriculum exported and saved successfully to your Documents folder as: \n${fileName}`
+        );
+      } catch (err: any) {
+        console.error('Excel Export/Save Error:', err);
+        alert(lang === 'ar'
+          ? `عذراً، فشل حفظ الملف على الهاتف: ${err.message || err}`
+          : `Sorry, failed to save file on mobile: ${err.message || err}`
+        );
+      }
+    } else {
+      XLSX.writeFile(wb, fileName);
+    }
   };
 
   const handleResetDevice = async (key: string) => {

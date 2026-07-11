@@ -622,7 +622,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
             {backIcon}
           </button>
           <h1 className="font-black text-lg text-slate-900 dark:text-white transition-opacity duration-200">
-            {activeTab === 'explore' && exploreSubTab === 'mindmap' ? '' : lessonFolderTitle}
+            {activeTab === 'explore' ? '' : lessonFolderTitle}
           </h1>
         </div>
         
@@ -825,37 +825,26 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
               )}
 
               {exploreSubTab === 'diagrams' && (
-                <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm relative animate-fadeIn">
-                  <div className="p-5 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0 animate-pulse"></span>
-                      <span className="font-extrabold text-sm text-slate-850 dark:text-white">
-                        {lang === 'ar' ? 'الرسومات والأشكال التوضيحية التفاعلية' : 'Interactive Diagrams & Anatomy Drawings'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="relative min-h-[300px]">
-                    {lesson.diagramLocked && (
-                      <LockedOverlay 
-                        messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"
-                        messageEn="These interactive diagrams are locked by the teacher."
-                        onUnlockClick={() => onNavigate('student-profile', 'push')}
-                      />
-                    )}
-                    <InteractiveDiagramVisualizer
-                      diagrams={
-                        lesson.interactiveDiagrams && lesson.interactiveDiagrams.length > 0
-                          ? lesson.interactiveDiagrams
-                          : lesson.diagramFile
-                          ? [{ imageFile: lesson.diagramFile, titleAr: lang === 'ar' ? 'الرسم التوضيحي المنهجي' : 'Standard Lesson Diagram', hotspots: [] }]
-                          : []
-                      }
-                      lang={lang}
-                      lessonFolder={lesson.folder}
+                <div className="relative w-full h-[calc(100vh-210px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-hidden shadow-sm relative animate-fadeIn">
+                  {lesson.diagramLocked && (
+                    <LockedOverlay 
+                      messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"
+                      messageEn="These interactive diagrams are locked by the teacher."
+                      onUnlockClick={() => onNavigate('student-profile', 'push')}
                     />
-                  </div>
-                </section>
+                  )}
+                  <InteractiveDiagramVisualizer
+                    diagrams={
+                      lesson.interactiveDiagrams && lesson.interactiveDiagrams.length > 0
+                        ? lesson.interactiveDiagrams
+                        : lesson.diagramFile
+                        ? [{ imageFile: lesson.diagramFile, titleAr: lang === 'ar' ? 'الرسم التوضيحي المنهجي' : 'Standard Lesson Diagram', hotspots: [] }]
+                        : []
+                    }
+                    lang={lang}
+                    lessonFolder={lesson.folder}
+                  />
+                </div>
               )}
 
               {exploreSubTab === 'pdf' && lesson.pdfFile && (

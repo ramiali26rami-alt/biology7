@@ -167,13 +167,77 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
     return () => window.removeEventListener('resize', redrawLines);
   }, [expandedBranches, expandedSubs, mindmap]);
 
-  // Touch & Mouse Dragging / Panning handlers (Disabled to keep locked in center)
-  const handleMouseDown = (e: React.MouseEvent) => {};
-  const handleMouseMove = (e: React.MouseEvent) => {};
-  const handleMouseUp = () => {};
-  const handleTouchStart = (e: React.TouchEvent) => {};
-  const handleTouchMove = (e: React.TouchEvent) => {};
-  const handleTouchEnd = () => {};
+  // Touch & Mouse Dragging / Panning handlers (Bounded to make it easy to control without going out of screen)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    e.preventDefault();
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX - transform.x, y: e.clientY - transform.y };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const newX = e.clientX - dragStart.current.x;
+    const newY = e.clientY - dragStart.current.y;
+    // Strict boundaries relative to scale to avoid map elements getting lost
+    const boundX = 350 * Math.max(1, transform.scale);
+    const boundY = 250 * Math.max(1, transform.scale);
+    setTransform(prev => ({
+      ...prev,
+      x: Math.max(-boundX, Math.min(boundX, newX)),
+      y: Math.max(-boundY, Math.min(boundY, newY))
+    }));
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      dragStart.current = { 
+        x: e.touches[0].clientX - transform.x, 
+        y: e.touches[0].clientY - transform.y 
+      };
+    } else if (e.touches.length === 2) {
+      setIsDragging(false);
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      touchStartDist.current = dist;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDragging && e.touches.length === 1) {
+      const newX = e.touches[0].clientX - dragStart.current.x;
+      const newY = e.touches[0].clientY - dragStart.current.y;
+      const boundX = 350 * Math.max(1, transform.scale);
+      const boundY = 250 * Math.max(1, transform.scale);
+      setTransform(prev => ({
+        ...prev,
+        x: Math.max(-boundX, Math.min(boundX, newX)),
+        y: Math.max(-boundY, Math.min(boundY, newY))
+      }));
+    } else if (e.touches.length === 2 && touchStartDist.current !== null) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleFactor = dist / touchStartDist.current;
+      setTransform(prev => ({
+        ...prev,
+        scale: Math.max(0.6, Math.min(3, prev.scale * scaleFactor))
+      }));
+      touchStartDist.current = dist;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    touchStartDist.current = null;
+  };
 
   // Zoom control buttons
   const zoomIn = () => {

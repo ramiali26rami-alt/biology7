@@ -133,7 +133,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-1.5 space-y-3">
+    <div className="w-full h-full bg-white dark:bg-[#0a0e1a] p-1.5 flex flex-col justify-between overflow-hidden">
       {/* Tab Navigation if multiple diagrams exist */}
       {diagrams.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
@@ -159,7 +159,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
 
       {/* Main Diagram Area */}
       <div 
-        className="relative w-full h-[380px] overflow-hidden bg-white dark:bg-[#0a0e1a] select-none flex items-center justify-center touch-none"
+        className="relative w-full flex-1 overflow-hidden bg-white dark:bg-[#0a0e1a] select-none flex items-center justify-center touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -209,7 +209,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
             <img
               src={getAssetUrl(activeDiagram.imageFile)}
               alt={activeDiagram.titleAr}
-              className="max-w-full max-h-[360px] object-contain block"
+              className="max-w-full max-h-full object-contain block"
               draggable={false}
             />
 
