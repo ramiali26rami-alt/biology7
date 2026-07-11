@@ -324,18 +324,18 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
       </header>
 
       {/* Main Content */}
-      <main className="pt-20 px-6 max-w-2xl mx-auto space-y-6">
+      <main className="pt-18 px-4 max-w-2xl mx-auto space-y-3.5">
         
         {/* Progress Header */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[24px] shadow-xl shadow-slate-200/25 dark:shadow-none">
-          <div className="flex justify-between items-end mb-3">
+        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-2xl shadow-sm">
+          <div className="flex justify-between items-end mb-2">
             <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">
+              <span className="text-[10px] text-slate-450 dark:text-slate-500 font-bold block">
                 {lang === 'ar'
                   ? `السؤال ${currentQuestionIndex + 1} من ${questions.length}`
                   : `Question ${currentQuestionIndex + 1} of ${questions.length}`}
               </span>
-              <h2 className="text-sm font-black text-slate-900 dark:text-white mt-1">
+              <h2 className="text-xs font-black text-slate-900 dark:text-white mt-0.5">
                 {getSectionLabel()}
               </h2>
             </div>
@@ -343,15 +343,15 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
               {score} {lang === 'ar' ? 'درجة' : 'pts'}
             </span>
           </div>
-          <div className="h-2 w-full bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden">
             <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
         </section>
 
         {!quizFinished ? (
-          <div className="space-y-4 animate-fadeIn">
-            {/* Question Image (if present) */}
-            {currentQ.questionImage && lesson && (
+          <div className="space-y-3 animate-fadeIn">
+            {/* Question Image (if present) - Hidden when feedback is shown to save space for next button */}
+            {!showFeedback && currentQ.questionImage && lesson && (
               <QuestionImage 
                 lessonId={lesson.id} 
                 folder={lesson.folder} 
@@ -360,8 +360,8 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
             )}
 
             {/* Question Box */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[24px] shadow-sm">
-              <p className="text-slate-850 dark:text-slate-100 text-sm font-extrabold leading-relaxed">
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-2xl shadow-sm">
+              <p className="text-slate-850 dark:text-slate-100 text-xs font-black leading-relaxed">
                 <strong>{currentQuestionIndex + 1}.</strong> {currentQ.text}
               </p>
             </div>

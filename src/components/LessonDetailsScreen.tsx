@@ -664,6 +664,14 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
           </button>
           
           <button 
+            onClick={() => setIsTutorOpen(true)}
+            className="active:scale-95 p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 transition-colors"
+            title={lang === 'ar' ? 'مساعد الدراسة' : 'Study Assistant'}
+          >
+            <Sparkles className="w-5 h-5 animate-pulse" />
+          </button>
+          
+          <button 
             onClick={() => setBookmarked(!bookmarked)}
             className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
@@ -1381,16 +1389,6 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
         </button>
       </nav>
 
-      {/* Floating Action Button for AI Tutor */}
-      {lesson && (
-        <button
-          onClick={() => setIsTutorOpen(true)}
-          className="fixed bottom-24 right-6 z-40 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full p-3.5 shadow-xl shadow-emerald-500/30 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all cursor-pointer font-black text-xs border-0 select-none"
-        >
-          <Sparkles className="w-4 h-4 animate-pulse" />
-          <span>مساعد الدراسة 🤖</span>
-        </button>
-      )}
 
       {/* AI Tutor Chat Drawer */}
       <AnimatePresence>

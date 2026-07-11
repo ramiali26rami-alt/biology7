@@ -167,68 +167,13 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
     return () => window.removeEventListener('resize', redrawLines);
   }, [expandedBranches, expandedSubs, mindmap]);
 
-  // Touch & Mouse Dragging / Panning handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('button')) return;
-    setIsDragging(true);
-    dragStart.current = { x: e.clientX - transform.x, y: e.clientY - transform.y };
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    setTransform(prev => ({
-      ...prev,
-      x: e.clientX - dragStart.current.x,
-      y: e.clientY - dragStart.current.y
-    }));
-  };
-
-  const handleMouseUp = () => setIsDragging(false);
-
-  // Touch Zoom & Pan handlers for mobile device
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if ((e.target as HTMLElement).closest('button')) return;
-    if (e.touches.length === 1) {
-      setIsDragging(true);
-      dragStart.current = { 
-        x: e.touches[0].clientX - transform.x, 
-        y: e.touches[0].clientY - transform.y 
-      };
-    } else if (e.touches.length === 2) {
-      setIsDragging(false);
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      touchStartDist.current = dist;
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (isDragging && e.touches.length === 1) {
-      setTransform(prev => ({
-        ...prev,
-        x: e.touches[0].clientX - dragStart.current.x,
-        y: e.touches[0].clientY - dragStart.current.y
-      }));
-    } else if (e.touches.length === 2 && touchStartDist.current !== null) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const scaleFactor = dist / touchStartDist.current;
-      setTransform(prev => ({
-        ...prev,
-        scale: Math.max(0.5, Math.min(3, prev.scale * scaleFactor))
-      }));
-      touchStartDist.current = dist;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    touchStartDist.current = null;
-  };
+  // Touch & Mouse Dragging / Panning handlers (Disabled to keep locked in center)
+  const handleMouseDown = (e: React.MouseEvent) => {};
+  const handleMouseMove = (e: React.MouseEvent) => {};
+  const handleMouseUp = () => {};
+  const handleTouchStart = (e: React.TouchEvent) => {};
+  const handleTouchMove = (e: React.TouchEvent) => {};
+  const handleTouchEnd = () => {};
 
   // Zoom control buttons
   const zoomIn = () => {
@@ -566,16 +511,16 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
       {selectedNodeDetails && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
           <div className="bg-slate-900 border border-slate-800 w-full max-w-md p-6 rounded-[28px] shadow-2xl relative animate-scaleUp">
-            <h3 className="text-white font-black text-lg mb-3 flex items-center gap-2">
+            <h3 className="text-white font-black text-xl mb-3 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
               {selectedNodeDetails.title}
             </h3>
-            <p className="text-slate-300 text-xs leading-relaxed font-extrabold whitespace-pre-line text-right">
+            <p className="text-slate-200 text-sm leading-relaxed font-bold whitespace-pre-line text-right">
               {selectedNodeDetails.details}
             </p>
             <button
               onClick={() => setSelectedNodeDetails(null)}
-              className="mt-6 w-full py-3 bg-gradient-to-tr from-violet-600 to-indigo-500 text-white font-black text-sm rounded-xl active:scale-95 transition-all shadow-lg shadow-indigo-500/20"
+              className="mt-6 w-full py-3.5 bg-gradient-to-tr from-violet-600 to-indigo-500 text-white font-black text-sm rounded-xl active:scale-95 transition-all shadow-lg shadow-indigo-500/20"
             >
               {lang === 'ar' ? 'حسناً، إغلاق' : 'Close'}
             </button>

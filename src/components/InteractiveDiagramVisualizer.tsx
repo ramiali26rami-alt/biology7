@@ -60,13 +60,14 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
 
   // Mouse Drag / Pan handlers
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (transform.scale === 1) return; // Disable drag/pan when scale is 1
     e.preventDefault();
     setIsDragging(true);
     dragStart.current = { x: e.clientX - transform.x, y: e.clientY - transform.y };
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || transform.scale === 1) return;
     const newX = e.clientX - dragStart.current.x;
     const newY = e.clientY - dragStart.current.y;
     
@@ -74,8 +75,8 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
     const bound = 300 * (transform.scale - 1);
     setTransform(prev => ({
       ...prev,
-      x: prev.scale === 1 ? 0 : Math.max(-bound, Math.min(bound, newX)),
-      y: prev.scale === 1 ? 0 : Math.max(-bound, Math.min(bound, newY))
+      x: Math.max(-bound, Math.min(bound, newX)),
+      y: Math.max(-bound, Math.min(bound, newY))
     }));
   };
 
@@ -95,6 +96,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
     if (e.touches.length === 2) {
       touchStartDist.current = getTouchDist(e);
     } else if (e.touches.length === 1) {
+      if (transform.scale === 1) return; // Disable drag/pan when scale is 1
       setIsDragging(true);
       dragStart.current = { 
         x: e.touches[0].clientX - transform.x, 
@@ -113,14 +115,14 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         scale: Math.max(1, Math.min(4, prev.scale * scaleFactor))
       }));
       touchStartDist.current = dist;
-    } else if (e.touches.length === 1 && isDragging) {
+    } else if (e.touches.length === 1 && isDragging && transform.scale > 1) {
       const newX = e.touches[0].clientX - dragStart.current.x;
       const newY = e.touches[0].clientY - dragStart.current.y;
       const bound = 300 * (transform.scale - 1);
       setTransform(prev => ({
         ...prev,
-        x: prev.scale === 1 ? 0 : Math.max(-bound, Math.min(bound, newX)),
-        y: prev.scale === 1 ? 0 : Math.max(-bound, Math.min(bound, newY))
+        x: Math.max(-bound, Math.min(bound, newX)),
+        y: Math.max(-bound, Math.min(bound, newY))
       }));
     }
   };
@@ -131,10 +133,10 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl p-5 space-y-4">
+    <div className="bg-white dark:bg-slate-900 p-1.5 space-y-3">
       {/* Tab Navigation if multiple diagrams exist */}
       {diagrams.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
+        <div className="flex gap-2 overflow-x-auto pb-1.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
           {diagrams.map((diag, idx) => (
             <button
               key={idx}
@@ -143,9 +145,9 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                 setSelectedHotspot(null);
                 resetZoom();
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all shrink-0 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 ${
                 activeDiagIdx === idx
-                  ? 'bg-emerald-500 text-white shadow-md'
+                  ? 'bg-emerald-500 text-white shadow-sm'
                   : 'bg-slate-50 dark:bg-slate-800/60 text-slate-650 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
@@ -157,7 +159,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
 
       {/* Main Diagram Area */}
       <div 
-        className="relative w-full h-[450px] border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden bg-slate-950/40 select-none flex items-center justify-center touch-none"
+        className="relative w-full h-[380px] overflow-hidden bg-white dark:bg-[#0a0e1a] select-none flex items-center justify-center touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -207,7 +209,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
             <img
               src={getAssetUrl(activeDiagram.imageFile)}
               alt={activeDiagram.titleAr}
-              className="max-w-full max-h-[420px] object-contain block"
+              className="max-w-full max-h-[360px] object-contain block"
               draggable={false}
             />
 
