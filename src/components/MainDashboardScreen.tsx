@@ -26,7 +26,8 @@ import {
   AlertTriangle,
   X,
   Loader2,
-  XCircle
+  XCircle,
+  ChevronDown
 } from 'lucide-react';
 import { ScreenId } from '../types';
 import { translations, Language } from '../utils/translations';
@@ -59,6 +60,11 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
   const [tutorInput, setTutorInput] = useState('');
   const [tutorLoading, setTutorLoading] = useState(false);
   const [tutorError, setTutorError] = useState<string | null>(null);
+
+  // Collapsible Banner Expansion States
+  const [isStreakExpanded, setIsStreakExpanded] = useState(false);
+  const [isPremiumExpanded, setIsPremiumExpanded] = useState(false);
+  const [isTutorPromptExpanded, setIsTutorPromptExpanded] = useState(false);
 
   // Initialize tutor chat when general chat is opened
   useEffect(() => {
@@ -208,14 +214,14 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
       </header>
 
       {/* Main Container */}
-      <main className="pt-20 px-6 max-w-2xl mx-auto space-y-6">
+      <main className="pt-18 px-5 max-w-2xl mx-auto space-y-4">
         
         {/* Welcome Section */}
-        <section className="mt-4">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight">
+        <section className="mt-2">
+          <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">
             {t.welcomeStudent}
           </h2>
-          <p className="text-slate-500 dark:text-slate-450 text-sm font-medium mt-1">
+          <p className="text-slate-500 dark:text-slate-450 text-xs font-semibold mt-0.5">
             {lang === 'ar' ? 'استعد لاجتياز امتحانات الشهادة الثانوية بتفوق تام في مادة الأحياء.' : 'Gear up to conquer your third-year biology exams with total confidence.'}
           </p>
         </section>
@@ -225,30 +231,44 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           <motion.section
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-amber-500 rounded-[24px] p-4 shadow-lg shadow-amber-500/20 relative overflow-hidden"
+            className="bg-amber-500 rounded-[20px] p-3.5 shadow-md shadow-amber-500/20 relative overflow-hidden"
           >
-            <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-lg" />
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                <Flame className="w-5 h-5 text-white fill-white" />
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-lg" />
+            <div className="flex flex-col gap-2">
+              <div 
+                onClick={() => setIsStreakExpanded(!isStreakExpanded)}
+                className="flex items-center justify-between cursor-pointer select-none"
+              >
+                <div className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-white fill-white shrink-0" />
+                  <p className="text-white font-black text-xs">
+                    {lang === 'ar' ? `🔥 سلسلتك (${getStreak()} يوم) في خطر!` : `🔥 Your ${getStreak()}-day streak is at risk!`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <ChevronDown className={`w-4 h-4 text-white transition-transform ${isStreakExpanded ? 'rotate-180' : ''}`} />
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); dismissStreakBanner(); }} 
+                    className="text-white/60 hover:text-white active:scale-90 transition-transform ml-1"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-white font-black text-sm">
-                  {lang === 'ar' ? `🔥 سلسلتك (${getStreak()} يوم) في خطر!` : `🔥 Your ${getStreak()}-day streak is at risk!`}
-                </p>
-                <p className="text-amber-100 text-xs font-bold mt-0.5">
-                  {lang === 'ar' ? 'لم تذاكر اليوم بعد. ادخل أي درس للحفاظ على سلسلتك.' : "You haven't studied today yet. Open any lesson to keep your streak."}
-                </p>
-                <button
-                  onClick={() => onNavigate('units-navigation', 'push')}
-                  className="mt-2 bg-white text-amber-600 font-black text-xs px-4 py-1.5 rounded-lg active:scale-95 transition-transform"
-                >
-                  {lang === 'ar' ? 'اذهب للدروس ←' : 'Go to Lessons →'}
-                </button>
-              </div>
-              <button onClick={dismissStreakBanner} className="text-white/60 hover:text-white shrink-0 active:scale-90 transition-transform">
-                <X className="w-4 h-4" />
-              </button>
+              
+              {isStreakExpanded && (
+                <div className="text-right border-t border-white/20 pt-2 animate-slideDown">
+                  <p className="text-amber-100 text-xs font-bold leading-relaxed">
+                    {lang === 'ar' ? 'لم تذاكر اليوم بعد. ادخل أي درس للحفاظ على سلسلتك.' : "You haven't studied today yet. Open any lesson to keep your streak."}
+                  </p>
+                  <button
+                    onClick={() => onNavigate('units-navigation', 'push')}
+                    className="mt-2 bg-white text-amber-600 font-black text-[11px] px-3.5 py-1.5 rounded-lg active:scale-95 transition-transform"
+                  >
+                    {lang === 'ar' ? 'اذهب للدروس ←' : 'Go to Lessons →'}
+                  </button>
+                </div>
+              )}
             </div>
           </motion.section>
         )}
@@ -298,85 +318,108 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         {/* Premium Banner (Dashboard CTA) */}
         {!premiumUnlocked && (
           <section 
-            onClick={() => onNavigate('student-profile', 'push')}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-5 rounded-[28px] shadow-lg shadow-emerald-500/10 relative overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-200"
+            className="bg-gradient-to-r from-emerald-500 to-teal-655 text-white p-3.5 rounded-[20px] shadow-md shadow-emerald-500/10 relative overflow-hidden transition-all duration-250"
           >
-            <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-            <div className="relative z-10 flex justify-between items-center gap-4">
-              <div className="space-y-1">
+            <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+            <div className="relative z-10 flex flex-col gap-2">
+              <div 
+                onClick={() => setIsPremiumExpanded(!isPremiumExpanded)}
+                className="flex items-center justify-between cursor-pointer select-none"
+              >
                 <div className="flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-amber-300 fill-amber-300" />
-                  <h3 className="font-black text-sm tracking-wide text-amber-200">{t.upgradeBannerTitle}</h3>
+                  <Crown className="w-4 h-4 text-amber-300 fill-amber-300 shrink-0" />
+                  <h3 className="font-black text-xs tracking-wide text-amber-200">{t.upgradeBannerTitle}</h3>
                 </div>
-                <p className="text-xs text-emerald-50 font-medium max-w-xs">{t.upgradeBannerDesc}</p>
+                <ChevronDown className={`w-4 h-4 text-emerald-100 transition-transform ${isPremiumExpanded ? 'rotate-180' : ''}`} />
               </div>
-              <span className="p-2 bg-white/20 rounded-full text-white shrink-0">
-                {lang === 'ar' ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-              </span>
+              
+              {isPremiumExpanded && (
+                <div className="text-right border-t border-emerald-450/20 pt-2 animate-slideDown">
+                  <p className="text-[11px] text-emerald-50 font-semibold leading-relaxed">
+                    {t.upgradeBannerDesc}
+                  </p>
+                  <button 
+                    onClick={() => onNavigate('student-profile', 'push')}
+                    className="mt-2.5 bg-white text-emerald-600 hover:bg-emerald-50 font-black text-[11px] px-3.5 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1.5 mr-auto"
+                  >
+                    <span>{lang === 'ar' ? 'تفعيل الآن' : 'Activate Now'}</span>
+                    {lang === 'ar' ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         )}
 
         {/* AI Biology Tutor General Banner */}
         <section 
-          onClick={() => setIsTutorOpen(true)}
-          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-5 rounded-[28px] shadow-lg shadow-indigo-500/15 relative overflow-hidden cursor-pointer hover:shadow-xl hover:scale-[1.01] active:scale-95 transition-all duration-200"
+          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-3.5 rounded-[20px] shadow-md shadow-indigo-500/10 relative overflow-hidden transition-all duration-250"
         >
-          <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-          <div className="relative z-10 flex justify-between items-center gap-4">
-            <div className="space-y-1">
+          <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+          <div className="relative z-10 flex flex-col gap-2">
+            <div 
+              onClick={() => setIsTutorPromptExpanded(!isTutorPromptExpanded)}
+              className="flex items-center justify-between cursor-pointer select-none"
+            >
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-100 animate-pulse" />
-                <h3 className="font-black text-sm tracking-wide text-indigo-100">{t.aiTutorPromptGeneral}</h3>
+                <Sparkles className="w-4 h-4 text-indigo-100 animate-pulse shrink-0" />
+                <h3 className="font-black text-xs tracking-wide text-indigo-100">{t.aiTutorPromptGeneral}</h3>
               </div>
-              <p className="text-xs text-indigo-50 font-medium max-w-xs">{t.aiTutorPromptGeneralDesc}</p>
+              <ChevronDown className={`w-4 h-4 text-indigo-100 transition-transform ${isTutorPromptExpanded ? 'rotate-180' : ''}`} />
             </div>
-            <span className="p-2 bg-white/20 rounded-full text-white shrink-0">
-              {lang === 'ar' ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-            </span>
+            
+            {isTutorPromptExpanded && (
+              <div className="text-right border-t border-indigo-400/20 pt-2 animate-slideDown">
+                <p className="text-[11px] text-indigo-50 font-semibold leading-relaxed">
+                  {t.aiTutorPromptGeneralDesc}
+                </p>
+                <button 
+                  onClick={() => setIsTutorOpen(true)}
+                  className="mt-2.5 bg-white text-indigo-600 hover:bg-indigo-50 font-black text-[11px] px-3.5 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1.5 mr-auto"
+                >
+                  <span>{lang === 'ar' ? 'افتح المحادثة' : 'Open Chat'}</span>
+                  {lang === 'ar' ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
         {/* Bento Statistics Grid */}
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-2 gap-3">
           
           {/* Bento Stats 1: Streak */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[28px] shadow-xl shadow-slate-200/25 dark:shadow-none flex flex-col justify-between min-h-[140px]">
-            <div className="flex items-center justify-between">
-              <span className="p-2.5 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-500">
-                <Flame className="w-5 h-5 fill-amber-500" />
-              </span>
-              <span className="text-[10px] text-emerald-500 dark:text-emerald-400 font-extrabold uppercase bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">
-                +{getStreak()} {lang === 'ar' ? 'يوم' : 'Days'}
-              </span>
-            </div>
-            <div>
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl shadow-sm flex items-center gap-3">
+            <span className="w-9 h-9 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-500 flex items-center justify-center shrink-0">
+              <Flame className="w-5 h-5 fill-amber-500" />
+            </span>
+            <div className="flex-1 min-w-0">
               <span className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider block">{t.studyStreak}</span>
-              <span className="text-2xl font-black text-slate-800 dark:text-white mt-1 block">{getStreak()} {lang === 'ar' ? 'يوم' : 'days'}</span>
+              <span className="text-sm font-black text-slate-855 dark:text-white block mt-0.5">{getStreak()} {lang === 'ar' ? 'يوم' : 'days'}</span>
             </div>
           </div>
 
           {/* Bento Stats 2: Completion Rate */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[28px] shadow-xl shadow-slate-200/25 dark:shadow-none flex flex-col justify-between min-h-[140px]">
-            {(() => {
-              const pct = overallPercent(lessons.map(l => l.id));
-              return (
-                <>
-                  <div className="flex items-center justify-between">
-                    <span className="p-2.5 bg-emerald-50 dark:bg-emerald-950/50 rounded-xl text-emerald-500">
-                      <TrendingUp className="w-5 h-5" />
-                    </span>
-                    <span className="text-xs text-emerald-600 dark:text-emerald-350 font-black">{pct}%</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider block">{t.learningStats}</span>
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl shadow-sm flex items-center gap-3">
+            <span className="w-9 h-9 bg-emerald-50 dark:bg-emerald-950/50 rounded-xl text-emerald-500 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-5 h-5" />
+            </span>
+            <div className="flex-1 min-w-0">
+              {(() => {
+                const pct = overallPercent(lessons.map(l => l.id));
+                return (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider block">{t.learningStats}</span>
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-350 font-black">{pct}%</span>
+                    </div>
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
                       <div className="bg-emerald-500 h-full rounded-full transition-all duration-700" style={{ width: `${pct}%` }}></div>
                     </div>
-                  </div>
-                </>
-              );
-            })()}
+                  </>
+                );
+              })()}
+            </div>
           </div>
 
         </section>
@@ -385,20 +428,19 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         <section className="space-y-3">
           <h3 className="text-sm font-black text-slate-400 uppercase tracking-wider mb-2">{t.quickAccess}</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             
             {/* Units Syllabus Navigation Card */}
             <div 
               onClick={() => onNavigate('units-navigation', 'push')}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200 shrink-0">
-                  <BookOpen className="w-6 h-6" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                  <BookOpen className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-[15px]">{t.myLessonsMenu}</h4>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">{lang === 'ar' ? 'دروس تفاعلية، وخرائط ثلاثية' : '3 Units, Interactive Maps'}</p>
+                  <h4 className="font-black text-slate-850 dark:text-slate-100 text-xs">{t.myLessonsMenu}</h4>
                 </div>
               </div>
               {chevronIcon}
@@ -407,15 +449,14 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Ministry Past Exams Portal Card */}
             <div 
               onClick={() => onNavigate('ministry-exams', 'push')}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-300 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-colors duration-200 shrink-0">
-                  <FileText className="w-6 h-6" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-300 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                  <FileText className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-[15px]">{t.previousExams}</h4>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">{lang === 'ar' ? 'نماذج امتحانات الجمهورية ٢٠٢٢-٢٠٢٤' : 'Yemeni Exams 2022 - 2024'}</p>
+                  <h4 className="font-black text-slate-855 dark:text-slate-100 text-xs">{t.previousExams}</h4>
                 </div>
               </div>
               {chevronIcon}
@@ -424,15 +465,14 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Practice and Quiz Card */}
             <div 
               onClick={() => onNavigate('biology-quiz', 'push')}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors duration-200 shrink-0">
-                  <PenTool className="w-6 h-6" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                  <PenTool className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-[15px]">{t.openTraining}</h4>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">{lang === 'ar' ? 'حل أسئلة صح وخطأ، وتصحيح تلقائي' : 'Multiple Choice & True/False'}</p>
+                  <h4 className="font-black text-slate-855 dark:text-slate-100 text-xs">{t.openTraining}</h4>
                 </div>
               </div>
               {chevronIcon}
@@ -441,15 +481,14 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Profile Settings Card */}
             <div 
               onClick={() => onNavigate('student-profile', 'push')}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-955/50 dark:bg-amber-950 text-amber-600 dark:text-amber-300 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-200 shrink-0">
-                  <User className="w-6 h-6" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-amber-50 dark:bg-amber-955/50 dark:bg-amber-950 text-amber-600 dark:text-amber-300 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                  <User className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-[15px]">{t.myProfile}</h4>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold mt-0.5">{lang === 'ar' ? 'رفع الصورة، والوضع الليلي، واللغات' : 'Photo, Dark Mode, Languages'}</p>
+                  <h4 className="font-black text-slate-855 dark:text-slate-100 text-xs">{t.myProfile}</h4>
                 </div>
               </div>
               {chevronIcon}

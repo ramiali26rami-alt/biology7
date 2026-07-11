@@ -145,19 +145,19 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
     >
       <div className={`relative w-full h-full duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
         {/* Front */}
-        <div className="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-md backface-hidden">
+        <div className="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden">
           <div className="flex justify-between items-center">
             <span className="text-[10px] font-black text-purple-500 uppercase tracking-widest">
               {lang === 'ar' ? 'بطاقة مراجعة - سؤال' : 'Flashcard - Question'}
             </span>
             <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
           </div>
-          <div className="text-center py-4 flex-1 flex flex-col justify-center items-center">
-            <h4 className="text-sm font-black text-slate-850 dark:text-white leading-relaxed">
+          <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
+            <h4 className="text-base md:text-lg font-black text-slate-900 dark:text-white leading-relaxed">
               {card.qAr}
             </h4>
             {card.qEn && (
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold mt-2">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
                 {card.qEn}
               </p>
             )}
@@ -168,19 +168,19 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-150 dark:border-slate-800 rounded-3xl p-6 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
+        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-150 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
           <div className="flex justify-between items-center">
             <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
               {lang === 'ar' ? 'الإجابة النموذجية' : 'Model Answer'}
             </span>
             <CheckCircle className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-center py-4 flex-1 flex flex-col justify-center items-center">
-            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-relaxed">
+          <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
+            <h4 className="text-sm md:text-base font-extrabold text-slate-850 dark:text-white leading-relaxed">
               {card.aAr}
             </h4>
             {card.aEn && (
-              <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-2">
+              <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-1">
                 {card.aEn}
               </p>
             )}
@@ -204,6 +204,7 @@ interface LessonDetailsScreenProps {
 
 export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons = [], onSelectLesson }: LessonDetailsScreenProps) {
   const [activeTab, setActiveTab] = useState<'explore' | 'review' | 'test'>('explore');
+  const [exploreSubTab, setExploreSubTab] = useState<'mindmap' | 'diagrams' | 'pdf'>('mindmap');
   const [bookmarked, setBookmarked] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
   const [mapError, setMapError] = useState(false);
@@ -620,8 +621,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
           >
             {backIcon}
           </button>
-          <h1 className="font-black text-lg text-slate-900 dark:text-white">
-            {lessonFolderTitle}
+          <h1 className="font-black text-lg text-slate-900 dark:text-white transition-opacity duration-200">
+            {activeTab === 'explore' && exploreSubTab === 'mindmap' ? '' : lessonFolderTitle}
           </h1>
         </div>
         
@@ -672,17 +673,23 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
       </header>
 
       {/* Main Content */}
-      <main className="pt-20 px-6 max-w-2xl mx-auto space-y-6">
+      <main className={`pt-20 max-w-2xl mx-auto ${
+        (activeTab === 'explore' && exploreSubTab === 'mindmap') 
+          ? 'px-4 h-[calc(100vh-80px)] pb-0 overflow-hidden' 
+          : 'px-6 pb-24 space-y-6'
+      }`}>
         
         {/* Lesson Heading Info */}
-        <div className="mt-4">
-          <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full mb-2">
-            {lang === 'ar' ? 'الوحدة والموضوع المنهجي' : 'Academic Unit Course'}
-          </span>
-          <h2 className="text-xl font-black text-slate-850 dark:text-white leading-tight">
-            {lessonFolderTitle}
-          </h2>
-        </div>
+        {!(activeTab === 'explore' && exploreSubTab === 'mindmap') && (
+          <div className="mt-4">
+            <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full mb-2">
+              {lang === 'ar' ? 'الوحدة والموضوع المنهجي' : 'Academic Unit Course'}
+            </span>
+            <h2 className="text-xl font-black text-slate-850 dark:text-white leading-tight">
+              {lessonFolderTitle}
+            </h2>
+          </div>
+        )}
 
         {/* Dynamic Study Tabs based on content availability */}
         <nav className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
@@ -709,31 +716,45 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
 
         {/* 1. Explore Tab */}
         {activeTab === 'explore' && (
-          <div className="space-y-6 animate-fadeIn">
-            {/* Interactive Mind Map Frame */}
-            {(lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
-              <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
-                <div className="p-5 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 bg-violet-500 rounded-full shrink-0"></span>
-                    <span className="font-extrabold text-sm text-slate-800 dark:text-white">
-                      {lang === 'ar' ? 'الخارطة الذهنية التفاعلية المنهجية' : 'Interactive Academic Mind Map'}
-                    </span>
-                  </div>
-                  {lesson.mindmapFile && (
-                    <a 
-                      href={getAssetUrl(lesson.mindmapFile)}
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-xs text-emerald-500 hover:text-emerald-600 font-extrabold flex items-center gap-1"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      {lang === 'ar' ? 'نافذة كاملة' : 'Full Window'}
-                    </a>
-                  )}
-                </div>
+          <div className="flex flex-col h-full animate-fadeIn">
+            {/* Explore Sub-Tabs Navigation */}
+            <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl gap-1.5 self-center w-full max-w-sm mx-auto mb-4 border border-slate-200/50 dark:border-slate-800 shrink-0">
+              <button
+                onClick={() => setExploreSubTab('mindmap')}
+                className={`flex-1 text-center py-1.5 px-3 text-[11px] font-black rounded-lg transition-all ${
+                  exploreSubTab === 'mindmap'
+                    ? 'bg-violet-600 text-white shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                {lang === 'ar' ? 'الخارطة الذهنية' : 'Mind Map'}
+              </button>
+              <button
+                onClick={() => setExploreSubTab('diagrams')}
+                className={`flex-1 text-center py-1.5 px-3 text-[11px] font-black rounded-lg transition-all ${
+                  exploreSubTab === 'diagrams'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                {lang === 'ar' ? 'الرسومات التفاعلية' : 'Diagrams'}
+              </button>
+              <button
+                onClick={() => setExploreSubTab('pdf')}
+                className={`flex-1 text-center py-1.5 px-3 text-[11px] font-black rounded-lg transition-all ${
+                  exploreSubTab === 'pdf'
+                    ? 'bg-teal-600 text-white shadow-sm'
+                    : 'text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                {lang === 'ar' ? 'مذكرة الدرس' : 'Notes'}
+              </button>
+            </div>
 
-                <div className="relative w-full h-[450px] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-none rounded-3xl overflow-hidden">
+            {/* Sub-tab content area */}
+            <div className="flex-1 min-h-0 relative">
+              {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
+                <div className="relative w-full h-[calc(100vh-210px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-hidden shadow-sm">
                   {lesson.mindmapLocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
@@ -773,7 +794,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
                           key={lesson.mindmapFile}
                           src={getAssetUrl(lesson.mindmapFile)}
                           title="Interactive Mind Map"
-                          className={`w-full h-full border-0 transition-opacity duration-300 ${mapLoading ? 'opacity-0' : 'opacity-100'}`}
+                          className="w-full h-full border-0"
                           sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-top-navigation-by-user-activation"
                           onLoad={() => setMapLoading(false)}
                           onError={() => { setMapError(true); setMapLoading(false); }}
@@ -793,80 +814,80 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
                     </div>
                   )}
                 </div>
-              </section>
-            )}
+              )}
 
-            {/* Interactive Drawings Section */}
-            <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none relative animate-fadeIn">
-              <div className="p-5 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0 animate-pulse"></span>
-                  <span className="font-extrabold text-sm text-slate-800 dark:text-white">
-                    {lang === 'ar' ? 'الرسومات والأشكال التوضيحية التفاعلية' : 'Interactive Diagrams & Anatomy Drawings'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="relative min-h-[300px]">
-                {lesson.diagramLocked && (
-                  <LockedOverlay 
-                    messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"
-                    messageEn="These interactive diagrams are locked by the teacher."
-                    onUnlockClick={() => onNavigate('student-profile', 'push')}
-                  />
-                )}
-                <InteractiveDiagramVisualizer
-                  diagrams={
-                    lesson.interactiveDiagrams && lesson.interactiveDiagrams.length > 0
-                      ? lesson.interactiveDiagrams
-                      : lesson.diagramFile
-                      ? [{ imageFile: lesson.diagramFile, titleAr: lang === 'ar' ? 'الرسم التوضيحي المنهجي' : 'Standard Lesson Diagram', hotspots: [] }]
-                      : []
-                  }
-                  lang={lang}
-                  lessonFolder={lesson.folder}
-                />
-              </div>
-            </section>
-
-            {/* PDF Notes Section */}
-            {lesson.pdfFile && (
-              <section className="bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-emerald-900 p-6 rounded-[28px] shadow-sm animate-fadeIn">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="p-2 bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 rounded-2xl font-black text-xs">
-                      PDF
-                    </span>
-                    <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                      <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-xs">
-                        {lang === 'ar' ? `مذكرة الدرس الأكاديمية` : `Academic Lecture Notes`}
-                      </h4>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-                        {lesson.pdfLocked 
-                          ? (lang === 'ar' ? 'تطلب تفعيل الحساب لفتح الملف 🔒' : 'Requires account activation 🔒')
-                          : (lang === 'ar' ? 'تفتح مباشرة في الذاكرة المؤمنة' : 'Decrypted in-memory on the fly')}
-                      </p>
+              {exploreSubTab === 'diagrams' && (
+                <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm relative animate-fadeIn">
+                  <div className="p-5 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0 animate-pulse"></span>
+                      <span className="font-extrabold text-sm text-slate-850 dark:text-white">
+                        {lang === 'ar' ? 'الرسومات والأشكال التوضيحية التفاعلية' : 'Interactive Diagrams & Anatomy Drawings'}
+                      </span>
                     </div>
                   </div>
-                  <button 
-                    onClick={handleViewPdf}
-                    disabled={loadingPdf}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    {loadingPdf ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>{lang === 'ar' ? 'جاري التحضير...' : 'Decrypting...'}</span>
-                      </>
-                    ) : lesson.pdfLocked ? (
-                      <span>{lang === 'ar' ? 'فتح الملف 🔒' : 'Open File 🔒'}</span>
-                    ) : (
-                      <span>{lang === 'ar' ? 'عرض المذكرة 👁️' : 'View Notes 👁️'}</span>
+                  
+                  <div className="relative min-h-[300px]">
+                    {lesson.diagramLocked && (
+                      <LockedOverlay 
+                        messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"
+                        messageEn="These interactive diagrams are locked by the teacher."
+                        onUnlockClick={() => onNavigate('student-profile', 'push')}
+                      />
                     )}
-                  </button>
-                </div>
-              </section>
-            )}
+                    <InteractiveDiagramVisualizer
+                      diagrams={
+                        lesson.interactiveDiagrams && lesson.interactiveDiagrams.length > 0
+                          ? lesson.interactiveDiagrams
+                          : lesson.diagramFile
+                          ? [{ imageFile: lesson.diagramFile, titleAr: lang === 'ar' ? 'الرسم التوضيحي المنهجي' : 'Standard Lesson Diagram', hotspots: [] }]
+                          : []
+                      }
+                      lang={lang}
+                      lessonFolder={lesson.folder}
+                    />
+                  </div>
+                </section>
+              )}
+
+              {exploreSubTab === 'pdf' && lesson.pdfFile && (
+                <section className="bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-emerald-900 p-6 rounded-[28px] shadow-sm animate-fadeIn">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="p-2 bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 rounded-2xl font-black text-xs">
+                        PDF
+                      </span>
+                      <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                        <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-xs">
+                          {lang === 'ar' ? `مذكرة الدرس الأكاديمية` : `Academic Lecture Notes`}
+                        </h4>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
+                          {lesson.pdfLocked 
+                            ? (lang === 'ar' ? 'تطلب تفعيل الحساب لفتح الملف 🔒' : 'Requires account activation 🔒')
+                            : (lang === 'ar' ? 'تفتح مباشرة في الذاكرة المؤمنة' : 'Decrypted in-memory on the fly')}
+                        </p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={handleViewPdf}
+                      disabled={loadingPdf}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {loadingPdf ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>{lang === 'ar' ? 'جاري التحضير...' : 'Decrypting...'}</span>
+                        </>
+                      ) : lesson.pdfLocked ? (
+                        <span>{lang === 'ar' ? 'فتح الملف 🔒' : 'Open File 🔒'}</span>
+                      ) : (
+                        <span>{lang === 'ar' ? 'عرض المذكرة 👁️' : 'View Notes 👁️'}</span>
+                      )}
+                    </button>
+                  </div>
+                </section>
+              )}
+            </div>
           </div>
         )}
 

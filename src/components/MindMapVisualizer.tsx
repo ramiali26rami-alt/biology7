@@ -39,8 +39,49 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   // Helper: check if a node is a sub-branch (i.e. has children)
   const getChildren = (nodeId: string) => mindmap.filter(n => n.parentId === nodeId);
 
+  // Center node function
+  const centerNode = (nodeId: string, zoomScale?: number) => {
+    const container = containerRef.current;
+    let nodeEl: HTMLElement | null = null;
+    
+    if (nodeId === 'root' && rootRef.current) {
+      nodeEl = rootRef.current;
+    } else {
+      nodeEl = branchRefs.current[nodeId];
+    }
+    
+    if (!container || !nodeEl) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const nodeRect = nodeEl.getBoundingClientRect();
+
+    const containerCenter = {
+      x: containerRect.left + containerRect.width / 2,
+      y: containerRect.top + containerRect.height / 2
+    };
+
+    const nodeCenter = {
+      x: nodeRect.left + nodeRect.width / 2,
+      y: nodeRect.top + nodeRect.height / 2
+    };
+
+    const dx = nodeCenter.x - containerCenter.x;
+    const dy = nodeCenter.y - containerCenter.y;
+
+    setTransform(prev => ({
+      scale: zoomScale || Math.max(1.15, prev.scale),
+      x: prev.x - dx,
+      y: prev.y - dy
+    }));
+
+    // Trigger redraw lines after animation frames
+    setTimeout(redrawLines, 50);
+    setTimeout(redrawLines, 150);
+  };
+
   // Toggle handlers
   const toggleBranch = (branchId: string) => {
+    const willExpand = !expandedBranches[branchId];
     setExpandedBranches(prev => {
       const next = { ...prev, [branchId]: !prev[branchId] };
       // Redraw lines after transition
@@ -48,6 +89,16 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
       setTimeout(redrawLines, 300);
       return next;
     });
+
+    if (willExpand) {
+      setTimeout(() => {
+        centerNode(branchId);
+      }, 150);
+    } else {
+      setTimeout(() => {
+        centerNode('root', 1.0);
+      }, 150);
+    }
   };
 
   const toggleSub = (subId: string) => {
@@ -207,7 +258,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
 
   return (
     <div 
-      className="relative w-full h-[550px] overflow-hidden select-none bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-none rounded-3xl touch-none"
+      className="relative w-full h-full overflow-hidden select-none bg-white dark:bg-[#0a0e1a] touch-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -313,8 +364,11 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                 });
                 setExpandedBranches(nextState);
                 setTimeout(redrawLines, 150);
+                setTimeout(() => {
+                  centerNode('root', 1.0);
+                }, 160);
               }}
-              className="bg-gradient-to-tr from-violet-600 to-indigo-500 hover:from-violet-500 hover:to-indigo-400 text-white font-black text-sm md:text-base px-8 py-4 rounded-full shadow-lg hover:shadow-indigo-500/30 border border-indigo-400/20 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+              className="bg-gradient-to-tr from-violet-600 to-indigo-500 hover:from-violet-500 hover:to-indigo-400 text-white font-black text-base md:text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-indigo-500/30 border border-indigo-400/20 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
             >
               <span>{lang === 'ar' ? rootNode.textAr : (rootNode.textEn || rootNode.textAr)}</span>
               {rootNode.details && (
@@ -360,7 +414,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                   {/* Branch Button */}
                   <button
                     onClick={() => toggleBranch(branch.id)}
-                    className="w-full text-center py-3 px-4 font-bold text-xs rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-2"
+                    className="w-full text-center py-3 px-4 font-black text-sm rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-2"
                     style={{
                       backgroundColor: isBranchExpanded ? `${color}1A` : (isDarkMode ? '#151d35' : '#f8fafc'),
                       borderColor: isBranchExpanded ? color : (isDarkMode ? '#2a3460' : '#cbd5e1'),
@@ -408,7 +462,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                             <div key={subNode.id} className="w-full flex flex-col items-stretch">
                               <button
                                 onClick={() => toggleSub(subNode.id)}
-                                className="w-full text-right py-2 px-3 font-bold text-[11px] rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-1"
+                                className="w-full text-right py-2 px-3 font-extrabold text-xs rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-1"
                                 style={{
                                   backgroundColor: isSubExpanded ? (isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)') : (isDarkMode ? '#101726' : '#f8fafc'),
                                   borderColor: isSubExpanded ? `${color}40` : (isDarkMode ? '#222d4a' : '#cbd5e1'),
@@ -446,7 +500,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                   {subChildren.map(leaf => (
                                     <div
                                       key={leaf.id}
-                                      className="text-right py-2 px-3 bg-[#f8fafc] dark:bg-[#151d35] border border-slate-200 dark:border-[#2a3460] rounded-lg text-[10.5px] leading-relaxed text-slate-700 dark:text-slate-200 flex items-center justify-between gap-1.5"
+                                      className="text-right py-2.5 px-3 bg-[#f8fafc] dark:bg-[#151d35] border border-slate-200 dark:border-[#2a3460] rounded-lg text-xs leading-relaxed font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between gap-1.5"
                                     >
                                       <span>{lang === 'ar' ? leaf.textAr : (leaf.textEn || leaf.textAr)}</span>
                                       {leaf.details && (
@@ -474,7 +528,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="text-right py-2.5 px-3 bg-[#f8fafc] dark:bg-[#151d35] border border-slate-200 dark:border-[#2a3460] rounded-xl text-[11px] leading-relaxed text-slate-700 dark:text-slate-200 relative overflow-hidden flex items-center justify-between gap-1.5"
+                              className="text-right py-3 px-3 bg-[#f8fafc] dark:bg-[#151d35] border border-slate-200 dark:border-[#2a3460] rounded-xl text-xs leading-relaxed font-semibold text-slate-700 dark:text-slate-200 relative overflow-hidden flex items-center justify-between gap-1.5"
                             >
                               <div 
                                 className="absolute right-0 top-0 bottom-0 w-[3px]"

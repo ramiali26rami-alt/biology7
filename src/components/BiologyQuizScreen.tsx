@@ -54,11 +54,11 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   if (!imgUrl) return null;
 
   return (
-    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-[24px] shadow-sm overflow-hidden my-3">
+    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1.5 rounded-xl shadow-sm overflow-hidden my-2">
       <img 
         src={imgUrl} 
         alt="Question Diagram" 
-        className="max-h-56 object-contain rounded-xl"
+        className="max-h-28 object-contain rounded-lg"
       />
     </div>
   );
@@ -410,7 +410,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
               <div className="space-y-3">
                 <VirtualizedList
                   items={currentQ.options || []}
-                  itemHeight={70}
+                  itemHeight={52}
                   renderItem={(opt: any) => {
                     const isSelected = selectedOption === opt.key;
                     const isCorrectOpt = opt.key === currentQ.correctKey;
@@ -432,13 +432,13 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
                       <button 
                         key={opt.key}
                         onClick={() => handleOptionClick(opt.key)}
-                        className={`w-full flex items-center p-4 rounded-xl border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
+                        className={`w-full flex items-center p-2.5 rounded-xl border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
                           lang === 'ar' ? 'text-right' : 'text-left'
                         } ${optionStyle}`}
                         disabled={showFeedback}
                       >
-                        <span className={`w-8 h-8 flex items-center justify-center rounded-lg font-black transition-colors shrink-0 ${
-                          lang === 'ar' ? 'ml-3' : 'mr-3'
+                        <span className={`w-6 h-6 flex items-center justify-center rounded-md text-[10px] font-black transition-colors shrink-0 ${
+                          lang === 'ar' ? 'ml-2.5' : 'mr-2.5'
                         } ${
                           isSelected 
                             ? (isCorrectOpt ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') 
@@ -446,7 +446,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
                         }`}>
                           {opt.key === 'T' ? '1' : opt.key === 'F' ? '2' : opt.key}
                         </span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 flex-1">{opt.text}</span>
+                        <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200 flex-1 leading-tight">{opt.text}</span>
                         {checkBadge}
                       </button>
                     );
@@ -455,13 +455,13 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
               </div>
             ) : (
               /* Fill in the Blank Form */
-              <div className="space-y-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px]">
+              <div className="space-y-2.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl">
                 <input 
                   type="text" 
                   value={fillInput} 
                   onChange={(e) => setFillInput(e.target.value)}
                   disabled={showFeedback}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   placeholder={lang === 'ar' ? 'اكتب كلمتك هنا...' : 'Type your word here...'}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && fillInput.trim()) {
@@ -474,12 +474,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
                   <button 
                     onClick={handleFillSubmit}
                     disabled={!fillInput.trim()}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 dark:disabled:bg-slate-850 disabled:text-slate-400 text-white font-extrabold py-3.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 dark:disabled:bg-slate-855 disabled:text-slate-400 text-white font-extrabold py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
                   >
                     {lang === 'ar' ? 'إنهاء الإجابة والتحقق' : 'Submit & Verify Answer'}
                   </button>
                 ) : (
-                  <div className="text-xs font-bold p-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-600 dark:text-slate-350">
+                  <div className="text-xs font-bold p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-650 dark:text-slate-350">
                     {lang === 'ar' 
                       ? `إجابتك: ${fillInput}` 
                       : `Your Answer: ${fillInput}`}
@@ -490,21 +490,21 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
 
             {/* Explanation Alert Banner */}
             {showFeedback && (
-              <div className={`p-5 rounded-[24px] flex items-start gap-3 border animate-fadeIn ${
+              <div className={`p-3 rounded-xl flex items-start gap-2.5 border animate-fadeIn ${
                 isAnswerCorrect 
                   ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-250 dark:border-emerald-900 text-emerald-900 dark:text-emerald-350' 
                   : 'bg-rose-50 dark:bg-rose-950/20 border-rose-150 dark:border-rose-950 text-rose-900 dark:text-rose-350'
               }`}>
                 {isAnswerCorrect ? (
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
+                  <CheckCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-emerald-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-500" />
+                  <XCircle className="w-4.5 h-4.5 shrink-0 mt-0.5 text-rose-500" />
                 )}
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <p className="font-extrabold text-xs">
+                  <p className="font-extrabold text-[11px]">
                     {isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText}
                   </p>
-                  <p className="text-[11px] opacity-90 mt-1 leading-relaxed font-bold">
+                  <p className="text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold">
                     {currentQ.explanation}
                   </p>
                 </div>
@@ -513,10 +513,10 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
 
             {/* Next Action trigger */}
             {showFeedback && (
-              <div className={`flex ${lang === 'ar' ? 'justify-end' : 'justify-start'} pt-2`}>
+              <div className={`flex ${lang === 'ar' ? 'justify-end' : 'justify-start'} pt-1`}>
                 <button 
                   onClick={handleNextQuestion}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-8 py-3 rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer"
                 >
                   {currentQuestionIndex === questions.length - 1 
                     ? (lang === 'ar' ? 'عرض النتائج النهائية' : 'Show Final Results') 

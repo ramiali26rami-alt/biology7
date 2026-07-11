@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
-import { lessonPercent, overallPercent } from '../utils/progress';
+import { lessonPercent, overallPercent, getStreak } from '../utils/progress';
 
 interface LessonsListScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -116,44 +116,40 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
         )}
         
         {/* Hero Branding Section */}
-        <div className="mb-4 mt-4">
-          <span className="inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-full mb-2">{t.biologyAcademy}</span>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2 leading-tight">
+        <div className="mb-2 mt-2">
+          <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">
             {getUnitTitle()}
           </h2>
-          <p className="text-slate-500 dark:text-slate-450 text-xs font-semibold">
-            {t.biologySyllabusDesc}
-          </p>
         </div>
 
-        {/* Subject Overview Card (Bento Style) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-emerald-500 text-white p-6 rounded-[32px] flex flex-col justify-between min-h-[150px] shadow-xl shadow-emerald-250/20 relative overflow-hidden">
-            <div className="absolute -top-6 -left-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-            <div className="relative z-10">
-              <span className="p-2.5 bg-white/20 rounded-2xl inline-block mb-3">
-                <Sparkles className="w-5 h-5 text-emerald-100 fill-emerald-100" />
+        {/* Compact Horizontal Statistics Bar */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl shadow-sm flex items-center justify-between gap-4">
+          {/* Completion Rate */}
+          <div className="flex items-center gap-2.5 flex-1">
+            <span className="w-8 h-8 rounded-lg bg-emerald-55 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4.5 h-4.5 fill-emerald-500/20" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <span className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider block">{t.learningStats}</span>
+              <span className="text-xs font-black text-slate-800 dark:text-white block mt-0.5">
+                {overallPercent(unitLessons.map(l => l.id))}% {lang === 'ar' ? 'مكتمل' : 'Completed'}
               </span>
-              <h3 className="text-sm font-black text-white">{t.learningStats}</h3>
-            </div>
-            <div className="flex items-end justify-between relative z-10">
-              <span className="text-3xl font-black text-white">75%</span>
-              <span className="text-[10px] text-emerald-105 text-emerald-700 bg-white px-3 py-1 rounded-full font-black">{t.pathCompleted}</span>
             </div>
           </div>
+          
+          {/* Divider */}
+          <div className="w-px h-8 bg-slate-100 dark:bg-slate-800 shrink-0" />
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[32px] flex flex-col justify-between shadow-xl shadow-slate-200/20 dark:shadow-none">
-            <div className="flex items-center gap-2">
-              <span className="p-2 bg-amber-50 dark:bg-amber-950/60 rounded-xl inline-block text-amber-500 font-bold shrink-0">
-                <Flame className="w-5 h-5 fill-amber-500" />
+          {/* Study Streak */}
+          <div className="flex items-center gap-2.5 flex-1">
+            <span className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-955/50 dark:bg-amber-950 text-amber-500 flex items-center justify-center shrink-0">
+              <Flame className="w-4.5 h-4.5 fill-amber-500" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <span className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider block">{t.studyStreak}</span>
+              <span className="text-xs font-black text-slate-800 dark:text-white block mt-0.5">
+                {getStreak()} {lang === 'ar' ? 'يوم' : 'Days'}
               </span>
-              <h3 className="font-extrabold text-slate-800 dark:text-slate-200 text-sm">{t.studyStreak}</h3>
-            </div>
-            <div className="my-2">
-              <div className="font-black text-2xl text-slate-900 dark:text-white">{t.daysValue}</div>
-            </div>
-            <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${overallPercent(unitLessons.map(l => l.id))}%` }}></div>
             </div>
           </div>
         </div>
