@@ -621,8 +621,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
           >
             {backIcon}
           </button>
-          <h1 className="font-black text-lg text-slate-900 dark:text-white transition-opacity duration-200">
-            {activeTab === 'explore' ? '' : lessonFolderTitle}
+          <h1 className="font-black text-sm md:text-base text-slate-800 dark:text-white transition-opacity duration-200">
+            {lang === 'ar' ? 'تفاصيل الدرس' : 'Lesson Details'}
           </h1>
         </div>
         
@@ -688,7 +688,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
       }`}>
         
         {/* Lesson Heading Info */}
-        {!(activeTab === 'explore' && exploreSubTab === 'mindmap') && (
+        {activeTab !== 'explore' && (
           <div className="mt-4">
             <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full mb-2">
               {lang === 'ar' ? 'الوحدة والموضوع المنهجي' : 'Academic Unit Course'}
@@ -762,7 +762,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
             {/* Sub-tab content area */}
             <div className="flex-1 min-h-0 relative">
               {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
-                <div className="relative w-full h-[calc(100vh-210px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-y-auto p-4 shadow-sm scrollbar-none">
+                <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-y-auto p-4 shadow-sm scrollbar-none">
                   {lesson.mindmapLocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
@@ -905,7 +905,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
                 
                 <ul className="space-y-3">
                   {(lang === 'ar' ? lesson.summaryPointsAr : lesson.summaryPointsEn).map((point, index) => (
-                    <li key={index} className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-350 leading-relaxed">
+                    <li key={index} className="flex items-start gap-2.5 text-xs text-slate-850 dark:text-slate-200 leading-relaxed">
                       <CircleDot className="w-3.5 h-3.5 text-purple-500 shrink-0 mt-0.5" />
                       <span>{point}</span>
                     </li>

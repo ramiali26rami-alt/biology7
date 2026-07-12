@@ -159,7 +159,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
 
       {/* Main Diagram Area */}
       <div 
-        className="relative w-full h-[350px] border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none flex items-start pt-2 justify-center touch-none"
+        className="relative w-full h-auto border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none flex items-start justify-center touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -197,7 +197,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         {/* Zoomable Inner Canvas */}
         <div
           ref={containerRef}
-          className="relative w-full h-full flex items-start pt-2 justify-center"
+          className="relative w-full h-auto flex items-start justify-center"
           style={{
             transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
             transformOrigin: 'center center',
@@ -205,11 +205,11 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           }}
         >
           {/* Sub-wrapper that matches the exact dimensions of the image */}
-          <div className="relative inline-block max-w-full max-h-[325px]">
+          <div className="relative inline-block w-full h-auto">
             <img
               src={getAssetUrl(activeDiagram.imageFile)}
               alt={activeDiagram.titleAr}
-              className="max-w-full max-h-[325px] object-contain block"
+              className="w-full h-auto object-contain block rounded-2xl"
               draggable={false}
             />
 

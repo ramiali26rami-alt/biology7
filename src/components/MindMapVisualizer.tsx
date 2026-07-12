@@ -52,7 +52,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   const defaultColors = ['#1db88a', '#e05c7a', '#f59e0b', '#38bdf8', '#a78bfa'];
 
   return (
-    <div className="w-full text-right select-none animate-fadeIn">
+    <div className="w-full text-right select-none animate-fadeIn pb-28">
       {/* Root Node Header Banner */}
       <div className="mb-5 bg-gradient-to-r from-violet-650 to-indigo-650 bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-950/60 dark:to-indigo-950/60 border border-indigo-500/20 rounded-2xl p-5 shadow-sm flex items-center justify-between gap-4">
         <div className="flex-1">
@@ -108,7 +108,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                   </div>
                   <h4 
                     className="text-sm md:text-base font-black transition-colors"
-                    style={{ color: isBranchExpanded ? (isDarkMode ? '#ffffff' : color) : (isDarkMode ? '#e2e8f0' : '#475569') }}
+                    style={{ color: isBranchExpanded ? (isDarkMode ? '#ffffff' : color) : (isDarkMode ? '#e2e8f0' : '#1e293b') }}
                   >
                     {lang === 'ar' ? branch.textAr : (branch.textEn || branch.textAr)}
                   </h4>
@@ -164,7 +164,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                       color: color
                                     }}
                                   />
-                                  <span className="text-xs md:text-sm font-extrabold text-slate-700 dark:text-slate-200">
+                                  <span className="text-xs md:text-sm font-black text-slate-850 dark:text-slate-200">
                                     {lang === 'ar' ? subNode.textAr : (subNode.textEn || subNode.textAr)}
                                   </span>
                                 </div>
@@ -196,7 +196,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                       {subChildren.map(leaf => (
                                         <div
                                           key={leaf.id}
-                                          className="p-3 bg-slate-550/10 bg-slate-50/50 dark:bg-slate-950/20 rounded-lg text-xs leading-relaxed font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between gap-3"
+                                          className="p-3 bg-slate-50/50 dark:bg-slate-950/20 rounded-lg text-xs md:text-sm font-black leading-relaxed text-slate-850 dark:text-slate-300 flex items-center justify-between gap-3"
                                         >
                                           <div className="flex items-start gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: color }} />
@@ -226,7 +226,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="p-3.5 bg-slate-50/40 dark:bg-slate-950/10 border border-slate-100 dark:border-slate-800/40 rounded-xl text-xs leading-relaxed font-bold text-slate-700 dark:text-slate-300 relative overflow-hidden flex items-center justify-between gap-3"
+                              className="p-3.5 bg-slate-50/40 dark:bg-slate-950/10 border border-slate-100 dark:border-slate-800/40 rounded-xl text-xs md:text-sm font-black leading-relaxed text-slate-850 dark:text-slate-300 relative overflow-hidden flex items-center justify-between gap-3"
                             >
                               <div 
                                 className="absolute right-0 top-0 bottom-0 w-[3px]"
@@ -293,7 +293,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                   <span>{selectedNodeDetails.title}</span>
                 </h3>
               </div>
-              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-4">
+              <p className="text-xs font-semibold text-slate-850 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-4">
                 {selectedNodeDetails.details}
               </p>
             </motion.div>

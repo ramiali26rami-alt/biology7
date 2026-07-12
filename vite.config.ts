@@ -223,6 +223,82 @@ export default defineConfig(() => {
               return;
             }
 
+            // ─── POST /api/tutor-chat ─────────────────────────────────────
+            if (req.url === '/api/tutor-chat' && req.method === 'POST') {
+              const body = await readBody(req);
+              try {
+                const { messages, lessonTitle, lessonSummary } = JSON.parse(body);
+
+                if (!messages || !Array.isArray(messages) || messages.length === 0) {
+                  jsonRes(res, { error: 'Missing or invalid messages parameter.' }, 400);
+                  return;
+                }
+
+                const apiKey = req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY;
+                if (!apiKey) {
+                  jsonRes(res, { error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' }, 400);
+                  return;
+                }
+
+                const { GoogleGenAI } = await import('@google/genai');
+                const ai = new GoogleGenAI({ apiKey: String(apiKey) });
+
+                const systemInstruction = `أنت معلم أحياء يمني خبير ومساعد ذكي للطلاب في الصف الثالث الثانوي (القسم العلمي).
+مهمتك هي الإجابة على أسئلة الطلاب بأسلوب تربوي، سهل ومبسط، وباللغة العربية الفصحى.
+
+شروط صارمة للإجابة:
+1. التزم تماماً بالمصطلحات العلمية والتعاريف المعتمدة في منهج الأحياء اليمني للمرحلة الثانوية.
+2. أجب باختصار ووضوح، واستخدم التنسيق (مثل النقاط والخطوط العريضة) لتسهيل القراءة على شاشات الهواتف.
+3. إذا كان سؤال الطالب غير متعلق بعلم الأحياء أو المنهج الدراسي، اعتذر منه بلطف ووجهه لطرح أسئلة في مادة الأحياء فقط.
+4. إذا سأل الطالب سؤالاً يتعلق بدرس آخر غير الدرس المفتوح، أجب عليه بدقة علمية مع الإشارة بلطف إلى أن هذا الموضوع ينتمي لدرس آخر في المنهج.`;
+
+                let context = '';
+                if (lessonTitle) {
+                  context += `\nالدرس الحالي الذي يتصفحه الطالب هو: "${lessonTitle}"`;
+                }
+                if (lessonSummary) {
+                  const summaryText = Array.isArray(lessonSummary) ? lessonSummary.join('\n') : String(lessonSummary);
+                  if (summaryText.trim()) {
+                    context += `\nملخص الدرس المعتمد:\n${summaryText}`;
+                  }
+                }
+
+                let promptText = `${systemInstruction}\n`;
+                if (context) {
+                  promptText += `\n${context}\n`;
+                }
+
+                promptText += `\nسجل المحادثة السابقة بينك وبين الطالب (مرتبة زمنياً):\n`;
+                messages.forEach((msg: any, idx: number) => {
+                  const sender = msg.role === 'user' ? 'الطالب' : 'المعلم الافتراضي';
+                  const textVal = msg.content || msg.text || '';
+                  if (idx === messages.length - 1 && msg.role === 'user') {
+                    promptText += `[السؤال الجديد للطالب]: ${textVal}\n`;
+                  } else {
+                    promptText += `[${sender}]: ${textVal}\n`;
+                  }
+                });
+
+                promptText += `\nالآن، قم بصياغة الإجابة التربوية المناسبة للسؤال الجديد للطالب باللغة العربية:`;
+
+                const response = await ai.models.generateContent({
+                  model: 'gemini-2.5-flash',
+                  contents: promptText
+                });
+
+                const text = response.text;
+                if (!text) {
+                  jsonRes(res, { error: 'Gemini returned an empty response.' }, 500);
+                  return;
+                }
+
+                jsonRes(res, { success: true, reply: text });
+              } catch (e) {
+                jsonRes(res, { error: String(e) }, 500);
+              }
+              return;
+            }
+
             // ─── POST /api/generate-quiz ──────────────────────────────────
             // Body: { lessonTitleAr, lessonTitleEn, lessonSummaryAr, lessonSummaryEn, questionCount, questionType }
             if (req.url === '/api/generate-quiz' && req.method === 'POST') {
