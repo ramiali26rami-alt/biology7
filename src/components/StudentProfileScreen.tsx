@@ -156,14 +156,12 @@ export default function StudentProfileScreen({
   const handleCheckAdminPin = () => {
     const inputElement = document.getElementById('admin-pin-input') as HTMLInputElement | null;
     if (inputElement) {
-      const pin = inputElement.value;
-      if (pin === '2026') {
-        setShowSettingsModal(false);
-        onNavigate('admin-dashboard', 'push');
-      } else {
-        alert(lang === 'ar' ? 'الرمز السري غير صحيح!' : 'Incorrect PIN!');
-        inputElement.value = '';
-      }
+      // Temporarily disabled for student testing versions
+      alert(lang === 'ar' 
+        ? 'عذراً، لوحة التحكم وإدارة المحتوى معطلة في هذه النسخة التجريبية!' 
+        : 'Sorry, the content management dashboard is disabled in this beta version!'
+      );
+      inputElement.value = '';
     }
   };
 
