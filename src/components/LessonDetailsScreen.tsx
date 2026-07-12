@@ -762,7 +762,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
             {/* Sub-tab content area */}
             <div className="flex-1 min-h-0 relative">
               {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
-                <div className="relative w-full h-[calc(100vh-210px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-hidden shadow-sm">
+                <div className="relative w-full h-[calc(100vh-210px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-y-auto p-4 shadow-sm scrollbar-none">
                   {lesson.mindmapLocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
