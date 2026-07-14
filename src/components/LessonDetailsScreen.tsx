@@ -309,8 +309,11 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
       } else {
         setTutorError(data.error || t.aiTutorError || 'حدث خطأ أثناء الاتصال بالمعلم الافتراضي.');
       }
-    } catch (e) {
-      setTutorError(lang === 'ar' ? 'فشل الاتصال. يرجى التأكد من اتصال الإنترنت وصلاحية السيرفر.' : 'Connection failed. Please check your internet connection and server status.');
+    } catch (e: any) {
+      setTutorError(lang === 'ar' 
+        ? `⚠️ فشل الاتصال بالخادم (${serverUrl || 'المحلي'}): ${e.message || 'يرجى التأكد من تشغيل السيرفر وعنوانه.'}` 
+        : `⚠️ Connection failed to (${serverUrl || 'local'}): ${e.message || 'Please check your connection and server URL.'}`
+      );
     } finally {
       setTutorLoading(false);
     }
@@ -1425,6 +1428,9 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/20">
+                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-lg font-mono text-center shrink-0">
+                  Debug - LocalStorage Server URL: "{localStorage.getItem('server_url') || 'none'}" | Env URL: "{import.meta.env.VITE_SERVER_URL || 'none'}"
+                </div>
                 {tutorMessages.map((msg, i) => (
                   <div
                     key={i}

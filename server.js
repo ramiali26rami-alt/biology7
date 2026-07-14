@@ -148,7 +148,7 @@ For every question, write detailed explanationAr (in Arabic) and explanationEn (
 Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -216,7 +216,7 @@ app.post('/api/analyze-diagram', async (req, res) => {
     const ai = new GoogleGenAI({ apiKey: String(apiKey) });
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: [
         {
           inlineData: {
@@ -321,7 +321,7 @@ app.post('/api/tutor-chat', async (req, res) => {
     promptText += `\nالآن، قم بصياغة الإجابة التربوية المناسبة للسؤال الجديد للطالب باللغة العربية:`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: promptText
     });
 

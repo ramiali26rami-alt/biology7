@@ -225,21 +225,32 @@ export default defineConfig(() => {
 
             // ─── POST /api/tutor-chat ─────────────────────────────────────
             if (req.url === '/api/tutor-chat' && req.method === 'POST') {
+              console.log('\n💬 [Tutor Chat] Received API request');
               const body = await readBody(req);
               try {
                 const { messages, lessonTitle, lessonSummary } = JSON.parse(body);
 
                 if (!messages || !Array.isArray(messages) || messages.length === 0) {
+                  console.warn('⚠️ [Tutor Chat] Missing messages parameter');
                   jsonRes(res, { error: 'Missing or invalid messages parameter.' }, 400);
                   return;
                 }
 
-                const apiKey = req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY;
+                console.log(`💬 [Tutor Chat] Last message: "${messages[messages.length - 1]?.content}"`);
+
+                const headerKey = req.headers['x-gemini-key'];
+                const envKey = process.env.GEMINI_API_KEY;
+                const apiKey = headerKey || envKey;
+                
+                console.log(`💬 [Tutor Chat] Key status - Header key length: ${headerKey ? String(headerKey).length : 0}, Env key length: ${envKey ? envKey.length : 0}`);
+
                 if (!apiKey) {
+                  console.error('❌ [Tutor Chat] No API Key provided anywhere');
                   jsonRes(res, { error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' }, 400);
                   return;
                 }
 
+                console.log('💬 [Tutor Chat] Importing @google/genai and initializing client...');
                 const { GoogleGenAI } = await import('@google/genai');
                 const ai = new GoogleGenAI({ apiKey: String(apiKey) });
 
@@ -281,19 +292,25 @@ export default defineConfig(() => {
 
                 promptText += `\nالآن، قم بصياغة الإجابة التربوية المناسبة للسؤال الجديد للطالب باللغة العربية:`;
 
+                console.log('💬 [Tutor Chat] Calling Gemini model generateContent...');
                 const response = await ai.models.generateContent({
-                  model: 'gemini-2.5-flash',
+                  model: 'gemini-3.1-flash-lite',
                   contents: promptText
                 });
 
                 const text = response.text;
+                console.log(`💬 [Tutor Chat] Gemini response received. Text length: ${text ? text.length : 0}`);
+
                 if (!text) {
+                  console.error('❌ [Tutor Chat] Gemini returned empty response text');
                   jsonRes(res, { error: 'Gemini returned an empty response.' }, 500);
                   return;
                 }
 
+                console.log('✅ [Tutor Chat] Success! Sending response to client.');
                 jsonRes(res, { success: true, reply: text });
-              } catch (e) {
+              } catch (e: any) {
+                console.error(`❌ [Tutor Chat] Error processing request: ${e.message}`, e);
                 jsonRes(res, { error: String(e) }, 500);
               }
               return;
@@ -344,7 +361,7 @@ For every question, write detailed explanationAr (in Arabic) and explanationEn (
 Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
                 const response = await ai.models.generateContent({
-                  model: 'gemini-2.5-flash',
+                  model: 'gemini-3.1-flash-lite',
                   contents: prompt,
                   config: {
                     responseMimeType: 'application/json',
