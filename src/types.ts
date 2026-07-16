@@ -67,6 +67,8 @@ export interface InteractiveHotspot {
   id: string;
   x: number;
   y: number;
+  arrowX?: number;
+  arrowY?: number;
   labelAr: string;
   labelEn?: string;
   descAr: string;

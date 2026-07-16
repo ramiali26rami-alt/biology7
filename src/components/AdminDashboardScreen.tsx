@@ -778,6 +778,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               id: String(d.partNumber || d.id || Math.random()).trim(),
               x: Number(d.x) || 0,
               y: Number(d.y) || 0,
+              arrowX: d.arrowX !== undefined && d.arrowX !== null && d.arrowX !== '' ? Number(d.arrowX) : undefined,
+              arrowY: d.arrowY !== undefined && d.arrowY !== null && d.arrowY !== '' ? Number(d.arrowY) : undefined,
               labelAr: d.partName || d.partNameAr || '',
               labelEn: d.partNameEn || '',
               descAr: d.partDetails || d.partDetailsAr || '',
@@ -811,6 +813,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 id: String(d.hotspotId || d.id || Math.random()).trim(),
                 x: Number(d.x) || 0,
                 y: Number(d.y) || 0,
+                arrowX: d.arrowX !== undefined && d.arrowX !== null && d.arrowX !== '' ? Number(d.arrowX) : undefined,
+                arrowY: d.arrowY !== undefined && d.arrowY !== null && d.arrowY !== '' ? Number(d.arrowY) : undefined,
                 labelAr: d.labelAr || '',
                 labelEn: d.labelEn || '',
                 descAr: d.descAr || '',
@@ -1096,7 +1100,9 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 partName: hs.labelAr,
                 partDetails: hs.descAr,
                 x: hs.x,
-                y: hs.y
+                y: hs.y,
+                arrowX: hs.arrowX !== undefined && hs.arrowX !== null ? hs.arrowX : '',
+                arrowY: hs.arrowY !== undefined && hs.arrowY !== null ? hs.arrowY : ''
               });
             });
           }
@@ -3801,6 +3807,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
 
   // Drag-and-drop state and refs
   const [draggingHotspotId, setDraggingHotspotId] = useState<string | null>(null);
+  const [draggingArrowId, setDraggingArrowId] = useState<string | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   const selectedLesson = lessons.find(l => l.id === selectedLessonId);
@@ -3831,7 +3838,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
     }
   };
 
-  const handleDrag = (clientX: number, clientY: number, hotspotId: string) => {
+  const handleDrag = (clientX: number, clientY: number, hotspotId: string, isDraggingArrow: boolean) => {
     if (!imageContainerRef.current || !selectedLesson || !selectedImage) return;
     const rect = imageContainerRef.current.getBoundingClientRect();
     let x = ((clientX - rect.left) / rect.width) * 100;
@@ -3847,7 +3854,16 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
       if (diag.imageFile === selectedImage) {
         return {
           ...diag,
-          hotspots: diag.hotspots.map(h => h.id === hotspotId ? { ...h, x, y } : h)
+          hotspots: diag.hotspots.map(h => {
+            if (h.id === hotspotId) {
+              if (isDraggingArrow) {
+                return { ...h, arrowX: x, arrowY: y };
+              } else {
+                return { ...h, x, y };
+              }
+            }
+            return h;
+          })
         };
       }
       return diag;
@@ -3857,26 +3873,30 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
   };
 
   useEffect(() => {
-    if (!draggingHotspotId) return;
+    const activeId = draggingHotspotId || draggingArrowId;
+    if (!activeId) return;
+    const isArrow = !!draggingArrowId;
 
     const onMouseMove = (e: MouseEvent) => {
-      handleDrag(e.clientX, e.clientY, draggingHotspotId);
+      handleDrag(e.clientX, e.clientY, activeId, isArrow);
     };
 
     const onMouseUp = () => {
       setDraggingHotspotId(null);
+      setDraggingArrowId(null);
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches[0]) {
         // Prevent scroll when dragging on mobile
         e.preventDefault();
-        handleDrag(e.touches[0].clientX, e.touches[0].clientY, draggingHotspotId);
+        handleDrag(e.touches[0].clientX, e.touches[0].clientY, activeId, isArrow);
       }
     };
 
     const onTouchEnd = () => {
       setDraggingHotspotId(null);
+      setDraggingArrowId(null);
     };
 
     window.addEventListener('mousemove', onMouseMove);
@@ -3890,7 +3910,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
     };
-  }, [draggingHotspotId, selectedLesson, selectedImage]);
+  }, [draggingHotspotId, draggingArrowId, selectedLesson, selectedImage]);
 
   // AI analyzer states
   const [aiLoading, setAiLoading] = useState(false);
@@ -4035,6 +4055,8 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
       id: newId,
       x: clickedCoords.x,
       y: clickedCoords.y,
+      arrowX: Math.round(Math.min(100, clickedCoords.x + 8) * 10) / 10,
+      arrowY: Math.round(Math.min(100, clickedCoords.y + 8) * 10) / 10,
       labelAr: editLabelAr.trim() || `عنصر ${newId}`,
       descAr: editDescAr.trim() || 'لا يوجد شرح مضاف.'
     };
@@ -4115,6 +4137,8 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
             id: h.partNumber || `H${Math.random().toString(36).substr(2, 4)}`,
             x: h.x,
             y: h.y,
+            arrowX: Math.round(Math.min(100, h.x + 8) * 10) / 10,
+            arrowY: Math.round(Math.min(100, h.y + 8) * 10) / 10,
             labelAr: h.partName,
             descAr: h.partDetails
           }));
@@ -4262,6 +4286,63 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                   onError={() => alert(lang === 'ar' ? 'خطأ في تحميل ملف الصورة، تأكد من مطابقة الاسم والمسار في مجلد المنهج.' : 'Failed to load image. Verify filename and path in the curriculum directory.')}
                 />
                 
+                {/* SVG arrows preview overlay in Admin editor */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-15">
+                  <defs>
+                    <marker
+                      id="admin-arrow-head-default"
+                      viewBox="0 0 10 10"
+                      refX="6"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#3b82f6" />
+                    </marker>
+                    <marker
+                      id="admin-arrow-head-active"
+                      viewBox="0 0 10 10"
+                      refX="6"
+                      refY="5"
+                      markerWidth="7"
+                      markerHeight="7"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#f59e0b" />
+                    </marker>
+                  </defs>
+
+                  {activeDiagram?.hotspots?.map((hotspot) => {
+                    const hasArrow = hotspot.arrowX !== undefined && hotspot.arrowY !== undefined && hotspot.arrowX !== null && hotspot.arrowY !== null;
+                    const isActive = activeHotspotId === hotspot.id;
+                    const startX = hotspot.x;
+                    const startY = hotspot.y;
+                    const endX = hasArrow ? hotspot.arrowX! : startX + 10;
+                    const endY = hasArrow ? hotspot.arrowY! : startY + 10;
+
+                    if (!hasArrow && !isActive) return null;
+
+                    return (
+                      <line
+                        key={`admin-arrow-${hotspot.id}`}
+                        x1={`${startX}%`}
+                        y1={`${startY}%`}
+                        x2={`${endX}%`}
+                        y2={`${endY}%`}
+                        stroke={isActive ? '#f59e0b' : '#3b82f6'}
+                        strokeWidth={isActive ? 2.5 : 1.5}
+                        strokeDasharray={isActive ? 'none' : '3 3'}
+                        markerEnd={`url(#admin-arrow-head-${isActive ? 'active' : 'default'})`}
+                        className="transition-all duration-150"
+                        style={{
+                          opacity: activeHotspotId ? (isActive ? 1 : 0.4) : 0.8
+                        }}
+                      />
+                    );
+                  })}
+                </svg>
+
                 {/* Render Existing Hotspots */}
                 {activeDiagram?.hotspots?.map((hotspot) => {
                   const isActive = activeHotspotId === hotspot.id;
@@ -4297,10 +4378,44 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         isActive ? 'bg-amber-400' : 'bg-emerald-400'
                       } ${isDragging ? '' : 'animate-ping'}`}></span>
                       <span className={`relative inline-flex rounded-full h-3.5 w-3.5 shadow-md border border-white text-[8px] font-black text-white items-center justify-center transition-transform ${
-                        isActive ? 'bg-amber-505 scale-110' : 'bg-emerald-500'
+                        isActive ? 'bg-amber-500 scale-110' : 'bg-emerald-500'
                       } ${isDragging ? 'scale-125 ring-2 ring-white/50 bg-amber-500' : 'group-hover:scale-110'}`}>
                         {hotspot.id.replace('H', '')}
                       </span>
+                    </button>
+                  );
+                })}
+
+                {/* Render Arrow Head drag handle for the active hotspot */}
+                {activeDiagram?.hotspots?.map((hotspot) => {
+                  const isActive = activeHotspotId === hotspot.id;
+                  if (!isActive) return null;
+
+                  const hasArrow = hotspot.arrowX !== undefined && hotspot.arrowY !== undefined && hotspot.arrowX !== null && hotspot.arrowY !== null;
+                  const arrowX = hasArrow ? hotspot.arrowX! : hotspot.x + 10;
+                  const arrowY = hasArrow ? hotspot.arrowY! : hotspot.y + 10;
+                  const isDraggingArrow = draggingArrowId === hotspot.id;
+
+                  return (
+                    <button
+                      key={`arrow-handle-${hotspot.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setDraggingArrowId(hotspot.id);
+                      }}
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        setDraggingArrowId(hotspot.id);
+                      }}
+                      style={{ left: `${arrowX}%`, top: `${arrowY}%` }}
+                      className={`absolute w-5 h-5 -mt-2.5 -ml-2.5 flex items-center justify-center z-30 focus:outline-none border border-amber-400 bg-amber-500 rounded-full shadow-lg cursor-pointer ${
+                        isDraggingArrow ? 'bg-amber-600 scale-125 cursor-grabbing' : 'hover:scale-110 cursor-grab'
+                      }`}
+                      title={lang === 'ar' ? 'سهم التوجيه (اسحب للإشارة للعضو)' : 'Arrow tip (Drag to point to structure)'}
+                    >
+                      <span className="text-[8.5px] font-black text-white select-none">🡥</span>
                     </button>
                   );
                 })}

@@ -213,55 +213,141 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
               draggable={false}
             />
 
+             {/* SVG arrows overlay */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-15">
+              <defs>
+                {/* Arrow marker for default state */}
+                <marker
+                  id="arrow-head-default"
+                  viewBox="0 0 10 10"
+                  refX="6"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#10b981" />
+                </marker>
+                {/* Arrow marker for active state */}
+                <marker
+                  id="arrow-head-active"
+                  viewBox="0 0 10 10"
+                  refX="6"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#f59e0b" />
+                </marker>
+              </defs>
+
+              {activeDiagram.hotspots?.map((hotspot) => {
+                if (hotspot.arrowX === undefined || hotspot.arrowY === undefined || hotspot.arrowX === null || hotspot.arrowY === null) return null;
+                const isActive = selectedHotspot?.id === hotspot.id;
+                
+                return (
+                  <line
+                    key={`arrow-${hotspot.id}`}
+                    x1={`${hotspot.x}%`}
+                    y1={`${hotspot.y}%`}
+                    x2={`${hotspot.arrowX}%`}
+                    y2={`${hotspot.arrowY}%`}
+                    stroke={isActive ? '#f59e0b' : '#10b981'}
+                    strokeWidth={isActive ? 2.5 : 1.5}
+                    strokeDasharray={isActive ? 'none' : '3 3'}
+                    markerEnd={`url(#arrow-head-${isActive ? 'active' : 'default'})`}
+                    className="transition-all duration-300"
+                    style={{
+                      opacity: selectedHotspot ? (isActive ? 1 : 0.35) : 0.85
+                    }}
+                  />
+                );
+              })}
+            </svg>
+
             {/* Hotspots overlay */}
             {activeDiagram.hotspots?.map((hotspot) => {
               const isActive = selectedHotspot?.id === hotspot.id;
               return (
-                <button
+                <div
                   key={hotspot.id}
-                  onClick={() => setSelectedHotspot(hotspot)}
+                  className="absolute z-20"
                   style={{
                     left: `${hotspot.x}%`,
                     top: `${hotspot.y}%`,
                     transform: `translate(-50%, -50%) scale(${1 / transform.scale})`, // keep hotspot marker size stable
                     transformOrigin: 'center center'
                   }}
-                  className="absolute w-6 h-6 flex items-center justify-center z-20 group focus:outline-none"
-                  title={hotspot.labelAr}
                 >
-                  {/* Outer pulsing ring */}
-                  <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${
-                    isActive ? 'bg-amber-400' : 'bg-emerald-400'
-                  }`}></span>
-                  {/* Inner circle */}
-                  <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border border-white transition-colors duration-250 ${
-                    isActive ? 'bg-amber-500' : 'bg-emerald-500'
-                  }`}></span>
-                </button>
+                  <button
+                    onClick={() => setSelectedHotspot(isActive ? null : hotspot)}
+                    className="w-6 h-6 flex items-center justify-center group focus:outline-none relative cursor-pointer"
+                    title={hotspot.labelAr}
+                  >
+                    {/* Outer pulsing ring */}
+                    <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${
+                      isActive ? 'bg-amber-400' : 'bg-emerald-400'
+                    }`}></span>
+                    {/* Inner circle */}
+                    <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border border-white transition-colors duration-250 ${
+                      isActive ? 'bg-amber-500' : 'bg-emerald-500'
+                    }`}></span>
+                  </button>
+
+                  {/* Popover Tooltip directly near the hotspot */}
+                  {isActive && (() => {
+                    const isNearTop = hotspot.y < 25;
+                    const isNearLeft = hotspot.x < 30;
+                    const isNearRight = hotspot.x > 70;
+
+                    let horizontalClass = "left-1/2 -translate-x-1/2";
+                    let arrowHorizontalClass = "left-1/2 -translate-x-1/2";
+
+                    if (isNearLeft) {
+                      horizontalClass = "left-0 -translate-x-[15%]";
+                      arrowHorizontalClass = "left-[20%]";
+                    } else if (isNearRight) {
+                      horizontalClass = "right-0 translate-x-[15%] left-auto";
+                      arrowHorizontalClass = "right-[20%] left-auto";
+                    }
+
+                    const verticalClass = isNearTop ? "top-8" : "bottom-8";
+                    
+                    const arrowClass = isNearTop
+                      ? `absolute bottom-full -mb-[1px] border-[6px] border-transparent border-b-white dark:border-b-slate-900 ${arrowHorizontalClass}`
+                      : `absolute top-full -mt-[1px] border-[6px] border-transparent border-t-white dark:border-t-slate-900 ${arrowHorizontalClass}`;
+
+                    return (
+                      <div 
+                        className={`absolute z-30 w-48 md:w-56 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-xl animate-fadeIn flex flex-col gap-1.5 text-right cursor-default ${verticalClass} ${horizontalClass}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex justify-between items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                          <button
+                            onClick={() => setSelectedHotspot(null)}
+                            className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650 transition-colors border-0 bg-transparent cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <h4 className="text-xs md:text-sm font-black text-emerald-500 dark:text-emerald-400 leading-tight">
+                            {lang === 'ar' ? hotspot.labelAr : (hotspot.labelEn || hotspot.labelAr)}
+                          </h4>
+                        </div>
+                        <p className="text-xs md:text-sm font-black text-slate-800 dark:text-slate-200 leading-relaxed max-h-32 overflow-y-auto">
+                          {lang === 'ar' ? hotspot.descAr : (hotspot.descEn || hotspot.descAr)}
+                        </p>
+                        
+                        {/* Dynamic Arrow */}
+                        <div className={arrowClass}></div>
+                      </div>
+                    );
+                  })()}
+                </div>
               );
             })}
           </div>
         </div>
-
-        {/* Tooltip Overlay (remains anchored outside the zoom canvas for readability) */}
-        {selectedHotspot && (
-          <div className="absolute inset-x-4 bottom-4 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-100 dark:border-slate-800 p-4 rounded-2xl shadow-xl animate-slideUp flex gap-3 items-start">
-            <div className="flex-1 min-w-0">
-              <h4 className="text-xs font-black text-emerald-500 dark:text-emerald-400">
-                {lang === 'ar' ? selectedHotspot.labelAr : (selectedHotspot.labelEn || selectedHotspot.labelAr)}
-              </h4>
-              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">
-                {lang === 'ar' ? selectedHotspot.descAr : (selectedHotspot.descEn || selectedHotspot.descAr)}
-              </p>
-            </div>
-            <button
-              onClick={() => setSelectedHotspot(null)}
-              className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Diagram Title */}

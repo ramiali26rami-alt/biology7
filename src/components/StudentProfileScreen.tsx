@@ -156,12 +156,19 @@ export default function StudentProfileScreen({
   const handleCheckAdminPin = () => {
     const inputElement = document.getElementById('admin-pin-input') as HTMLInputElement | null;
     if (inputElement) {
-      // Temporarily disabled for student testing versions
-      alert(lang === 'ar' 
-        ? 'عذراً، لوحة التحكم وإدارة المحتوى معطلة في هذه النسخة التجريبية!' 
-        : 'Sorry, the content management dashboard is disabled in this beta version!'
-      );
-      inputElement.value = '';
+      const pin = inputElement.value;
+      const isLocalDev = window.location.hostname === 'localhost' && window.location.port === '3000';
+      
+      if (isLocalDev && pin === '2026') {
+        setShowSettingsModal(false);
+        onNavigate('admin-dashboard', 'push');
+      } else {
+        alert(lang === 'ar' 
+          ? 'عذراً، لوحة التحكم وإدارة المحتوى غير متاحة في نسخ الهواتف والإنتاج!' 
+          : 'Sorry, the content management dashboard is disabled on mobile and production builds!'
+        );
+        inputElement.value = '';
+      }
     }
   };
 
