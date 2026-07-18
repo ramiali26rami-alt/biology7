@@ -70,11 +70,11 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center mb-10"
         >
-          <div className="w-20 h-20 rounded-[28px] bg-emerald-500 flex items-center justify-center shadow-2xl shadow-emerald-900/60 mb-4">
-            <Dna className="w-10 h-10 text-white" strokeWidth={1.5} />
+          <div className="w-20 h-20 rounded-[28px] overflow-hidden bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-900/40 mb-4 border border-slate-800">
+            <img src="/logo.png" className="w-full h-full object-cover" alt="Smart Bio Logo" />
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">
-            {isAr ? 'أكاديمية الأحياء' : 'Biology Academy'}
+            {isAr ? 'سمارت بايو' : 'Smart Bio'}
           </h1>
           <p className="text-emerald-400 text-xs font-bold mt-1">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}

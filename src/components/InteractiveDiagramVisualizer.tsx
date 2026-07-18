@@ -169,30 +169,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         onTouchEnd={handleTouchEnd}
         style={{ cursor: transform.scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
-        {/* Zoom Control Panel */}
-        <div className="absolute bottom-4 right-4 z-30 flex flex-col gap-2 bg-white/90 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800/80 p-2 rounded-2xl backdrop-blur-md shadow-lg">
-          <button 
-            onClick={zoomIn} 
-            className="p-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 rounded-xl transition-all"
-            title="Zoom In"
-          >
-            <ZoomIn className="w-4 h-4" />
-          </button>
-          <button 
-            onClick={zoomOut} 
-            className="p-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 rounded-xl transition-all"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-4 h-4" />
-          </button>
-          <button 
-            onClick={resetZoom} 
-            className="p-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 rounded-xl transition-all"
-            title="Reset"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-        </div>
+
 
         {/* Zoomable Inner Canvas */}
         <div
@@ -272,12 +249,13 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
               return (
                 <div
                   key={hotspot.id}
-                  className="absolute z-20"
+                  className="absolute"
                   style={{
                     left: `${hotspot.x}%`,
                     top: `${hotspot.y}%`,
                     transform: `translate(-50%, -50%) scale(${1 / transform.scale})`, // keep hotspot marker size stable
-                    transformOrigin: 'center center'
+                    transformOrigin: 'center center',
+                    zIndex: isActive ? 50 : 20
                   }}
                 >
                   <button
@@ -350,14 +328,41 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       </div>
 
-      {/* Diagram Title */}
-      <div className="text-center">
-        <h3 className="text-xs font-black text-slate-800 dark:text-slate-100">
-          {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
-        </h3>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
-          {lang === 'ar' ? 'اسحب للتحريك واستخدم الأزرار للتكبير أو باصبعين على الهاتف' : 'Drag to pan, use buttons to zoom, or pinch with two fingers on mobile'}
-        </p>
+      {/* Diagram Title & Zoom controls outside the image canvas */}
+      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-850 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+        <div className="text-right flex-1 min-w-0">
+          <h3 className="text-xs md:text-sm font-black text-slate-850 dark:text-slate-100 truncate">
+            {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
+          </h3>
+          <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
+            {lang === 'ar' ? 'اسحب للتحريك واستخدم الزر للتكبير أو قرصة الأصابع' : 'Drag to pan, pinch to zoom'}
+          </p>
+        </div>
+        
+        {/* Clean Zoom Controls */}
+        <div className="flex gap-1.5 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 p-1.5 rounded-xl shadow-sm shrink-0">
+          <button 
+            onClick={zoomIn} 
+            className="p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-lg transition-colors border-0 cursor-pointer bg-transparent"
+            title="Zoom In"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            onClick={zoomOut} 
+            className="p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-lg transition-colors border-0 cursor-pointer bg-transparent"
+            title="Zoom Out"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            onClick={resetZoom} 
+            className="p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-lg transition-colors border-0 cursor-pointer bg-transparent"
+            title="Reset"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );

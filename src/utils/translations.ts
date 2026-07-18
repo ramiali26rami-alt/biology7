@@ -20,8 +20,8 @@ export const translations = {
 
     // Lessons List
     syllabusDetails: 'تفاصيل المنهج',
-    biologyAcademy: 'أكاديمية الأحياء',
-    biologySyllabusTitle: 'منهج الأحياء - الصف الثالث الثانوي',
+    biologyAcademy: 'سمارت بايو',
+    biologySyllabusTitle: 'سمارت بايو - الصف الثالث الثانوي',
     biologySyllabusDesc: 'استكشف أسرار الحياة وعجائب الكائنات الحية مع شرح مبسط ومسارات تفاعلية.',
     learningStats: 'إحصائيات التعلم',
     pathCompleted: 'اكتمل المسار',
@@ -232,8 +232,8 @@ export const translations = {
 
     // Lessons List
     syllabusDetails: 'Syllabus Details',
-    biologyAcademy: 'Biology Academy',
-    biologySyllabusTitle: 'Biology Syllabus - 3rd Grade of Secondary School',
+    biologyAcademy: 'Smart Bio',
+    biologySyllabusTitle: 'Smart Bio - 3rd Grade of Secondary School',
     biologySyllabusDesc: 'Explore the secrets of life and the wonders of living organisms with simplified, interactive paths.',
     learningStats: 'Learning Stats',
     pathCompleted: 'Path Completed',

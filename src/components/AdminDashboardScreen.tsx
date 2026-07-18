@@ -1668,7 +1668,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               {lang === 'ar' ? 'لوحة المالك والإدارة' : 'Owner Content Panel'}
             </h1>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              {lang === 'ar' ? 'أكاديمية الأحياء - اليمن' : 'Biotech Biology Academy'}
+              {lang === 'ar' ? 'سمارت بايو - اليمن' : 'Smart Bio - Yemen'}
             </p>
           </div>
         </div>
