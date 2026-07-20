@@ -555,8 +555,10 @@ app.get('*', (req, res) => {
 });
 
 const PORT = Number(process.env.PORT ?? 3000);
-app.listen(PORT, () => {
-  console.log(`✅ Production server running on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`✅ Production server running on port ${PORT}`);
+  });
+}
 
 export default app;
