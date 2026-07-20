@@ -446,7 +446,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     setLoadingPdf(true);
     try {
       if (Capacitor.isNativePlatform()) {
-        const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7-ramiali26rami-5190s-projects.vercel.app').replace(/\/$/, '');
+        const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
         const folderPath = lesson.folder || '';
         const absolutePdfUrl = `${serverUrl}/${folderPath}/${lesson.pdfFile}`;
         window.open(absolutePdfUrl, '_system');
