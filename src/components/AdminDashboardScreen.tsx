@@ -1013,9 +1013,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     lessons.forEach(l => {
       const { U, L } = getUL(l.id, l.unit);
 
-      // Export Quizzes (Objective questions)
+      // Export Quizzes (Objective questions only)
       if (l.quiz) {
         l.quiz.forEach(q => {
+          const type = String(q.type || '').trim().toLowerCase();
+          if (!['mcq', 'tf', 'fill', 'fill_blank'].includes(type)) {
+            return;
+          }
+
           const optionsStr = q.options 
             ? q.options.map(o => o.textAr).join(' | ')
             : '';
@@ -1040,9 +1045,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         });
       }
 
-      // Export Ministry Exams
+      // Export Ministry Exams (Objective questions only)
       if (l.ministryExams) {
         l.ministryExams.forEach(q => {
+          const type = String(q.type || '').trim().toLowerCase();
+          if (!['mcq', 'tf', 'fill', 'fill_blank'].includes(type)) {
+            return;
+          }
+
           const optionsStr = q.options 
             ? q.options.map(o => o.textAr).join(' | ')
             : '';
