@@ -147,7 +147,10 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
   const [flipped, setFlipped] = useState(false);
   return (
     <div 
-      onClick={() => setFlipped(!flipped)}
+      onClick={() => {
+        playClickSound();
+        setFlipped(!flipped);
+      }}
       className="w-full h-64 perspective-1000 cursor-pointer select-none group"
     >
       <div className={`relative w-full h-full duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
@@ -953,7 +956,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
 
                 <div className="flex justify-between items-center gap-4 px-4 pt-2">
                   <button
-                    onClick={() => setCurrentFlashcardIndex((prev) => Math.max(0, prev - 1))}
+                    onClick={() => {
+                      playNextSound();
+                      setCurrentFlashcardIndex((prev) => Math.max(0, prev - 1));
+                    }}
                     disabled={currentFlashcardIndex === 0}
                     className="flex items-center gap-1 text-xs font-black text-slate-700 dark:text-slate-300 disabled:opacity-30 active:scale-90 transition-transform"
                   >
@@ -973,7 +979,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
                   </div>
 
                   <button
-                    onClick={() => setCurrentFlashcardIndex((prev) => Math.min(lesson.flashcards.length - 1, prev + 1))}
+                    onClick={() => {
+                      playNextSound();
+                      setCurrentFlashcardIndex((prev) => Math.min(lesson.flashcards.length - 1, prev + 1));
+                    }}
                     disabled={currentFlashcardIndex === lesson.flashcards.length - 1}
                     className="flex items-center gap-1 text-xs font-black text-slate-700 dark:text-slate-300 disabled:opacity-30 active:scale-90 transition-transform"
                   >
