@@ -8,6 +8,7 @@ import { ChevronDown, Info, HelpCircle, X } from 'lucide-react';
 import { MindmapNode } from '../types';
 import { Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
+import { playClickSound, playHotspotSound } from '../utils/soundEffects';
 
 interface MindMapVisualizerProps {
   mindmap: MindmapNode[];
@@ -28,6 +29,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   const getChildren = (nodeId: string) => mindmap.filter(n => n.parentId === nodeId);
 
   const toggleBranch = (branchId: string) => {
+    playClickSound();
     setExpandedBranches(prev => ({
       ...prev,
       [branchId]: !prev[branchId]
@@ -35,6 +37,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   };
 
   const toggleSub = (subId: string) => {
+    playClickSound();
     setExpandedSubs(prev => ({
       ...prev,
       [subId]: !prev[subId]
@@ -65,10 +68,13 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
         </div>
         {rootNode.details && (
           <button
-            onClick={() => setSelectedNodeDetails({
-              title: lang === 'ar' ? rootNode.textAr : (rootNode.textEn || rootNode.textAr),
-              details: rootNode.details!
-            })}
+            onClick={() => {
+              playHotspotSound();
+              setSelectedNodeDetails({
+                title: lang === 'ar' ? rootNode.textAr : (rootNode.textEn || rootNode.textAr),
+                details: rootNode.details!
+              });
+            }}
             className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer shrink-0"
           >
             <Info className="w-5 h-5" />
