@@ -43,6 +43,10 @@ export const SecureStorage = {
       console.error(`Error decrypting key ${key}:`, e);
       return null;
     }
+  },
+
+  removeItem(key: string): void {
+    localStorage.removeItem(key);
   }
 };
 
