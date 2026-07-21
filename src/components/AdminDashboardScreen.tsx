@@ -332,8 +332,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
             errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: عدد الخيارات أقل من خيارين!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: MCQ requires at least 2 options!`);
           }
         } else if (q.type === 'tf') {
-          if (!q.correctKey || (q.correctKey !== 'T' && q.correctKey !== 'F')) {
-            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد صح أو خطأ!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: TF requires correct key T or F!`);
+          if (!q.correctKey || (q.correctKey !== 'T' && q.correctKey !== 'F' && q.correctKey !== 'A' && q.correctKey !== 'B')) {
+            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد صح (A) أو خطأ (B)!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: TF requires correct key A or B!`);
           }
         } else if (q.type === 'fill') {
           if (!q.correctAnswers || q.correctAnswers.length === 0) {
