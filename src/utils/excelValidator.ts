@@ -226,9 +226,9 @@ export function validateExcelData(data: {
     }
 
     const qtype = String(q.questionType || q.type || '').trim().toLowerCase();
-    const validTypes = ['mcq', 'tf', 'fill', 'fill_blank', 'explain', 'what_if', 'define'];
+    const validTypes = ['mcq', 'tf', 'fill', 'fill_blank', 'explain', 'what_if', 'define', ''];
     if (!validTypes.includes(qtype)) {
-      errors.push(`السطر ${rowNum} (${sheetName}): نوع السؤال (${qtype}) غير صالح. الأنواع المقبولة: ${validTypes.join(', ')}.`);
+      errors.push(`السطر ${rowNum} (${sheetName}): نوع السؤال (${qtype}) غير صالح. الأنواع المقبولة: mcq, tf, fill, fill_blank, explain, what_if, define أو تركه فارغاً للبطاقات.`);
     }
 
     if (isEmpty(q.questionText || q.textAr || q.text)) {
@@ -316,7 +316,10 @@ export function validateExcelData(data: {
     ministryExams.length;
 
   const summaryFlashcardsCount = 
-    examBank.filter(q => ['explain', 'what_if', 'define'].includes(q.questionType || q.type)).length + 
+    examBank.filter(q => {
+      const type = String(q.questionType || q.type || '').trim().toLowerCase();
+      return !type || ['explain', 'what_if', 'define'].includes(type);
+    }).length + 
     flashcards.length;
 
   const summaryGlossaryCount = 

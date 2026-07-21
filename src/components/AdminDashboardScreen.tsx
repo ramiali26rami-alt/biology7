@@ -640,9 +640,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
           };
 
           const isMinQuestion = (q: any) => q.isMinistry === true || q.isMinistry === 'true' || String(q.isMinistry).toLowerCase() === 'true';
+          const isObjective = (q: any) => {
+            const rawType = String(q.questionType || q.type || '').trim().toLowerCase();
+            return ['mcq', 'tf', 'fill', 'fill_blank'].includes(rawType);
+          };
 
-          let lessonQuizzes: ConfigQuestion[] = lessonExamBank.filter(q => !isMinQuestion(q)).map(mapExamQuestion);
-          let lessonMinistryExams: ConfigQuestion[] = lessonExamBank.filter(q => isMinQuestion(q)).map(mapExamQuestion);
+          let lessonQuizzes: ConfigQuestion[] = lessonExamBank.filter(q => isObjective(q) && !isMinQuestion(q)).map(mapExamQuestion);
+          let lessonMinistryExams: ConfigQuestion[] = lessonExamBank.filter(q => isObjective(q) && isMinQuestion(q)).map(mapExamQuestion);
 
           // Fallback to legacy quizzes
           if (lessonExamBank.length === 0) {
@@ -724,17 +728,23 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
             }
           }
 
-          const subjectiveRows = lessonExamBank.filter((q: any) => ['explain', 'what_if', 'define'].includes(q.questionType || q.type));
+          const subjectiveRows = lessonExamBank.filter((q: any) => {
+            const rawType = String(q.questionType || q.type || '').trim().toLowerCase();
+            return !rawType || ['explain', 'what_if', 'define', 'subjective', 'flashcard'].includes(rawType);
+          });
           const lessonFlashcards = subjectiveRows.map((q: any) => {
             let prefix = '';
             const rawType = String(q.questionType || q.type || '').trim().toLowerCase();
-            if (rawType === 'explain') prefix = lang === 'ar' ? 'علل: ' : 'Explain: ';
-            else if (rawType === 'what_if') prefix = lang === 'ar' ? 'ماذا يحدث لو: ' : 'What happens if: ';
-            else if (rawType === 'define') prefix = lang === 'ar' ? 'عرّف: ' : 'Define: ';
+            const text = q.questionText || q.textAr || q.text || '';
+            const textEn = q.textEn || '';
+
+            if (rawType === 'explain' && !text.startsWith('علل') && !text.startsWith('Explain')) prefix = lang === 'ar' ? 'علل: ' : 'Explain: ';
+            else if (rawType === 'what_if' && !text.startsWith('ماذا يحدث') && !textEn.startsWith('What happens')) prefix = lang === 'ar' ? 'ماذا يحدث لو: ' : 'What happens if: ';
+            else if (rawType === 'define' && !text.startsWith('عرف') && !text.startsWith('Define')) prefix = lang === 'ar' ? 'عرّف: ' : 'Define: ';
 
             return {
-              qAr: prefix + (q.questionText || q.textAr || q.text || ''),
-              qEn: prefix + (q.textEn || ''),
+              qAr: prefix + text,
+              qEn: prefix + textEn,
               aAr: q.correctAnswer || q.correctAnswers || q.correctKey || '',
               aEn: q.correctAnswersEn || ''
             };
@@ -1071,8 +1081,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
             questionId: 4000 + idx,
             isMinistry: 'FALSE',
             examYear: 'General',
-            questionType: subType,
-            questionText: cleanText,
+            questionType: '',
+            questionText: f.qAr,
             questionImage: '',
             options: '',
             correctAnswer: f.aAr,
