@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  * Smart Bio - Synthesized Web Audio Sound System
- * Zero-dependency, offline-ready audio effects for UI & Quiz interactions.
+ * High-volume, vibrant, offline-ready sound effects for UI, Diagrams & Quizzes.
  */
 
 let audioCtx: AudioContext | null = null;
@@ -28,45 +28,42 @@ if (typeof window !== 'undefined') {
     if (ctx && ctx.state === 'suspended') {
       ctx.resume().catch(() => {});
     }
-    window.removeEventListener('pointerdown', unlockAudio);
-    window.removeEventListener('touchstart', unlockAudio);
-    window.removeEventListener('click', unlockAudio);
   };
-  window.addEventListener('pointerdown', unlockAudio);
-  window.addEventListener('touchstart', unlockAudio);
-  window.addEventListener('click', unlockAudio);
+  window.addEventListener('pointerdown', unlockAudio, { passive: true });
+  window.addEventListener('touchstart', unlockAudio, { passive: true });
+  window.addEventListener('click', unlockAudio, { passive: true });
 }
 
 export function isSoundEnabled(): boolean {
   return localStorage.getItem('sound_enabled') !== 'false';
 }
 
-/** Soft tactile click sound for buttons and options */
+/** Crisp, audible tactile pop for buttons, tabs, and hotspots */
 export function playClickSound() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
 
   try {
+    const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(450, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.04);
 
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+
+    gain.gain.setValueAtTime(0.5, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.04);
-  } catch (e) {
-    // Ignore browser audio play errors
-  }
+    osc.start(now);
+    osc.stop(now + 0.05);
+  } catch (e) {}
 }
 
-/** Pleasant ascending chime for correct answer */
+/** Clear, vibrant 3-note ascending chime for correct answers */
 export function playCorrectSound() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -74,8 +71,9 @@ export function playCorrectSound() {
 
   try {
     const now = ctx.currentTime;
-    // Harmonic notes: E5 (659.25Hz) -> A5 (880Hz)
-    [659.25, 880].forEach((freq, idx) => {
+    // Bright C Major Triad: C5 (523.25Hz) -> E5 (659.25Hz) -> G5 (783.99Hz)
+    const notes = [523.25, 659.25, 783.99];
+    notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const startTime = now + idx * 0.08;
@@ -83,18 +81,18 @@ export function playCorrectSound() {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.22, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
+      gain.gain.setValueAtTime(0.65, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.22);
+      osc.stop(startTime + 0.25);
     });
   } catch (e) {}
 }
 
-/** Soft low double-tone for incorrect answer */
+/** Distinct, audible 2-tone low warning for incorrect answers */
 export function playWrongSound() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -102,50 +100,52 @@ export function playWrongSound() {
 
   try {
     const now = ctx.currentTime;
-    // Descending tones: D3 (146.83Hz) -> G2 (98Hz)
-    [146.83, 98].forEach((freq, idx) => {
+    // Low descending warning tones: D3 (146.83Hz) -> Ab2 (103.83Hz)
+    [146.83, 103.83].forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.09;
+      const startTime = now + idx * 0.1;
 
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.15, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.16);
+      gain.gain.setValueAtTime(0.55, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.2);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.16);
+      osc.stop(startTime + 0.2);
     });
   } catch (e) {}
 }
 
-/** Crisp pop / swoosh sound when advancing to next question */
+/** Vibrant swoosh sound when advancing questions or switching views */
 export function playNextSound() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
 
   try {
+    const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(320, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(640, ctx.currentTime + 0.06);
 
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(350, now);
+    osc.frequency.exponentialRampToValueAtTime(750, now + 0.08);
+
+    gain.gain.setValueAtTime(0.45, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.06);
+    osc.start(now);
+    osc.stop(now + 0.08);
   } catch (e) {}
 }
 
-/** Triumphant fanfare when completing a quiz */
+/** Triumphant, high-volume fanfare when completing a quiz or unit */
 export function playCompleteSound() {
   if (!isSoundEnabled()) return;
   const ctx = getAudioContext();
@@ -153,23 +153,23 @@ export function playCompleteSound() {
 
   try {
     const now = ctx.currentTime;
-    // Triumphant arpeggio: C5 -> E5 -> G5 -> C6
+    // Fanfare chords: C5 -> E5 -> G5 -> C6
     const notes = [523.25, 659.25, 783.99, 1046.5];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.09;
+      const startTime = now + idx * 0.1;
 
-      osc.type = 'sine';
+      osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.25, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.32);
+      gain.gain.setValueAtTime(0.75, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.32);
+      osc.stop(startTime + 0.35);
     });
   } catch (e) {}
 }

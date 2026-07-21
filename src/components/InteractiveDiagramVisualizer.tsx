@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { HelpCircle, X, ChevronLeft, ChevronRight, Info, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 import { InteractiveDiagram, InteractiveHotspot } from '../types';
 import { Language } from '../utils/translations';
+import { playClickSound } from '../utils/soundEffects';
 
 interface InteractiveDiagramVisualizerProps {
   diagrams: InteractiveDiagram[];
@@ -259,7 +260,10 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                   }}
                 >
                   <button
-                    onClick={() => setSelectedHotspot(isActive ? null : hotspot)}
+                    onClick={() => {
+                      playClickSound();
+                      setSelectedHotspot(isActive ? null : hotspot);
+                    }}
                     className="w-6 h-6 flex items-center justify-center group focus:outline-none relative cursor-pointer"
                     title={hotspot.labelAr}
                   >
