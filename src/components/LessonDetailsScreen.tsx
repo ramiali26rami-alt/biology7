@@ -445,19 +445,22 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     }
     setLoadingPdf(true);
     try {
+      let serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
+      if (serverUrl.includes('railway') || serverUrl.includes('biology-server')) {
+        serverUrl = 'https://biology7.vercel.app';
+        localStorage.setItem('server_url', serverUrl);
+      }
+      const folderPath = lesson.folder || '';
+      const absolutePdfUrl = `${serverUrl}/${folderPath}/${lesson.pdfFile}`;
+
       if (Capacitor.isNativePlatform()) {
-        const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
-        const folderPath = lesson.folder || '';
-        const absolutePdfUrl = `${serverUrl}/${folderPath}/${lesson.pdfFile}`;
         window.open(absolutePdfUrl, '_system');
       } else {
-        const fallbackUrl = getAssetUrl(lesson.pdfFile);
-        const url = await getCachedAssetUrl(lesson.id, lesson.pdfFile, fallbackUrl);
-        window.open(url, '_blank');
+        window.open(absolutePdfUrl, '_blank');
       }
     } catch (err) {
       console.error(err);
-      alert(lang === 'ar' ? 'فشل فك تشفير مذكرة الـ PDF في الذاكرة.' : 'Failed to decrypt PDF notes in memory.');
+      alert(lang === 'ar' ? 'حدث خطأ أثناء فتح مذكرة الـ PDF.' : 'Failed to open PDF notes.');
     } finally {
       setLoadingPdf(false);
     }
