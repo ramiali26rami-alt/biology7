@@ -26,6 +26,13 @@ import { markQuizDone, getLessonProgress } from '../utils/progress';
 import { SecureStorage } from '../utils/security';
 import { VirtualizedList } from './VirtualizedList';
 import { getCachedAssetUrl } from '../utils/cacheManager';
+import { 
+  playClickSound, 
+  playCorrectSound, 
+  playWrongSound, 
+  playNextSound, 
+  playCompleteSound 
+} from '../utils/soundEffects';
 
 interface QuestionImageProps {
   lessonId: string;
@@ -192,9 +199,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
     const correct = key === currentQ.correctKey;
     setIsAnswerCorrect(correct);
     if (correct) {
+      playCorrectSound();
       const isHintUsed = hintsUsed.has(currentQ.id);
       const earnedPoints = isHintUsed ? 0.75 : 1.0;
       setScore((prev) => prev + earnedPoints);
+    } else {
+      playWrongSound();
     }
     setShowFeedback(true);
     
@@ -213,9 +223,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
     const correct = validateFillAnswer(fillInput, currentQ.correctAnswers || []);
     setIsAnswerCorrect(correct);
     if (correct) {
+      playCorrectSound();
       const isHintUsed = hintsUsed.has(currentQ.id);
       const earnedPoints = isHintUsed ? 0.75 : 1.0;
       setScore((prev) => prev + earnedPoints);
+    } else {
+      playWrongSound();
     }
     setShowFeedback(true);
     
@@ -235,9 +248,11 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, o
     setShowHintMsg(false); // Reset hint display for next question
     
     if (currentQuestionIndex < questions.length - 1) {
+      playNextSound();
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // Quiz finished — save real score
+      playCompleteSound();
       if (lesson) markQuizDone(lesson.id, score, questions.length);
       setQuizFinished(true);
     }
