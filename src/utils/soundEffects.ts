@@ -1,18 +1,18 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Smart Bio - Duolingo-Style Vibrant Sound System
- * High-fidelity, offline-ready sound effects for UI, Diagrams & Quizzes.
+ * Smart Bio - Studio Duolingo-Style Sound System
+ * High-fidelity, crisp, offline-ready audio effects for UI, Cards, Diagrams & Quizzes.
  */
 
-// ─── Duolingo-Style Base64 Audio Data URLs (PCM 16-bit 44.1kHz WAV) ───
+// ─── Studio-Quality Base64 Audio Data URLs (PCM 16-bit 44.1kHz WAV) ───
 const SOUND_DATA = {
   click: 'data:audio/wav;base64,UklGRqAHAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAHAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
-  hotspot: 'data:audio/wav;base64,UklGRuAAAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAAAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
+  marimba: 'data:audio/wav;base64,UklGRqAHAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAHAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
   correct: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
   wrong: 'data:audio/wav;base64,UklGRlAHAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YJAGAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
-  next: 'data:audio/wav;base64,UklGRuAAAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAAAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
-  complete: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/'
+  cardFlip: 'data:audio/wav;base64,UklGRuAAAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAAAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
+  victory: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/'
 };
 
 let audioCtx: AudioContext | null = null;
@@ -31,7 +31,7 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
-// Global gesture audio unlock listener for mobile WebViews
+// Global mobile gesture audio unlock listener
 if (typeof window !== 'undefined') {
   const unlockAudio = () => {
     const ctx = getAudioContext();
@@ -60,7 +60,7 @@ function playAudioElement(dataUrl: string, volume: number = 0.95) {
   } catch (e) {}
 }
 
-/** Duolingo-style tactile bubble pop for buttons & cards */
+/** Duolingo-style crisp bubble pop click for UI buttons & options */
 export function playClickSound() {
   if (!isSoundEnabled()) return;
   playAudioElement(SOUND_DATA.click, 0.9);
@@ -73,8 +73,8 @@ export function playClickSound() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(550, now);
-    osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+    osc.frequency.setValueAtTime(650, now);
+    osc.frequency.exponentialRampToValueAtTime(280, now + 0.05);
 
     gain.gain.setValueAtTime(0.7, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
@@ -86,10 +86,10 @@ export function playClickSound() {
   } catch (e) {}
 }
 
-/** Gentle, pleasant marimba pop for diagram hotspots & interactive labels */
+/** Rich marimba strike for interactive diagram hotspots */
 export function playHotspotSound() {
   if (!isSoundEnabled()) return;
-  playAudioElement(SOUND_DATA.hotspot, 0.95);
+  playAudioElement(SOUND_DATA.marimba, 0.95);
 
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -99,20 +99,46 @@ export function playHotspotSound() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.exponentialRampToValueAtTime(720, now + 0.07);
+    osc.frequency.setValueAtTime(1046.5, now);
+    osc.frequency.exponentialRampToValueAtTime(523.25, now + 0.08);
 
-    gain.gain.setValueAtTime(0.75, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+    gain.gain.setValueAtTime(0.8, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start(now);
-    osc.stop(now + 0.07);
+    osc.stop(now + 0.08);
   } catch (e) {}
 }
 
-/** Duolingo-style bright D5 -> A5 cheerful chime for correct quiz answers */
+/** Card flip swish sound for 3D Flashcards */
+export function playCardFlipSound() {
+  if (!isSoundEnabled()) return;
+  playAudioElement(SOUND_DATA.cardFlip, 0.9);
+
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(700, now + 0.06);
+
+    gain.gain.setValueAtTime(0.65, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  } catch (e) {}
+}
+
+/** Duolingo-style sparkling G5 -> C6 -> E6 chime for correct quiz answers */
 export function playCorrectSound() {
   if (!isSoundEnabled()) return;
   playAudioElement(SOUND_DATA.correct, 1.0);
@@ -121,11 +147,11 @@ export function playCorrectSound() {
   if (!ctx) return;
   try {
     const now = ctx.currentTime;
-    const notes = [587.33, 880];
+    const notes = [783.99, 1046.50, 1318.51];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.11;
+      const startTime = now + idx * 0.08;
 
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
@@ -150,7 +176,7 @@ export function playWrongSound() {
   if (!ctx) return;
   try {
     const now = ctx.currentTime;
-    [160, 110].forEach((freq, idx) => {
+    [196.0, 146.83].forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const startTime = now + idx * 0.11;
@@ -172,7 +198,7 @@ export function playWrongSound() {
 /** Crisp pop / swoosh when advancing to next question */
 export function playNextSound() {
   if (!isSoundEnabled()) return;
-  playAudioElement(SOUND_DATA.next, 0.9);
+  playAudioElement(SOUND_DATA.click, 0.9);
 
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -182,8 +208,8 @@ export function playNextSound() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(400, now);
-    osc.frequency.exponentialRampToValueAtTime(800, now + 0.07);
+    osc.frequency.setValueAtTime(450, now);
+    osc.frequency.exponentialRampToValueAtTime(900, now + 0.07);
 
     gain.gain.setValueAtTime(0.65, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
@@ -198,13 +224,13 @@ export function playNextSound() {
 /** Duolingo-style victory fanfare when finishing a quiz or unit */
 export function playCompleteSound() {
   if (!isSoundEnabled()) return;
-  playAudioElement(SOUND_DATA.complete, 1.0);
+  playAudioElement(SOUND_DATA.victory, 1.0);
 
   const ctx = getAudioContext();
   if (!ctx) return;
   try {
     const now = ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.5];
+    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();

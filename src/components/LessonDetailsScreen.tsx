@@ -40,6 +40,7 @@ import { translations, Language } from '../utils/translations';
 import { markVisited } from '../utils/progress';
 import { 
   playClickSound, 
+  playCardFlipSound,
   playCorrectSound, 
   playWrongSound, 
   playNextSound, 
@@ -148,7 +149,7 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
   return (
     <div 
       onClick={() => {
-        playClickSound();
+        playCardFlipSound();
         setFlipped(!flipped);
       }}
       className="w-full h-64 perspective-1000 cursor-pointer select-none group"
