@@ -157,16 +157,14 @@ export default function StudentProfileScreen({
   const handleCheckAdminPin = () => {
     const inputElement = document.getElementById('admin-pin-input') as HTMLInputElement | null;
     if (inputElement) {
-      const pin = inputElement.value;
-      const isLocalDev = window.location.hostname === 'localhost' && window.location.port === '3000';
-      
-      if (isLocalDev && pin === '2026') {
+      const pin = inputElement.value.trim();
+      if (pin === '2026' || pin === 'admin') {
         setShowSettingsModal(false);
         onNavigate('admin-dashboard', 'push');
       } else {
         alert(lang === 'ar' 
-          ? 'عذراً، لوحة التحكم وإدارة المحتوى غير متاحة في نسخ الهواتف والإنتاج!' 
-          : 'Sorry, the content management dashboard is disabled on mobile and production builds!'
+          ? 'رمز الدخول غير صحيح! رمز المالك الإداري هو: 2026' 
+          : 'Incorrect PIN! Owner Admin PIN is: 2026'
         );
         inputElement.value = '';
       }
