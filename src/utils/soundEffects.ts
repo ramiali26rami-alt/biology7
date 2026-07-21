@@ -1,14 +1,15 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Smart Bio - Universal Dual-Engine Sound System (HTML5 Audio + Web Audio API)
- * Guaranteed offline playback across all mobile WebViews, Android APKs, and PC browsers.
+ * Smart Bio - Duolingo-Style Vibrant Sound System
+ * High-fidelity, offline-ready sound effects for UI, Diagrams & Quizzes.
  */
 
-// ─── Base64 Audio Data URLs (PCM 16-bit 22.05kHz WAV) ───
+// ─── Duolingo-Style Base64 Audio Data URLs (PCM 16-bit 44.1kHz WAV) ───
 const SOUND_DATA = {
-  click: 'data:audio/wav;base64,UklGRtL+AABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYb+AAB/f4CAgICEhISIiIiLjY2Nk5SUlZmZmZudnZ2ioqKlpqamp6ioqKyurq6xsbGyszMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM=',
-  correct: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O1tre5uru8vb7AwcLExcjJytDR0tPW19jZ2tvcnZ6foaOkp6msr7CxtLW3ube5uru9v8HCw8bHyMnKzM3Oz9DR0tTW19jZ2tzc3d7h4uPm5+jp6uzt7u/w8fL09fbn',
+  click: 'data:audio/wav;base64,UklGRqAHAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAHAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
+  hotspot: 'data:audio/wav;base64,UklGRuAAAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAAAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
+  correct: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
   wrong: 'data:audio/wav;base64,UklGRlAHAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YJAGAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
   next: 'data:audio/wav;base64,UklGRuAAAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAAAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
   complete: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/'
@@ -30,7 +31,7 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
-// Global mobile gesture audio unlock listener
+// Global gesture audio unlock listener for mobile WebViews
 if (typeof window !== 'undefined') {
   const unlockAudio = () => {
     const ctx = getAudioContext();
@@ -47,28 +48,23 @@ export function isSoundEnabled(): boolean {
   return localStorage.getItem('sound_enabled') !== 'false';
 }
 
-function playAudioElement(dataUrl: string, volume: number = 0.85) {
+function playAudioElement(dataUrl: string, volume: number = 0.95) {
   if (!isSoundEnabled()) return;
   try {
     const audio = new Audio(dataUrl);
     audio.volume = volume;
     const playPromise = audio.play();
     if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Suppress browser autoplay restriction logs
-      });
+      playPromise.catch(() => {});
     }
   } catch (e) {}
 }
 
-/** Soft, crisp tactile click sound for UI buttons & diagram hotspots */
+/** Duolingo-style tactile bubble pop for buttons & cards */
 export function playClickSound() {
   if (!isSoundEnabled()) return;
-  
-  // 1. Primary HTML5 Audio
   playAudioElement(SOUND_DATA.click, 0.9);
 
-  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
   try {
@@ -77,10 +73,10 @@ export function playClickSound() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(750, now);
+    osc.frequency.setValueAtTime(550, now);
     osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
 
-    gain.gain.setValueAtTime(0.6, now);
+    gain.gain.setValueAtTime(0.7, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
     osc.connect(gain);
@@ -90,28 +86,51 @@ export function playClickSound() {
   } catch (e) {}
 }
 
-/** Bright, joyful chime for correct answers */
-export function playCorrectSound() {
+/** Gentle, pleasant marimba pop for diagram hotspots & interactive labels */
+export function playHotspotSound() {
   if (!isSoundEnabled()) return;
-  
-  // 1. Primary HTML5 Audio
-  playAudioElement(SOUND_DATA.correct, 1.0);
+  playAudioElement(SOUND_DATA.hotspot, 0.95);
 
-  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
   try {
     const now = ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.5];
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.exponentialRampToValueAtTime(720, now + 0.07);
+
+    gain.gain.setValueAtTime(0.75, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.07);
+  } catch (e) {}
+}
+
+/** Duolingo-style bright D5 -> A5 cheerful chime for correct quiz answers */
+export function playCorrectSound() {
+  if (!isSoundEnabled()) return;
+  playAudioElement(SOUND_DATA.correct, 1.0);
+
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const notes = [587.33, 880];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.07;
+      const startTime = now + idx * 0.11;
 
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.8, startTime);
+      gain.gain.setValueAtTime(0.85, startTime);
       gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.28);
 
       osc.connect(gain);
@@ -122,14 +141,11 @@ export function playCorrectSound() {
   } catch (e) {}
 }
 
-/** Low double-buzz for incorrect answers */
+/** Duolingo-style soft, double-bonk tone for wrong quiz answers */
 export function playWrongSound() {
   if (!isSoundEnabled()) return;
+  playAudioElement(SOUND_DATA.wrong, 0.9);
 
-  // 1. Primary HTML5 Audio
-  playAudioElement(SOUND_DATA.wrong, 0.95);
-
-  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
   try {
@@ -137,12 +153,12 @@ export function playWrongSound() {
     [160, 110].forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.1;
+      const startTime = now + idx * 0.11;
 
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.7, startTime);
+      gain.gain.setValueAtTime(0.75, startTime);
       gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
 
       osc.connect(gain);
@@ -153,14 +169,11 @@ export function playWrongSound() {
   } catch (e) {}
 }
 
-/** Swoosh / pop sound when advancing to next question */
+/** Crisp pop / swoosh when advancing to next question */
 export function playNextSound() {
   if (!isSoundEnabled()) return;
+  playAudioElement(SOUND_DATA.next, 0.9);
 
-  // 1. Primary HTML5 Audio
-  playAudioElement(SOUND_DATA.next, 0.85);
-
-  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
   try {
@@ -170,26 +183,23 @@ export function playNextSound() {
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(400, now);
-    osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(800, now + 0.07);
 
-    gain.gain.setValueAtTime(0.6, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    gain.gain.setValueAtTime(0.65, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start(now);
-    osc.stop(now + 0.08);
+    osc.stop(now + 0.07);
   } catch (e) {}
 }
 
-/** Fanfare arpeggio when completing a quiz */
+/** Duolingo-style victory fanfare when finishing a quiz or unit */
 export function playCompleteSound() {
   if (!isSoundEnabled()) return;
-
-  // 1. Primary HTML5 Audio
   playAudioElement(SOUND_DATA.complete, 1.0);
 
-  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
   try {
@@ -203,13 +213,13 @@ export function playCompleteSound() {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.85, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.38);
+      gain.gain.setValueAtTime(0.9, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.38);
+      osc.stop(startTime + 0.35);
     });
   } catch (e) {}
 }

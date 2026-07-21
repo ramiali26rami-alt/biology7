@@ -38,6 +38,13 @@ import {
 import { ScreenId, Lesson, ConfigQuestion } from '../types';
 import { translations, Language } from '../utils/translations';
 import { markVisited } from '../utils/progress';
+import { 
+  playClickSound, 
+  playCorrectSound, 
+  playWrongSound, 
+  playNextSound, 
+  playCompleteSound 
+} from '../utils/soundEffects';
 import { VirtualizedList } from './VirtualizedList';
 import { MindMapVisualizer } from './MindMapVisualizer';
 import { InteractiveDiagramVisualizer } from './InteractiveDiagramVisualizer';
@@ -484,6 +491,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
 
   // Start quiz logic
   const startQuiz = (type: 'quiz' | 'ministry' | 'errors') => {
+    playClickSound();
     if (!lesson) return;
     let questionsList: ConfigQuestion[] = [];
     const isInteractive = (q: ConfigQuestion) => 
@@ -525,6 +533,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     
     const isHintUsed = hintsUsed.has(currentQ.id);
     if (correct) {
+      playCorrectSound();
       const earned = isHintUsed ? 0.75 : 1.0;
       setScore((prev) => prev + earned);
       // Remove from errors if solved correctly in Error Box retry mode
@@ -532,6 +541,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
         removeQuestionFromErrors(currentQ.id);
       }
     } else {
+      playWrongSound();
       // Add to errors if incorrect
       addQuestionToErrors(currentQ);
     }
@@ -546,12 +556,14 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     
     const isHintUsed = hintsUsed.has(currentQ.id);
     if (correct) {
+      playCorrectSound();
       const earned = isHintUsed ? 0.75 : 1.0;
       setScore((prev) => prev + earned);
       if (quizMode === 'errors') {
         removeQuestionFromErrors(currentQ.id);
       }
     } else {
+      playWrongSound();
       addQuestionToErrors(currentQ);
     }
     setShowFeedback(true);
@@ -564,6 +576,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
     setShowHintMsg(false);
     
     if (currentQuestionIndex < activeQuestions.length - 1) {
+      playNextSound();
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       handleQuizFinish();
@@ -571,6 +584,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons 
   };
 
   const handleQuizFinish = () => {
+    playCompleteSound();
     setTimerActive(false);
     setQuizFinished(true);
   };
