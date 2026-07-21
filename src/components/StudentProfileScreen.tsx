@@ -44,7 +44,7 @@ import { Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
 import { loadProgress, getStreak, overallPercent } from '../utils/progress';
-import { playClickSound } from '../utils/soundEffects';
+import { playClickSound, playCorrectSound } from '../utils/soundEffects';
 import { scheduleReminderNotification, getReminderTime, setReminderTime } from '../utils/notifications';
 import { SecureStorage } from '../utils/security';
 
@@ -238,7 +238,7 @@ export default function StudentProfileScreen({
     setSoundEnabled(nextSound);
     localStorage.setItem('sound_enabled', nextSound ? 'true' : 'false');
     if (nextSound) {
-      setTimeout(() => playClickSound(), 50);
+      setTimeout(() => playCorrectSound(), 50);
     }
   };
 

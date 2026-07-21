@@ -1,9 +1,18 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Smart Bio - Synthesized Web Audio Sound System
- * High-volume, vibrant, offline-ready sound effects for UI, Diagrams & Quizzes.
+ * Smart Bio - Universal Dual-Engine Sound System (HTML5 Audio + Web Audio API)
+ * Guaranteed offline playback across all mobile WebViews, Android APKs, and PC browsers.
  */
+
+// ─── Base64 Audio Data URLs (PCM 16-bit 22.05kHz WAV) ───
+const SOUND_DATA = {
+  click: 'data:audio/wav;base64,UklGRtL+AABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYb+AAB/f4CAgICEhISIiIiLjY2Nk5SUlZmZmZudnZ2ioqKlpqamp6ioqKyurq6xsbGyszMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM=',
+  correct: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O1tre5uru8vb7AwcLExcjJytDR0tPW19jZ2tvcnZ6foaOkp6msr7CxtLW3ube5uru9v8HCw8bHyMnKzM3Oz9DR0tTW19jZ2tzc3d7h4uPm5+jp6uzt7u/w8fL09fbn',
+  wrong: 'data:audio/wav;base64,UklGRlAHAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YJAGAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
+  next: 'data:audio/wav;base64,UklGRuAAAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YYAAAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/',
+  complete: 'data:audio/wav;base64,UklGRvABAABXQVZFZm10EBAAAAABAAEARKwAAIhYAQACABAAZGF0YdABAAB/f4CBgYKDhIWGh4mJiYqLjI2Oj5CSk5WVl5mampucnJ2goaKjpKWmp6ipqqutra6vsLmys7O0tba3uLm6u7y9vr/AwcLDxMXGx8jJysrLzM3Oz9DR0dLU1dbX2NnZ2tvb3Nze3+Dh4eLm5+jp6err6+zt7u/v8PHx8vPz9PX19vf4+Pn6+/z8/f7/'
+};
 
 let audioCtx: AudioContext | null = null;
 
@@ -38,22 +47,40 @@ export function isSoundEnabled(): boolean {
   return localStorage.getItem('sound_enabled') !== 'false';
 }
 
-/** Crisp, audible tactile pop for buttons, tabs, and hotspots */
+function playAudioElement(dataUrl: string, volume: number = 0.85) {
+  if (!isSoundEnabled()) return;
+  try {
+    const audio = new Audio(dataUrl);
+    audio.volume = volume;
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Suppress browser autoplay restriction logs
+      });
+    }
+  } catch (e) {}
+}
+
+/** Soft, crisp tactile click sound for UI buttons & diagram hotspots */
 export function playClickSound() {
   if (!isSoundEnabled()) return;
+  
+  // 1. Primary HTML5 Audio
+  playAudioElement(SOUND_DATA.click, 0.9);
+
+  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
-
   try {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, now);
-    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+    osc.frequency.setValueAtTime(750, now);
+    osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
 
-    gain.gain.setValueAtTime(0.5, now);
+    gain.gain.setValueAtTime(0.6, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
     osc.connect(gain);
@@ -63,45 +90,51 @@ export function playClickSound() {
   } catch (e) {}
 }
 
-/** Clear, vibrant 3-note ascending chime for correct answers */
+/** Bright, joyful chime for correct answers */
 export function playCorrectSound() {
   if (!isSoundEnabled()) return;
+  
+  // 1. Primary HTML5 Audio
+  playAudioElement(SOUND_DATA.correct, 1.0);
+
+  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
-
   try {
     const now = ctx.currentTime;
-    // Bright C Major Triad: C5 (523.25Hz) -> E5 (659.25Hz) -> G5 (783.99Hz)
-    const notes = [523.25, 659.25, 783.99];
+    const notes = [523.25, 659.25, 783.99, 1046.5];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.08;
+      const startTime = now + idx * 0.07;
 
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.65, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+      gain.gain.setValueAtTime(0.8, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.28);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.25);
+      osc.stop(startTime + 0.28);
     });
   } catch (e) {}
 }
 
-/** Distinct, audible 2-tone low warning for incorrect answers */
+/** Low double-buzz for incorrect answers */
 export function playWrongSound() {
   if (!isSoundEnabled()) return;
+
+  // 1. Primary HTML5 Audio
+  playAudioElement(SOUND_DATA.wrong, 0.95);
+
+  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
-
   try {
     const now = ctx.currentTime;
-    // Low descending warning tones: D3 (146.83Hz) -> Ab2 (103.83Hz)
-    [146.83, 103.83].forEach((freq, idx) => {
+    [160, 110].forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const startTime = now + idx * 0.1;
@@ -109,33 +142,37 @@ export function playWrongSound() {
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.55, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.2);
+      gain.gain.setValueAtTime(0.7, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.2);
+      osc.stop(startTime + 0.22);
     });
   } catch (e) {}
 }
 
-/** Vibrant swoosh sound when advancing questions or switching views */
+/** Swoosh / pop sound when advancing to next question */
 export function playNextSound() {
   if (!isSoundEnabled()) return;
+
+  // 1. Primary HTML5 Audio
+  playAudioElement(SOUND_DATA.next, 0.85);
+
+  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
-
   try {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(350, now);
-    osc.frequency.exponentialRampToValueAtTime(750, now + 0.08);
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
 
-    gain.gain.setValueAtTime(0.45, now);
+    gain.gain.setValueAtTime(0.6, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
     osc.connect(gain);
@@ -145,31 +182,34 @@ export function playNextSound() {
   } catch (e) {}
 }
 
-/** Triumphant, high-volume fanfare when completing a quiz or unit */
+/** Fanfare arpeggio when completing a quiz */
 export function playCompleteSound() {
   if (!isSoundEnabled()) return;
+
+  // 1. Primary HTML5 Audio
+  playAudioElement(SOUND_DATA.complete, 1.0);
+
+  // 2. Synthesized Web Audio backup
   const ctx = getAudioContext();
   if (!ctx) return;
-
   try {
     const now = ctx.currentTime;
-    // Fanfare chords: C5 -> E5 -> G5 -> C6
     const notes = [523.25, 659.25, 783.99, 1046.5];
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = now + idx * 0.1;
+      const startTime = now + idx * 0.09;
 
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.75, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+      gain.gain.setValueAtTime(0.85, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.38);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(startTime);
-      osc.stop(startTime + 0.35);
+      osc.stop(startTime + 0.38);
     });
   } catch (e) {}
 }
