@@ -21,6 +21,22 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
+// Global mobile gesture audio unlock listener
+if (typeof window !== 'undefined') {
+  const unlockAudio = () => {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+    window.removeEventListener('pointerdown', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+    window.removeEventListener('click', unlockAudio);
+  };
+  window.addEventListener('pointerdown', unlockAudio);
+  window.addEventListener('touchstart', unlockAudio);
+  window.addEventListener('click', unlockAudio);
+}
+
 export function isSoundEnabled(): boolean {
   return localStorage.getItem('sound_enabled') !== 'false';
 }
