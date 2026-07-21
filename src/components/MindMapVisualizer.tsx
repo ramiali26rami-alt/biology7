@@ -8,7 +8,7 @@ import { ChevronDown, Info, HelpCircle, X } from 'lucide-react';
 import { MindmapNode } from '../types';
 import { Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
-import { playClickSound, playHotspotSound } from '../utils/soundEffects';
+import { playClickSound, playHotspotSound, playMindmapSound } from '../utils/soundEffects';
 
 interface MindMapVisualizerProps {
   mindmap: MindmapNode[];
@@ -29,7 +29,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   const getChildren = (nodeId: string) => mindmap.filter(n => n.parentId === nodeId);
 
   const toggleBranch = (branchId: string) => {
-    playClickSound();
+    playMindmapSound();
     setExpandedBranches(prev => ({
       ...prev,
       [branchId]: !prev[branchId]
@@ -37,7 +37,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   };
 
   const toggleSub = (subId: string) => {
-    playClickSound();
+    playMindmapSound();
     setExpandedSubs(prev => ({
       ...prev,
       [subId]: !prev[subId]
