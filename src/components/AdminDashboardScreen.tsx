@@ -458,6 +458,9 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Reset input value so selecting the same file again triggers onChange
+    e.target.value = '';
+
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
@@ -465,19 +468,32 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         if (!bstr) return;
         const wb = XLSX.read(bstr, { type: 'binary' });
 
-        const lessonsCoreSheet = wb.Sheets['Lessons_Core'] || wb.Sheets['Lessons'];
-        const diagramsInteractiveSheet = wb.Sheets['Diagrams_Interactive'];
-        const mindmapsInteractiveSheet = wb.Sheets['MindMaps_Interactive'];
-        const examBankSheet = wb.Sheets['Exam_Bank'];
+        // Case-insensitive, space and underscore flexible sheet finder
+        const findSheet = (names: string[]) => {
+          for (const name of names) {
+            const foundKey = wb.SheetNames.find(n => {
+              const cleanN = n.trim().toLowerCase().replace(/[\s_-]+/g, '');
+              const cleanTarget = name.trim().toLowerCase().replace(/[\s_-]+/g, '');
+              return cleanN === cleanTarget;
+            });
+            if (foundKey) return wb.Sheets[foundKey];
+          }
+          return null;
+        };
+
+        const lessonsCoreSheet = findSheet(['lessons_core', 'lessons', 'lessons core']);
+        const diagramsInteractiveSheet = findSheet(['diagrams_interactive', 'diagrams interactive']);
+        const mindmapsInteractiveSheet = findSheet(['mindmaps_interactive', 'mindmaps interactive', 'mindmaps']);
+        const examBankSheet = findSheet(['exam_bank', 'exam bank', 'exambank']);
 
         // Legacy sheets
-        const diagramsMindMapsSheet = wb.Sheets['Diagrams_&_MindMaps'];
-        const quizzesSheet = wb.Sheets['Quizzes'];
-        const flashcardsSheet = wb.Sheets['Flashcards'];
-        const glossarySheet = wb.Sheets['Glossary'];
-        const mindmapsSheet = wb.Sheets['Mindmaps'];
-        const interactiveDiagramsSheet = wb.Sheets['InteractiveDiagrams'];
-        const ministryExamsSheet = wb.Sheets['MinistryExams'];
+        const diagramsMindMapsSheet = findSheet(['diagrams_&_mindmaps', 'diagrams & mindmaps', 'diagrams_mindmaps', 'diagrams mindmaps']);
+        const quizzesSheet = findSheet(['quizzes']);
+        const flashcardsSheet = findSheet(['flashcards']);
+        const glossarySheet = findSheet(['glossary']);
+        const mindmapsSheet = findSheet(['mindmaps']);
+        const interactiveDiagramsSheet = findSheet(['interactivediagrams', 'interactive diagrams']);
+        const ministryExamsSheet = findSheet(['ministryexams', 'ministry exams']);
 
         const lessonsRaw = lessonsCoreSheet ? XLSX.utils.sheet_to_json(lessonsCoreSheet) : [];
         const diagramsInteractiveRaw = diagramsInteractiveSheet ? XLSX.utils.sheet_to_json(diagramsInteractiveSheet) : [];
@@ -494,13 +510,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
         // Validate excel
         const validation = validateExcelData({
-          lessons_core: wb.Sheets['Lessons_Core'] ? lessonsRaw : undefined,
-          exam_bank: wb.Sheets['Exam_Bank'] ? examBankRaw : undefined,
-          diagrams_interactive: wb.Sheets['Diagrams_Interactive'] ? diagramsInteractiveRaw : undefined,
-          mindmaps_interactive: wb.Sheets['MindMaps_Interactive'] ? mindmapsInteractiveRaw : undefined,
+          lessons_core: lessonsCoreSheet ? lessonsRaw : undefined,
+          exam_bank: examBankSheet ? examBankRaw : undefined,
+          diagrams_interactive: diagramsInteractiveSheet ? diagramsInteractiveRaw : undefined,
+          mindmaps_interactive: mindmapsInteractiveSheet ? mindmapsInteractiveRaw : undefined,
 
-          diagrams_mindmaps: wb.Sheets['Diagrams_&_MindMaps'] ? diagramsMindMapsRaw : undefined,
-          lessons: wb.Sheets['Lessons_Core'] ? undefined : lessonsRaw,
+          diagrams_mindmaps: diagramsMindMapsSheet ? diagramsMindMapsRaw : undefined,
+          lessons: lessonsCoreSheet ? undefined : lessonsRaw,
           quizzes: quizzesRaw,
           flashcards: flashcardsRaw,
           glossary: glossaryRaw,
