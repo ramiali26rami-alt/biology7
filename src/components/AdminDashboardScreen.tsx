@@ -284,6 +284,20 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         }
       })
       .catch(err => console.error("Error loading detected assets:", err));
+
+    // Force load latest curriculum from server to bypass browser LocalStorage cache
+    try {
+      localStorage.removeItem('curriculum_data');
+      localStorage.removeItem('curriculum_version');
+      fetch(`/lessons_config.json?t=${Date.now()}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data) {
+            setLessons(data);
+          }
+        })
+        .catch(() => {});
+    } catch (e) {}
   }, []);
 
   const t = translations[lang];
