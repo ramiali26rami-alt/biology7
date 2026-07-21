@@ -77,7 +77,8 @@ interface ExamPaper {
   year: number;
 }
 
-export default function MinistryExamsScreen({ onNavigate, lang, lesson, lessons }: MinistryExamsScreenProps) {
+export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLesson, lessons = [] }: MinistryExamsScreenProps) {
+  const lesson = (lessons || []).find(l => l.id === propLesson?.id) || propLesson;
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10800); // 180 minutes in seconds (3 hours)

@@ -213,7 +213,8 @@ interface LessonDetailsScreenProps {
   onSelectLesson?: (lesson: Lesson) => void;
 }
 
-export default function LessonDetailsScreen({ onNavigate, lang, lesson, lessons = [], onSelectLesson }: LessonDetailsScreenProps) {
+export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLesson, lessons = [], onSelectLesson }: LessonDetailsScreenProps) {
+  const lesson = (lessons || []).find(l => l.id === propLesson?.id) || propLesson;
   const [activeTab, setActiveTab] = useState<'explore' | 'review' | 'test'>('explore');
   const [exploreSubTab, setExploreSubTab] = useState<'mindmap' | 'diagrams' | 'pdf'>('mindmap');
   const [bookmarked, setBookmarked] = useState(false);

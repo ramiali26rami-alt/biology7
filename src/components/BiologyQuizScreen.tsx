@@ -92,7 +92,8 @@ interface Question {
   questionImage?: string;
 }
 
-export default function BiologyQuizScreen({ onNavigate, lang, lesson, lessons, onSelectLesson }: BiologyQuizScreenProps) {
+export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson, lessons = [], onSelectLesson }: BiologyQuizScreenProps) {
+  const lesson = (lessons || []).find(l => l.id === propLesson?.id) || propLesson;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [fillInput, setFillInput] = useState('');
