@@ -933,6 +933,16 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     reader.readAsBinaryString(file);
   };
 
+  const handleSyncCurriculum = async () => {
+    try {
+      SecureStorage.removeItem('curriculum_data');
+      SecureStorage.removeItem('curriculum_version');
+      window.location.reload();
+    } catch (e) {
+      alert(lang === 'ar' ? 'فشل إعادة المزامنة' : 'Re-sync failed');
+    }
+  };
+
   const handleExportExcel = async () => {
     const getUL = (lessonId: string, fallbackUnit = 1) => {
       if (lessonId.startsWith('u') && lessonId.includes('-l')) {
@@ -3517,6 +3527,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       />
                     </label>
                   </div>
+
+                  <button
+                    onClick={handleSyncCurriculum}
+                    className="w-full bg-slate-200 hover:bg-slate-350 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-black text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span>{lang === 'ar' ? 'تحديث وتنزيل المنهج الجديد من السيرفر 🔄' : 'Force Sync & Reload Syllabus from Server 🔄'}</span>
+                  </button>
 
                   {/* Validation results view */}
                   {excelValidationResult && (
