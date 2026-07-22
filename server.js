@@ -73,32 +73,123 @@ function rescanAssets(publicDir) {
   }
 }
 
+// ─── Vercel KV Database Helper ───
+const KV = {
+  url: process.env.KV_REST_API_URL || '',
+  token: process.env.KV_REST_API_TOKEN || '',
+  isConfigured() {
+    return !!(this.url && this.token);
+  },
+  async get(key) {
+    if (!this.isConfigured()) return null;
+    try {
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(['GET', key])
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data && data.result) {
+        try {
+          return JSON.parse(data.result);
+        } catch {
+          return data.result;
+        }
+      }
+      return null;
+    } catch (e) {
+      console.error(`Vercel KV read error for ${key}:`, e);
+      return null;
+    }
+  },
+  async set(key, value) {
+    if (!this.isConfigured()) return false;
+    try {
+      const valStr = typeof value === 'string' ? value : JSON.stringify(value);
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(['SET', key, valStr])
+      });
+      return res.ok;
+    } catch (e) {
+      console.error(`Vercel KV write error for ${key}:`, e);
+      return false;
+    }
+  }
+};
+
+// ─── GET /api/get-config ───
+app.get('/api/get-config', async (req, res) => {
+  try {
+    if (KV.isConfigured()) {
+      const cachedData = await KV.get('curriculum_data');
+      if (cachedData) {
+        return res.json(cachedData);
+      }
+    }
+    const configPath = path.join(publicDir, 'lessons_config.json');
+    if (fs.existsSync(configPath)) {
+      const text = fs.readFileSync(configPath, 'utf-8');
+      try {
+        return res.json(JSON.parse(text));
+      } catch {
+        return res.send(text);
+      }
+    }
+    res.status(404).json({ error: 'Config file not found' });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
+
 // ─── POST /api/save-config ───
 app.post('/api/save-config', async (req, res) => {
   try {
     const data = req.body;
-    const configPath = path.join(publicDir, 'lessons_config.json');
-    if (fs.existsSync(configPath)) {
-      const backupsDir = path.join(dataDir, 'backups');
-      if (!fs.existsSync(backupsDir)) {
-        fs.mkdirSync(backupsDir, { recursive: true });
-      }
-      const now = new Date();
-      const yyyymmdd = now.getFullYear() +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        String(now.getDate()).padStart(2, '0');
-      const hhmmss = String(now.getHours()).padStart(2, '0') +
-        String(now.getMinutes()).padStart(2, '0') +
-        String(now.getSeconds()).padStart(2, '0');
-      const backupFilename = `lessons_config_${yyyymmdd}_${hhmmss}.json`;
-      fs.copyFileSync(configPath, path.join(backupsDir, backupFilename));
+    let savedToKv = false;
+
+    if (KV.isConfigured()) {
+      savedToKv = await KV.set('curriculum_data', data);
     }
 
-    fs.writeFileSync(
-      configPath,
-      JSON.stringify(data, null, 2),
-      'utf-8'
-    );
+    const configPath = path.join(publicDir, 'lessons_config.json');
+    try {
+      if (fs.existsSync(configPath)) {
+        const backupsDir = path.join(dataDir, 'backups');
+        if (!fs.existsSync(backupsDir)) {
+          fs.mkdirSync(backupsDir, { recursive: true });
+        }
+        const now = new Date();
+        const yyyymmdd = now.getFullYear() +
+          String(now.getMonth() + 1).padStart(2, '0') +
+          String(now.getDate()).padStart(2, '0');
+        const hhmmss = String(now.getHours()).padStart(2, '0') +
+          String(now.getMinutes()).padStart(2, '0') +
+          String(now.getSeconds()).padStart(2, '0');
+        const backupFilename = `lessons_config_${yyyymmdd}_${hhmmss}.json`;
+        fs.copyFileSync(configPath, path.join(backupsDir, backupFilename));
+      }
+
+      fs.writeFileSync(
+        configPath,
+        JSON.stringify(data, null, 2),
+        'utf-8'
+      );
+    } catch (fsErr) {
+      console.warn("Local filesystem write skipped/failed:", fsErr.message);
+      if (!savedToKv) {
+        throw fsErr;
+      }
+    }
+
     await triggerBackupAfterSave(data.length);
     res.json({ success: true });
   } catch (e) {
