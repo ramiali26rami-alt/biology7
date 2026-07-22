@@ -17,8 +17,8 @@ export async function handleApiRequest(
   // ─── GET /api/curriculum-version ───
   if (req.url === '/api/curriculum-version' && req.method === 'GET') {
     try {
-      const KV_REST_API_URL = process.env.KV_REST_API_URL;
-      const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN;
+      const KV_REST_API_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+      const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
       if (KV_REST_API_URL && KV_REST_API_TOKEN) {
         const resKv = await fetch(KV_REST_API_URL, {
           method: 'POST',
@@ -85,8 +85,8 @@ export async function handleApiRequest(
 export async function triggerBackupAfterSave(
   lessonsCount: number
 ): Promise<void> {
-  const KV_REST_API_URL = process.env.KV_REST_API_URL;
-  const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN;
+  const KV_REST_API_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
   // 1. Update version file
   let current = { version: '1.0.0' };
