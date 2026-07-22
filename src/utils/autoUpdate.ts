@@ -5,9 +5,9 @@
 
 import { SecureStorage } from './security';
 
-const SERVER_URL = (
-  localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || ''
-).replace(/\/$/, '');
+function getServerUrl(): string {
+  return (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
+}
 
 export async function checkAndUpdate(): Promise<{
   updated: boolean;
@@ -15,6 +15,7 @@ export async function checkAndUpdate(): Promise<{
   error: boolean;
 }> {
   try {
+    const serverUrl = getServerUrl();
     const storedVersion =
       SecureStorage.getItem('curriculum_version')
       ?? '0.0.0';
@@ -26,7 +27,7 @@ export async function checkAndUpdate(): Promise<{
     );
 
     const response = await fetch(
-      `${SERVER_URL}/api/curriculum-version`,
+      `${serverUrl}/api/curriculum-version`,
       { signal: controller.signal }
     );
     clearTimeout(timeout);
@@ -52,11 +53,11 @@ export async function checkAndUpdate(): Promise<{
 
     // New version — download full curriculum
     let curriculumRes = await fetch(
-      `${SERVER_URL}/api/get-config?t=${Date.now()}`
+      `${serverUrl}/api/get-config?t=${Date.now()}`
     );
     if (!curriculumRes.ok) {
       curriculumRes = await fetch(
-        `${SERVER_URL}/lessons_config.json?t=${Date.now()}`
+        `${serverUrl}/lessons_config.json?t=${Date.now()}`
       );
     }
 

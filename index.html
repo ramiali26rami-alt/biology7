@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
+    <script>
+      try {
+        const storedServer = localStorage.getItem('server_url');
+        if (!storedServer || storedServer.includes('railway') || storedServer.includes('biology-server') || storedServer === 'none') {
+          localStorage.setItem('server_url', 'https://biology7.vercel.app');
+        }
+      } catch (e) {}
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>سمارت بايو - الثالث الثانوي</title>
