@@ -37,7 +37,7 @@ jobs:
         run: npm run build
         env:
           # Change this URL to your production server address, or set it as a GitHub secret
-          VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL || 'https://your-production-app.railway.app' }}
+          VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL || 'https://biology7.vercel.app' }}
 
       - name: Sync Capacitor to Android
         run: npx cap sync
