@@ -98,6 +98,8 @@ export default function StudentProfileScreen({
   const [activationLoading, setActivationLoading] = useState(false);
   const [activationMessage, setActivationMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [serverUrlInput, setServerUrlInput] = useState(() => localStorage.getItem('server_url') || '');
+  const [adminClicks, setAdminClicks] = useState(0);
+  const [showAdminOptions, setShowAdminOptions] = useState(false);
 
   const handleActivateKey = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,11 +165,21 @@ export default function StudentProfileScreen({
         onNavigate('admin-dashboard', 'push');
       } else {
         alert(lang === 'ar' 
-          ? 'رمز الدخول غير صحيح! رمز المالك الإداري هو: 2026' 
-          : 'Incorrect PIN! Owner Admin PIN is: 2026'
+          ? 'رمز الدخول غير صحيح!' 
+          : 'Incorrect PIN!'
         );
         inputElement.value = '';
       }
+    }
+  };
+
+  const handleVersionClick = () => {
+    const nextClicks = adminClicks + 1;
+    setAdminClicks(nextClicks);
+    if (nextClicks >= 7) {
+      setShowAdminOptions(true);
+      setAdminClicks(0);
+      alert(lang === 'ar' ? '🚀 تم تفعيل خيارات المطور والمالك!' : '🚀 Developer & Owner options unlocked!');
     }
   };
 
@@ -948,65 +960,70 @@ export default function StudentProfileScreen({
                   </button>
                 </div>
 
-                {/* Demo Control: Unlock All Content */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm">
-                      <Flame className="w-4 h-4 text-amber-500" />
-                    </div>
-                    <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                      <span className="text-xs font-bold block">{lang === 'ar' ? 'تفعيل كافة الدروس (ديمو)' : 'Unlock All Content (Demo)'}</span>
-                      <span className="text-[10px] text-slate-405 text-slate-400 dark:text-slate-500 block">
-                        {lang === 'ar' ? 'فتح الباقة الذهبية للامتحانات والدروس فوراً' : 'Activate golden tier access instantly'}
-                      </span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={handleTogglePremium}
-                    className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 focus:outline-none shrink-0 relative flex items-center ${
-                      premiumUnlocked ? 'bg-emerald-500 justify-start' : 'bg-slate-200 dark:bg-slate-750 justify-end'
-                    }`}
-                  >
-                    <div className="w-4 h-4 rounded-full bg-white shadow-md transform transition-all duration-200" />
-                  </button>
-                </div>
-                {/* Admin Dashboard Entry */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm text-emerald-500">
-                        <UserCheck className="w-4 h-4" />
+                {showAdminOptions && (
+                  <>
+                    {/* Demo Control: Unlock All Content */}
+                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm">
+                          <Flame className="w-4 h-4 text-amber-500" />
+                        </div>
+                        <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                          <span className="text-xs font-bold block">{lang === 'ar' ? 'تفعيل كافة الدروس (ديمو)' : 'Unlock All Content (Demo)'}</span>
+                          <span className="text-[10px] text-slate-405 text-slate-400 dark:text-slate-500 block">
+                            {lang === 'ar' ? 'فتح الباقة الذهبية للامتحانات والدروس فوراً' : 'Activate golden tier access instantly'}
+                          </span>
+                        </div>
                       </div>
-                      <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                        <span className="text-xs font-bold block">{lang === 'ar' ? 'إدارة محتوى التطبيق (للمالك)' : 'App Content Management (Owner)'}</span>
-                        <span className="text-[10px] text-slate-450 text-slate-450 block">
-                          {lang === 'ar' ? 'إضافة وتعديل المنهج والأسئلة والفيديوهات' : 'Add/edit lessons, videos, and quizzes'}
-                        </span>
+                      <button 
+                        onClick={handleTogglePremium}
+                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 focus:outline-none shrink-0 relative flex items-center ${
+                          premiumUnlocked ? 'bg-emerald-500 justify-start' : 'bg-slate-200 dark:bg-slate-750 justify-end'
+                        }`}
+                      >
+                        <div className="w-4 h-4 rounded-full bg-white shadow-md transform transition-all duration-200" />
+                      </button>
+                    </div>
+
+                    {/* Admin Dashboard Entry */}
+                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm text-emerald-500">
+                            <UserCheck className="w-4 h-4" />
+                          </div>
+                          <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                            <span className="text-xs font-bold block">{lang === 'ar' ? 'إدارة محتوى التطبيق (للمالك)' : 'App Content Management (Owner)'}</span>
+                            <span className="text-[10px] text-slate-450 text-slate-450 block">
+                              {lang === 'ar' ? 'إضافة وتعديل المنهج والأسئلة والفيديوهات' : 'Add/edit lessons, videos, and quizzes'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <input
+                          type="password"
+                          placeholder={lang === 'ar' ? 'أدخل الرمز السري' : 'Enter Admin PIN'}
+                          className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 text-center"
+                          maxLength={8}
+                          id="admin-pin-input"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleCheckAdminPin();
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={handleCheckAdminPin}
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-4 py-1.5 rounded-xl active:scale-95 transition-all shrink-0"
+                        >
+                          {lang === 'ar' ? 'دخول' : 'Enter'}
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <input
-                      type="password"
-                      placeholder={lang === 'ar' ? 'أدخل الرمز السري' : 'Enter Admin PIN'}
-                      className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 text-center"
-                      maxLength={8}
-                      id="admin-pin-input"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleCheckAdminPin();
-                        }
-                      }}
-                    />
-                    <button
-                      onClick={handleCheckAdminPin}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-4 py-1.5 rounded-xl active:scale-95 transition-all shrink-0"
-                    >
-                      {lang === 'ar' ? 'دخول' : 'Enter'}
-                    </button>
-                  </div>
-                </div>
+                  </>
+                )}
 
                 {/* Developer Info Section */}
                 <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-2.5">
@@ -1019,9 +1036,9 @@ export default function StudentProfileScreen({
                       <span>{lang === 'ar' ? 'اسم التطبيق:' : 'App Name:'}</span>
                       <span className="font-extrabold text-slate-800 dark:text-white">Biotech Biology</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between cursor-pointer active:scale-98 select-none" onClick={handleVersionClick}>
                       <span>{lang === 'ar' ? 'الإصدار:' : 'Version:'}</span>
-                      <span className="font-bold">v1.0.0</span>
+                      <span className="font-bold hover:underline text-emerald-650 dark:text-emerald-450">v1.0.0</span>
                     </div>
                     <div className="flex justify-between">
                       <span>{lang === 'ar' ? 'المنهج الدراسي:' : 'Curriculum:'}</span>

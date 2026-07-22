@@ -50,6 +50,12 @@ export default function App() {
   }>({ show: false, newLessons: 0 });
 
   useEffect(() => {
+    // Correct any stale or default server URL in localStorage
+    const storedServer = localStorage.getItem('server_url');
+    if (!storedServer || storedServer.includes('railway') || storedServer.includes('biology-server') || storedServer === 'none') {
+      localStorage.setItem('server_url', 'https://biology7.vercel.app');
+    }
+
     loadCurriculum()
       .then(data => {
         if (data) setLessons(data);
