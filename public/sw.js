@@ -32,6 +32,19 @@ self.addEventListener('fetch', e => {
     return;
   }
 
+  // Network-only for API endpoints to prevent stale caching of dynamic data
+  if (url.pathname.startsWith('/api/')) {
+    e.respondWith(
+      fetch(e.request).catch(() => 
+        new Response(JSON.stringify({ error: 'offline' }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+    );
+    return;
+  }
+
   // Network-first for lessons configuration to avoid stale caching issues
   if (url.pathname === '/lessons_config.json') {
     e.respondWith(
