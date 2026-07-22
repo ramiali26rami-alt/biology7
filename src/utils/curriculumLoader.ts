@@ -3,7 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { Capacitor } from '@capacitor/core';
 import { decryptCurriculumData, SecureStorage } from './security';
+
+function getServerUrl(): string {
+  return (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
+}
 
 export async function loadCurriculum(bypassCache = false): Promise<any> {
   const isLocalDev = 
@@ -17,24 +22,48 @@ export async function loadCurriculum(bypassCache = false): Promise<any> {
     if (cached) return cached;
   }
 
+  const serverUrl = getServerUrl();
+  const isNative = Capacitor.isNativePlatform();
+
   // 2. Fetch from database endpoint (/api/get-config)
-  try {
-    const res = await fetch(`/api/get-config?t=${Date.now()}`);
-    if (res.ok) {
-      const text = await res.text();
-      let data;
-      try {
-        data = decryptCurriculumData(text);
-      } catch {
-        data = JSON.parse(text);
+  if (isNative) {
+    try {
+      const res = await fetch(`${serverUrl}/api/get-config?t=${Date.now()}`);
+      if (res.ok) {
+        const text = await res.text();
+        let data;
+        try {
+          data = decryptCurriculumData(text);
+        } catch {
+          data = JSON.parse(text);
+        }
+        if (data) {
+          SecureStorage.setItem('curriculum_data', data);
+          return data;
+        }
       }
-      if (data) {
-        SecureStorage.setItem('curriculum_data', data);
-        return data;
-      }
+    } catch (e) {
+      console.warn('Native remote config load failed, trying local fallback:', e);
     }
-  } catch (e) {
-    console.warn('API config load failed, trying file fallback:', e);
+  } else {
+    try {
+      const res = await fetch(`/api/get-config?t=${Date.now()}`);
+      if (res.ok) {
+        const text = await res.text();
+        let data;
+        try {
+          data = decryptCurriculumData(text);
+        } catch {
+          data = JSON.parse(text);
+        }
+        if (data) {
+          SecureStorage.setItem('curriculum_data', data);
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn('API config load failed, trying file fallback:', e);
+    }
   }
 
   // 3. Fallback to locally bundled file (works 100% offline on first run)
@@ -48,7 +77,11 @@ export async function loadCurriculum(bypassCache = false): Promise<any> {
       data = JSON.parse(text);
     }
     if (data) {
-      SecureStorage.setItem('curriculum_data', data);
+      // Do not store local offline bundle as cached data on native app
+      // so it always attempts to fetch from remote server on next launch
+      if (!isNative) {
+        SecureStorage.setItem('curriculum_data', data);
+      }
       return data;
     }
   } catch (e) {
@@ -57,8 +90,7 @@ export async function loadCurriculum(bypassCache = false): Promise<any> {
 
   // 4. Remote fallback if local bundle fails
   try {
-    const SERVER_URL = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
-    const res = await fetch(`${SERVER_URL}/api/get-config?t=${Date.now()}`);
+    const res = await fetch(`${serverUrl}/api/get-config?t=${Date.now()}`);
     const text = await res.text();
     let data;
     try {
