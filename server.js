@@ -126,6 +126,30 @@ const KV = {
   }
 };
 
+// ─── GET /api/debug-status ───
+app.get('/api/debug-status', async (req, res) => {
+  try {
+    const isKvConfigured = KV.isConfigured();
+    let kvVersion = null;
+    if (isKvConfigured) {
+      try {
+        kvVersion = await KV.get('curriculum_version');
+      } catch (err) {
+        kvVersion = "error: " + err.message;
+      }
+    }
+    res.json({
+      kvConfigured: isKvConfigured,
+      kvVersion: kvVersion,
+      envKeys: Object.keys(process.env).filter(k => k.includes('KV') || k.includes('REDIS') || k.includes('UPSTASH')),
+      localVersionExists: fs.existsSync('data/curriculum_version.json'),
+      localConfigExists: fs.existsSync(path.join(publicDir, 'lessons_config.json'))
+    });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
+
 // ─── GET /api/get-config ───
 app.get('/api/get-config', async (req, res) => {
   try {
