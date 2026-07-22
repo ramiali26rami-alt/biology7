@@ -5,15 +5,17 @@
 
 import { decryptCurriculumData, SecureStorage } from './security';
 
-export async function loadCurriculum(): Promise<any> {
+export async function loadCurriculum(bypassCache = false): Promise<any> {
   const isLocalDev = 
     window.location.hostname === 'localhost' || 
     window.location.hostname === '127.0.5.1' || 
     window.location.hostname === '127.0.0.1';
 
-  // 1. Check secure storage cache first (bypass in local dev to see config changes instantly)
-  const cached = SecureStorage.getItem('curriculum_data');
-  if (cached && !isLocalDev) return cached;
+  // 1. Check secure storage cache first (bypass in local dev or if bypassCache is true)
+  if (!bypassCache && !isLocalDev) {
+    const cached = SecureStorage.getItem('curriculum_data');
+    if (cached) return cached;
+  }
 
   // 2. Fetch from database endpoint (/api/get-config)
   try {

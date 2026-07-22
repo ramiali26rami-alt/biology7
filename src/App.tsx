@@ -60,7 +60,7 @@ export default function App() {
   useEffect(() => {
     checkAndUpdate().then(async (result) => {
       if (result.updated) {
-        const updatedLessons = await loadCurriculum();
+        const updatedLessons = await loadCurriculum(true);
         if (updatedLessons) {
           setLessons(updatedLessons);
         }

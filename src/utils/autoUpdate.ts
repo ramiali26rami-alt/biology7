@@ -51,9 +51,14 @@ export async function checkAndUpdate(): Promise<{
     }
 
     // New version — download full curriculum
-    const curriculumRes = await fetch(
-      `${SERVER_URL}/lessons_config.json?t=${Date.now()}`
+    let curriculumRes = await fetch(
+      `${SERVER_URL}/api/get-config?t=${Date.now()}`
     );
+    if (!curriculumRes.ok) {
+      curriculumRes = await fetch(
+        `${SERVER_URL}/lessons_config.json?t=${Date.now()}`
+      );
+    }
 
     if (!curriculumRes.ok) {
       return { 
