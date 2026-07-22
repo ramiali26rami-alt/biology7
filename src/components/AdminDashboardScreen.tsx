@@ -960,6 +960,26 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     }
   };
 
+  const handlePublishUpdate = async () => {
+    try {
+      const res = await fetch('/api/publish-update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (res.ok) {
+        const resData = await res.json();
+        alert(lang === 'ar' 
+          ? `📢 تم نشر التحديث بنجاح لجميع هواتف الطلاب! (رقم الإصدار الجديد: ${resData.version || 'محدث'})` 
+          : `📢 Update published successfully to all students! (New Version: ${resData.version || 'updated'})`
+        );
+      } else {
+        throw new Error('Server returned non-200');
+      }
+    } catch (e) {
+      alert(lang === 'ar' ? 'فشل نشر التحديث' : 'Publishing update failed');
+    }
+  };
+
   const handleExportExcel = async () => {
     const getUL = (lessonId: string, fallbackUnit = 1) => {
       if (lessonId.startsWith('u') && lessonId.includes('-l')) {
@@ -3564,6 +3584,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       />
                     </label>
                   </div>
+
+                  <button
+                    onClick={handlePublishUpdate}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>{lang === 'ar' ? 'نشر وإرسال التحديث لجميع الهواتف 📢' : 'Publish & Broadcast Update to All Phones 📢'}</span>
+                  </button>
 
                   <button
                     onClick={handleSyncCurriculum}

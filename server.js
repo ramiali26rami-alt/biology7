@@ -174,6 +174,39 @@ app.get('/api/get-config', async (req, res) => {
   }
 });
 
+// ─── POST /api/publish-update ───
+app.post('/api/publish-update', async (req, res) => {
+  try {
+    let currentLessonsCount = 0;
+    if (KV.isConfigured()) {
+      const cachedData = await KV.get('curriculum_data');
+      if (cachedData && Array.isArray(cachedData)) {
+        currentLessonsCount = cachedData.length;
+      }
+    } else {
+      const configPath = path.join(publicDir, 'lessons_config.json');
+      if (fs.existsSync(configPath)) {
+        const text = fs.readFileSync(configPath, 'utf-8');
+        try {
+          const parsed = JSON.parse(text);
+          currentLessonsCount = Array.isArray(parsed) ? parsed.length : 0;
+        } catch {}
+      }
+    }
+    await triggerBackupAfterSave(currentLessonsCount);
+    
+    // Read new version to return
+    let newVer = "1.0.0";
+    if (KV.isConfigured()) {
+      const vData = await KV.get('curriculum_version');
+      if (vData && vData.version) newVer = vData.version;
+    }
+    res.json({ success: true, version: newVer });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
+
 // ─── POST /api/save-config ───
 app.post('/api/save-config', async (req, res) => {
   try {
