@@ -310,3 +310,64 @@ export async function getLeaderboard(): Promise<any[]> {
     return [];
   }
 }
+
+// 7. Log a single question's answer correctness for analytics
+export async function logQuestionResult(questionId: string, lessonId: string, questionText: string, isCorrect: boolean): Promise<void> {
+  try {
+    const { data, error } = await supabase
+      .from('question_analytics')
+      .select('wrong_count, correct_count')
+      .eq('question_id', questionId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (data) {
+      await supabase
+        .from('question_analytics')
+        .update({
+          wrong_count: data.wrong_count + (isCorrect ? 0 : 1),
+          correct_count: data.correct_count + (isCorrect ? 1 : 0)
+        })
+        .eq('question_id', questionId);
+    } else {
+      await supabase
+        .from('question_analytics')
+        .insert([{
+          question_id: questionId,
+          lesson_id: lessonId,
+          question_text: questionText,
+          wrong_count: isCorrect ? 0 : 1,
+          correct_count: isCorrect ? 1 : 0
+        }]);
+    }
+  } catch (err) {
+    console.error('Error logging question result:', err);
+  }
+}
+
+// 8. Fetch ranked list of difficult questions
+export async function getDifficultQuestions(): Promise<any[]> {
+  try {
+    const { data, error } = await supabase
+      .from('question_analytics')
+      .select('*');
+    if (error) throw error;
+    
+    return (data || [])
+      .map(q => {
+        const total = q.correct_count + q.wrong_count;
+        const failureRate = total > 0 ? Math.round((q.wrong_count / total) * 100) : 0;
+        return {
+          ...q,
+          total,
+          failureRate
+        };
+      })
+      .filter(q => q.wrong_count > 0)
+      .sort((a, b) => b.failureRate - a.failureRate || b.wrong_count - a.wrong_count);
+  } catch (err) {
+    console.error('Error fetching difficult questions:', err);
+    return [];
+  }
+}

@@ -33,6 +33,7 @@ import {
   playNextSound, 
   playCompleteSound 
 } from '../utils/soundEffects';
+import { logQuestionResult } from '../utils/supabaseHelper';
 
 interface QuestionImageProps {
   lessonId: string;
@@ -210,6 +211,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setShowFeedback(true);
     
     if (lesson) {
+      logQuestionResult(currentQ.id, lesson.id, currentQ.textAr || currentQ.textEn, correct).catch(() => {});
       SecureStorage.setItem(`quiz_progress_${lesson.id}`, {
         questionIndex: currentQuestionIndex,
         selectedAnswer: key,
@@ -234,6 +236,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setShowFeedback(true);
     
     if (lesson) {
+      logQuestionResult(currentQ.id, lesson.id, currentQ.textAr || currentQ.textEn, correct).catch(() => {});
       SecureStorage.setItem(`quiz_progress_${lesson.id}`, {
         questionIndex: currentQuestionIndex,
         selectedAnswer: fillInput,

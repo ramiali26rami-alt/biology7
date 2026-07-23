@@ -41,6 +41,7 @@ import { SecureStorage } from '../utils/security';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { supabase } from '../utils/supabaseClient';
+import { getDifficultQuestions } from '../utils/supabaseHelper';
 
 export function getAbsoluteUrl(path: string) {
   let serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
@@ -83,12 +84,30 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const [generatedCode, setGeneratedCode] = useState('');
   const [codeLoading, setCodeLoading] = useState(false);
 
+  // Difficult Questions States
+  const [difficultQuestions, setDifficultQuestions] = useState<any[]>([]);
+  const [diffQuestionsLoading, setDiffQuestionsLoading] = useState(false);
+  const [studentsSubTab, setStudentsSubTab] = useState<'roster' | 'difficulty'>('roster');
+
   useEffect(() => {
     if (activeTab === 'students') {
       fetchStudents();
       fetchActivationCodes();
+      fetchDiffQuestions();
     }
   }, [activeTab]);
+
+  const fetchDiffQuestions = async () => {
+    setDiffQuestionsLoading(true);
+    try {
+      const data = await getDifficultQuestions();
+      setDifficultQuestions(data);
+    } catch (err) {
+      console.error('Error fetching difficult questions:', err);
+    } finally {
+      setDiffQuestionsLoading(false);
+    }
+  };
 
   const fetchStudents = async () => {
     setDbStudentsLoading(true);
@@ -4057,7 +4076,32 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Students Tab Sub-Navigation */}
+                <div className="flex border-b border-slate-100 dark:border-slate-800 gap-6 my-2">
+                  <button
+                    onClick={() => setStudentsSubTab('roster')}
+                    className={`pb-3 text-xs font-black transition-all border-b-2 ${
+                      studentsSubTab === 'roster'
+                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-450'
+                        : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650'
+                    }`}
+                  >
+                    👥 {lang === 'ar' ? 'إدارة الطلاب والتفعيل' : 'Roster & Keys'}
+                  </button>
+                  <button
+                    onClick={() => setStudentsSubTab('difficulty')}
+                    className={`pb-3 text-xs font-black transition-all border-b-2 ${
+                      studentsSubTab === 'difficulty'
+                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-450'
+                        : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650'
+                    }`}
+                  >
+                    📊 {lang === 'ar' ? 'الأسئلة الأكثر صعوبة للطلاب' : 'Difficult Questions'}
+                  </button>
+                </div>
+
+                {studentsSubTab === 'roster' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Left Column: Students List (takes 2 cols) */}
                   <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
                     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
@@ -4269,6 +4313,78 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     </div>
                   </div>
                 </div>
+              )}
+
+                {studentsSubTab === 'difficulty' && (
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h2 className="text-lg font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'الأسئلة الصعبة في الكويزات' : 'Difficult Questions Analytics'}</h2>
+                        <p className="text-xs text-slate-400 font-bold">{lang === 'ar' ? 'الأسئلة المرتبة تنازلياً حسب نسبة إخفاق الطلاب فيها' : 'Questions ranked by student failure rate'}</p>
+                      </div>
+                      <button
+                        onClick={fetchDiffQuestions}
+                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-xl border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${diffQuestionsLoading ? 'animate-spin' : ''}`} />
+                        {lang === 'ar' ? 'تحديث الإحصائيات' : 'Refresh'}
+                      </button>
+                    </div>
+
+                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-2xl">
+                      <table className="w-full text-right border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-850">
+                            <th className="p-4">{lang === 'ar' ? 'السؤال' : 'Question'}</th>
+                            <th className="p-4">{lang === 'ar' ? 'الدرس' : 'Lesson'}</th>
+                            <th className="p-4">{lang === 'ar' ? 'الخطأ' : 'Wrong Ans'}</th>
+                            <th className="p-4">{lang === 'ar' ? 'الصواب' : 'Correct Ans'}</th>
+                            <th className="p-4">{lang === 'ar' ? 'نسبة الفشل' : 'Failure Rate'}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-850 text-xs font-bold text-slate-800 dark:text-slate-200">
+                          {diffQuestionsLoading ? (
+                            <tr>
+                              <td colSpan={5} className="p-8 text-center text-slate-450">
+                                <Loader2 className="w-6 h-6 animate-spin mx-auto text-emerald-500 mb-2" />
+                                {lang === 'ar' ? 'جاري تحميل إحصائيات الأسئلة...' : 'Loading analytics...'}
+                              </td>
+                            </tr>
+                          ) : difficultQuestions.length === 0 ? (
+                            <tr>
+                              <td colSpan={5} className="p-8 text-center text-slate-450">
+                                📊 {lang === 'ar' ? 'لا توجد أية إجابات مسجلة بعد في قاعدة البيانات للأسئلة.' : 'No logged question results yet.'}
+                              </td>
+                            </tr>
+                          ) : (
+                            difficultQuestions.map(q => {
+                              const lessonName = lessons.find(l => l.id === q.lesson_id)?.titleAr || q.lesson_id;
+                              return (
+                                <tr key={q.question_id} className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20">
+                                  <td className="p-4 max-w-[280px]">
+                                    <span className="font-extrabold block text-slate-900 dark:text-white leading-relaxed">{q.question_text}</span>
+                                    <span className="text-[9px] text-slate-450 font-mono block mt-0.5">ID: {q.question_id}</span>
+                                  </td>
+                                  <td className="p-4 text-slate-500 dark:text-slate-400">{lessonName}</td>
+                                  <td className="p-4 text-rose-500 dark:text-rose-455 font-extrabold">❌ {q.wrong_count}</td>
+                                  <td className="p-4 text-emerald-500 dark:text-emerald-450">🟢 {q.correct_count}</td>
+                                  <td className="p-4">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-16 bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div className="bg-rose-500 h-full rounded-full" style={{ width: `${q.failureRate}%` }}></div>
+                                      </div>
+                                      <span className="font-black text-rose-600 dark:text-rose-450">{q.failureRate}%</span>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 
