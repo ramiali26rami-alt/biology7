@@ -42,6 +42,15 @@ import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { supabase } from '../utils/supabaseClient';
 
+export function getAbsoluteUrl(path: string) {
+  let serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
+  if (serverUrl.includes('railway') || serverUrl.includes('biology-server')) {
+    serverUrl = 'https://biology7.vercel.app';
+  }
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${serverUrl}${cleanPath}`;
+}
+
 interface AdminDashboardScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
   lang: Language;
@@ -223,7 +232,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     setKeysLoading(true);
     setKeysStatusMsg(null);
     try {
-      const res = await fetch('/api/activation-keys', {
+      const res = await fetch(getAbsoluteUrl('/api/activation-keys'), {
         headers: {
           'x-admin-passcode': '2026'
         }
@@ -251,7 +260,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     setKeysLoading(true);
     setKeysStatusMsg(null);
     try {
-      const res = await fetch('/api/generate-keys', {
+      const res = await fetch(getAbsoluteUrl('/api/generate-keys'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -298,7 +307,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     if (activeTab === 'keys') {
       fetchKeys();
     } else if (activeTab === 'export') {
-      fetch('/api/backups')
+      fetch(getAbsoluteUrl('/api/backups'))
         .then(r => r.json())
         .then(d => setBackups(d.backups ?? []))
         .catch(() => {});
@@ -323,7 +332,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     setAiStatusMsg(null);
 
     try {
-      const res = await fetch('/api/generate-quiz', {
+      const res = await fetch(getAbsoluteUrl('/api/generate-quiz'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -380,7 +389,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   };
 
   useEffect(() => {
-    fetch('/detected_assets.json')
+    fetch(getAbsoluteUrl('/detected_assets.json'))
       .then(res => res.json())
       .then(data => {
         if (data && data.folders) {
@@ -1094,7 +1103,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
   const handlePublishUpdate = async () => {
     try {
-      const res = await fetch('/api/publish-update', {
+      const res = await fetch(getAbsoluteUrl('/api/publish-update'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1368,7 +1377,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     if (!window.confirm(confirmMsg)) return;
 
     try {
-      const res = await fetch('/api/reset-key-device', {
+      const res = await fetch(getAbsoluteUrl('/api/reset-key-device'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1427,7 +1436,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     }
 
     try {
-      const res = await fetch('/api/save-config', {
+      const res = await fetch(getAbsoluteUrl('/api/save-config'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(lessonsToSave)
@@ -1457,7 +1466,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     setReplaceText('');
     setNodesSearchQuery('');
     try {
-      const res = await fetch(`/api/read-file?path=${encodeURIComponent(filePath)}`);
+      const res = await fetch(getAbsoluteUrl(`/api/read-file?path=${encodeURIComponent(filePath)}`));
       const data = await res.json();
       const content = data.content ?? '';
       setFileEditorContent(content);
@@ -1496,7 +1505,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     setFileEditorSaving(true);
     setFileEditorSaved(false);
     try {
-      const res = await fetch('/api/save-file', {
+      const res = await fetch(getAbsoluteUrl('/api/save-file'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filePath: fileEditorPath, content: contentToSave })
@@ -1838,7 +1847,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         const base64 = (e.target?.result as string).split(',')[1];
         const filePath = `${editingLesson.folder}/${file.name}`;
         try {
-          const res = await fetch('/api/upload-binary', {
+          const res = await fetch(getAbsoluteUrl('/api/upload-binary'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ filePath, contentBase64: base64 })
@@ -4404,7 +4413,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
   const [localApiKey] = useState<string>(() => localStorage.getItem('gemini_api_key') || '');
 
   useEffect(() => {
-    fetch('/detected_assets.json')
+    fetch(getAbsoluteUrl('/detected_assets.json'))
       .then(res => res.json())
       .then(data => {
         if (data && data.folders) {
@@ -4604,7 +4613,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
           const mimeType = blob.type || 'image/png';
 
           // 2. Call backend analyze diagram
-          const apiRes = await fetch('/api/analyze-diagram', {
+          const apiRes = await fetch(getAbsoluteUrl('/api/analyze-diagram'), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
