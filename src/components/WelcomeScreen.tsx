@@ -32,6 +32,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
   const [regLoading, setRegLoading] = useState(false);
   const [regErrorMessage, setRegErrorMessage] = useState('');
   const [restoreMessage, setRestoreMessage] = useState('');
+  const [modalType, setModalType] = useState<'about' | 'privacy' | 'terms' | null>(null);
 
   const isAr = lang === 'ar';
 
@@ -191,6 +192,21 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                   ? <ArrowLeft className="w-4 h-4 rotate-180" />
                   : <ArrowRight className="w-4 h-4" />}
               </button>
+
+              {/* Footer Links for About, Terms & Privacy */}
+              <div className="flex flex-wrap justify-center gap-3 text-[10px] text-slate-500 font-bold pt-4 border-t border-slate-800/40">
+                <button type="button" onClick={() => setModalType('about')} className="hover:text-emerald-400 transition-colors">
+                  {isAr ? 'من نحن' : 'About Us'}
+                </button>
+                <span>•</span>
+                <button type="button" onClick={() => setModalType('terms')} className="hover:text-emerald-400 transition-colors">
+                  {isAr ? 'شروط الاستخدام' : 'Terms of Use'}
+                </button>
+                <span>•</span>
+                <button type="button" onClick={() => setModalType('privacy')} className="hover:text-emerald-400 transition-colors">
+                  {isAr ? 'سياسة الخصوصية' : 'Privacy Policy'}
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -445,6 +461,102 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
         </div>
 
       </div>
+
+      {/* Modal overlays for about, privacy, terms */}
+      <AnimatePresence>
+        {modalType && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setModalType(null)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            />
+            
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-slate-900 border border-slate-800 rounded-[28px] max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right"
+              dir={isAr ? 'rtl' : 'ltr'}
+            >
+              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 className="text-md font-black text-white">
+                  {modalType === 'about' && (isAr ? 'من نحن' : 'About Us')}
+                  {modalType === 'terms' && (isAr ? 'شروط الاستخدام' : 'Terms of Use')}
+                  {modalType === 'privacy' && (isAr ? 'سياسة الخصوصية' : 'Privacy Policy')}
+                </h3>
+                <button
+                  onClick={() => setModalType(null)}
+                  className="text-slate-400 hover:text-white text-xs font-black p-1 hover:bg-slate-800 rounded-full"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="text-xs text-slate-300 leading-relaxed font-bold space-y-3 whitespace-pre-line">
+                {modalType === 'about' && (
+                  isAr 
+                    ? "منصة تعليمية متكاملة تقودها نخبة من المعلمين والتربويين ذوي الخبرة والكفاءة في تدريس مادة الأحياء. نسعى لتقديم تجربة تعليمية تفاعلية بصرية حديثة، تعتمد على التكنولوجيا لتبسيط المفاهيم الصعبة وتهيئة الطالب بشكل كامل لاجتياز امتحانات الشهادة الثانوية بتفوق ونيل الدرجات الكاملة."
+                    : "An integrated educational platform led by an elite group of experienced and qualified teachers in biology. We strive to provide a modern visual interactive learning experience that leverages technology to simplify difficult concepts, preparing students to successfully pass high school certificate exams with excellence."
+                )}
+
+                {modalType === 'terms' && (
+                  isAr
+                    ? `1. شروط الاستخدام:
+                       باستخدامك هذا التطبيق، فإنك توافق على الالتزام بشروط الخدمة هذه.
+                       
+                       2. استخدام شخصي:
+                       الحساب مخصص للاستخدام الشخصي للطالب المسجل فقط على جهاز واحد. يُمنع مشاركة الحساب أو محاولة تجاوزه.
+                       
+                       3. الملكية الفكرية:
+                       جميع الحقوق محفوظة للمنصة، بما في ذلك التصاميم، الأسئلة، الملخصات والخرائط الذهنية المتضمنة.`
+                    : `1. Terms of Use:
+                       By using this app, you agree to comply with these terms of service.
+                       
+                       2. Personal Use:
+                       The account is for the personal use of the registered student only on a single device. Sharing accounts or attempting bypasses is prohibited.
+                       
+                       3. Intellectual Property:
+                       All rights are reserved to the platform, including designs, questions, summaries, and mindmaps.`
+                )}
+
+                {modalType === 'privacy' && (
+                  isAr
+                    ? `1. جمع البيانات:
+                       نحن نجمع فقط البيانات الأساسية اللازمة لتشغيل حسابك (الاسم، رقم الهاتف، المحافظة، ومعرّف الجهاز UUID لتأمين الحساب).
+                       
+                       2. أمان البيانات:
+                       نحن لا نبيع أو نشارك بياناتك الشخصية مع أي طرف ثالث خارج إطار تفعيل وتحسين خدمات التطبيق.
+                       
+                       3. التخزين السحابي:
+                       يتم حفظ إحصائيات إنجاز الكويزات سحابياً لغرض تحسين لوحة الصدارة ورصد الأسئلة الصعبة لتقديم دعم أكاديمي أفضل.`
+                    : `1. Data Collection:
+                       We only collect basic data required to operate your account (Name, Phone number, Governorate, and Device UUID for security).
+                       
+                       2. Data Security:
+                       We do not sell or share your personal data with any third party outside the scope of app operations.
+                       
+                       3. Cloud Storage:
+                       Quiz progress statistics are stored in the cloud to compute leaderboards and analyze difficult questions.`
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setModalType(null)}
+                  className="w-full bg-slate-800 hover:bg-slate-750 text-white font-black py-2.5 rounded-xl text-xs"
+                >
+                  {isAr ? 'إغلاق' : 'Close'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

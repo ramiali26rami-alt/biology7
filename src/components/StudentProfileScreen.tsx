@@ -607,35 +607,7 @@ export default function StudentProfileScreen({
           );
         })()}
 
-        {/* My Badges Section */}
-        <section>
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-black text-slate-900 dark:text-white">{t.myBadges}</h3>
-            <button className="text-emerald-500 hover:underline text-xs font-bold">{t.viewAll}</button>
-          </div>
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[24px] p-4 flex gap-4 overflow-x-auto pb-4 scrollbar-none shadow-xl shadow-slate-200/30 dark:shadow-none">
-            <div className="flex-shrink-0 flex flex-col items-center bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 min-w-[110px]">
-              <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 rounded-full flex items-center justify-center mb-2">
-                <FlaskConical className="w-6 h-6" />
-              </div>
-              <span className="text-xs text-slate-800 dark:text-slate-200 text-center font-bold">Biology Master</span>
-            </div>
-            <div className="flex-shrink-0 flex flex-col items-center bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 min-w-[110px]">
-              <div className="w-12 h-12 bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-300 rounded-full flex items-center justify-center mb-2">
-                <HelpCircle className="w-6 h-6" />
-              </div>
-              <span className="text-xs text-slate-800 dark:text-slate-200 text-center font-bold">Quiz Expert</span>
-            </div>
-            <div className="flex-shrink-0 flex flex-col items-center bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 min-w-[110px]">
-              <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center mb-2">
-                <Calendar className="w-6 h-6" />
-              </div>
-              <span className="text-xs text-slate-800 dark:text-slate-200 text-center font-bold">
-                {lang === 'ar' ? 'حضور كامل' : 'Perfect Streak'}
-              </span>
-            </div>
-          </div>
-        </section>
+
 
         {/* List Actions */}
         <section className="space-y-3">
