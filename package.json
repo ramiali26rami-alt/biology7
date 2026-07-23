@@ -17,6 +17,7 @@
     "@capacitor/core": "^8.4.1",
     "@capacitor/filesystem": "^8.1.2",
     "@google/genai": "^2.4.0",
+    "@supabase/supabase-js": "^2.110.8",
     "@tailwindcss/vite": "^4.1.14",
     "@types/crypto-js": "^4.2.2",
     "@types/react-window": "^1.8.8",

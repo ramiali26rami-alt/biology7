@@ -21,6 +21,7 @@ import { Language } from './utils/translations';
 import { AppWrapper } from './AppWrapper';
 import { checkAndUpdate } from './utils/autoUpdate';
 import { loadCurriculum } from './utils/curriculumLoader';
+import { checkStudentSubscription, syncUnsavedQuizResults } from './utils/supabaseHelper';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(() => {
@@ -61,6 +62,10 @@ export default function App() {
         if (data) setLessons(data);
       })
       .catch(err => console.error("Error loading lessons config:", err));
+
+    // Check student subscription and sync offline results on boot
+    checkStudentSubscription().catch(() => {});
+    syncUnsavedQuizResults().catch(() => {});
   }, []);
 
   useEffect(() => {

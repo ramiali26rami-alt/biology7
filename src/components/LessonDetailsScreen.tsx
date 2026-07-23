@@ -215,6 +215,7 @@ interface LessonDetailsScreenProps {
 
 export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLesson, lessons = [], onSelectLesson }: LessonDetailsScreenProps) {
   const lesson = (lessons || []).find(l => l.id === propLesson?.id) || propLesson;
+  const premiumUnlocked = SecureStorage.getItem('premium_unlocked') === 'true';
   const [activeTab, setActiveTab] = useState<'explore' | 'review' | 'test'>('explore');
   const [exploreSubTab, setExploreSubTab] = useState<'mindmap' | 'diagrams' | 'pdf'>('mindmap');
   const [bookmarked, setBookmarked] = useState(false);
@@ -450,8 +451,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
   const handleViewPdf = async () => {
     if (!lesson || !lesson.pdfFile) return;
-    if (lesson.pdfLocked) {
-      alert(lang === 'ar' ? 'عذراً، هذه المذكرة مغلقة من قبل المعلم.' : 'Sorry, this lecture note is locked by the teacher.');
+    if (lesson.pdfLocked && !premiumUnlocked) {
+      alert(lang === 'ar' ? 'عذراً، هذه المذكرة مغلقة للمشتركين فقط.' : 'Sorry, this lecture note is locked for premium subscribers.');
       onNavigate('student-profile', 'push');
       return;
     }
@@ -788,7 +789,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             <div className="flex-1 min-h-0 relative">
               {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
                 <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-y-auto p-4 shadow-sm scrollbar-none">
-                  {lesson.mindmapLocked && (
+                  {lesson.mindmapLocked && !premiumUnlocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
                       messageEn="This interactive mind map is locked by the teacher."
@@ -851,7 +852,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
               {exploreSubTab === 'diagrams' && (
                 <div className="relative w-full animate-fadeIn">
-                  {lesson.diagramLocked && (
+                  {lesson.diagramLocked && !premiumUnlocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"
                       messageEn="These interactive diagrams are locked by the teacher."
@@ -884,7 +885,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           {lang === 'ar' ? `مذكرة الدرس الأكاديمية` : `Academic Lecture Notes`}
                         </h4>
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-                          {lesson.pdfLocked 
+                          {lesson.pdfLocked && !premiumUnlocked
                             ? (lang === 'ar' ? 'تطلب تفعيل الحساب لفتح الملف 🔒' : 'Requires account activation 🔒')
                             : (lang === 'ar' ? 'تفتح مباشرة في الذاكرة المؤمنة' : 'Decrypted in-memory on the fly')}
                         </p>
@@ -900,7 +901,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           <span>{lang === 'ar' ? 'جاري التحضير...' : 'Decrypting...'}</span>
                         </>
-                      ) : lesson.pdfLocked ? (
+                      ) : (lesson.pdfLocked && !premiumUnlocked) ? (
                         <span>{lang === 'ar' ? 'فتح الملف 🔒' : 'Open File 🔒'}</span>
                       ) : (
                         <span>{lang === 'ar' ? 'عرض المذكرة 👁️' : 'View Notes 👁️'}</span>
@@ -1005,7 +1006,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         {activeTab === 'test' && (
           <div className="space-y-6 animate-fadeIn">
             {/* Locked check */}
-            {lesson.quizLocked && (
+            {lesson.quizLocked && !premiumUnlocked && (
               <div className="relative min-h-[300px]">
                 <LockedOverlay 
                   messageAr="تم قفل جميع الاختبارات والامتحانات لهذه الحصة من قبل المعلم"
@@ -1015,7 +1016,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               </div>
             )}
 
-            {!lesson.quizLocked && (
+            {(!lesson.quizLocked || premiumUnlocked) && (
               <>
                 {/* A. Select Quiz Type Mode */}
                 {quizMode === 'select' && (

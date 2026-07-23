@@ -27,6 +27,8 @@ export interface AppProgress {
 
 const KEY = 'app_progress';
 
+import { saveQuizResult } from './supabaseHelper';
+
 const todayStr = (): string => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -114,6 +116,9 @@ export function markQuizDone(lessonId: string, score: number, total: number): vo
   }
   saveProgress(p);
   touchStreak();
+  
+  // Save to Supabase (and queue offline if network is down)
+  saveQuizResult(lessonId, score, total).catch(() => {});
 }
 
 /** Returns the progress percentage (0, 33, 66, 100) for a lesson. */

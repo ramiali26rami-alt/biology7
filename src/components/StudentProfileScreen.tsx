@@ -47,6 +47,7 @@ import { loadProgress, getStreak, overallPercent } from '../utils/progress';
 import { playClickSound, playCorrectSound } from '../utils/soundEffects';
 import { scheduleReminderNotification, getReminderTime, setReminderTime } from '../utils/notifications';
 import { SecureStorage } from '../utils/security';
+import { claimActivationCode } from '../utils/supabaseHelper';
 
 interface StudentProfileScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -109,23 +110,9 @@ export default function StudentProfileScreen({
     setActivationMessage(null);
 
     try {
-      const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
-      const res = await fetch(`${serverUrl}/api/activate-key`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          key: activationKey.trim(),
-          studentName: name || 'Student',
-          deviceUuid: localStorage.getItem('client_device_uuid') || 'default'
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const res = await claimActivationCode(activationKey.trim());
+      if (res.success) {
         setPremiumUnlocked(true);
-        SecureStorage.setItem('premium_unlocked', 'true');
         setActivationMessage({
           type: 'success',
           text: t.activationSuccess
@@ -137,11 +124,7 @@ export default function StudentProfileScreen({
       } else {
         setActivationMessage({
           type: 'error',
-          text: data.error === 'already_used'
-            ? (lang === 'ar' ? 'كود التفعيل مستخدم بالفعل!' : 'Activation key already used!')
-            : data.error === 'already_used_other_device'
-              ? (lang === 'ar' ? 'عذراً، هذا الكود مفعل على جهاز آخر!' : 'Sorry, this key is activated on another device!')
-              : t.activationError
+          text: res.message
         });
       }
     } catch (err) {
@@ -229,6 +212,7 @@ export default function StudentProfileScreen({
     const nextPremium = !premiumUnlocked;
     setPremiumUnlocked(nextPremium);
     SecureStorage.setItem('premium_unlocked', nextPremium ? 'true' : 'false');
+    localStorage.setItem('premium_unlocked', nextPremium ? 'true' : 'false');
   };
 
   const toggleDarkMode = () => {
@@ -263,6 +247,7 @@ export default function StudentProfileScreen({
       setAvatarUrl(PRESET_AVATARS[0].url);
       setPremiumUnlocked(false);
       SecureStorage.setItem('premium_unlocked', 'false');
+      localStorage.setItem('premium_unlocked', 'false');
       window.location.reload();
     }
   };

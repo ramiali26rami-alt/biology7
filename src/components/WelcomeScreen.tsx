@@ -4,10 +4,11 @@
  */
 
 import React, { useState } from 'react';
-import { Dna, ArrowLeft, ArrowRight, Sparkles, BookOpen, PenTool, Award } from 'lucide-react';
+import { Dna, ArrowLeft, ArrowRight, Sparkles, BookOpen, PenTool, Award, Loader2 } from 'lucide-react';
 import { ScreenId } from '../types';
 import { Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
+import { registerStudent } from '../utils/supabaseHelper';
 
 interface WelcomeScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -15,13 +16,22 @@ interface WelcomeScreenProps {
   setLang: (lang: Language) => void;
 }
 
-const STEPS = ['lang', 'name', 'ready'] as const;
+const STEPS = ['lang', 'name', 'phone_gov', 'ready'] as const;
 type Step = typeof STEPS[number];
+
+const GOVERNORATES_AR = ['صنعاء', 'عدن', 'تعز', 'إب', 'حضرموت', 'الحديدة', 'ذمار', 'لحج', 'عمران', 'أبين', 'شبوة', 'مأرب', 'حجة', 'البيضاء', 'الجوف', 'المهرة', 'المحويت', 'الضالع', 'ريمة', 'سقطرى', 'أخرى'];
+const GOVERNORATES_EN = ['Sanaa', 'Aden', 'Taiz', 'Ibb', 'Hadramout', 'Hodeidah', 'Dhamar', 'Lahj', 'Amran', 'Abyan', 'Shabwah', 'Marib', 'Hajjah', 'Al-Bayda', 'Al-Jawf', 'Al-Mahrah', 'Al-Mahwit', 'Al-Dhale', 'Raymah', 'Socotra', 'Other'];
 
 export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScreenProps) {
   const [step, setStep] = useState<Step>('lang');
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [governorate, setGovernorate] = useState(lang === 'ar' ? 'صنعاء' : 'Sanaa');
+  const [phoneError, setPhoneError] = useState(false);
+  const [regLoading, setRegLoading] = useState(false);
+  const [regErrorMessage, setRegErrorMessage] = useState('');
+  const [restoreMessage, setRestoreMessage] = useState('');
 
   const isAr = lang === 'ar';
 
@@ -31,9 +41,40 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
       return;
     }
     setNameError(false);
-    localStorage.setItem('student_name', name.trim());
-    localStorage.setItem('student_email', '');
-    setStep('ready');
+    setStep('phone_gov');
+  };
+
+  const handleRegister = async () => {
+    // Validate phone: must be at least 9 digits
+    const cleanedPhone = phone.trim().replace(/\s+/g, '');
+    if (!cleanedPhone || cleanedPhone.length < 9 || !/^\d+$/.test(cleanedPhone)) {
+      setPhoneError(true);
+      return;
+    }
+    setPhoneError(false);
+    setRegErrorMessage('');
+    setRegLoading(true);
+
+    try {
+      const res = await registerStudent(name, cleanedPhone, governorate);
+      if (res.success) {
+        if (res.isPremium) {
+          setRestoreMessage(isAr 
+            ? '🎉 تم العثور على حسابك النشط سابقاً وتفعيل الباقة الذهبية مجدداً تلقائياً!' 
+            : '🎉 Found your previously active account and restored premium access automatically!'
+          );
+        } else {
+          setRestoreMessage('');
+        }
+        setStep('ready');
+      } else {
+        setRegErrorMessage(res.message);
+      }
+    } catch (err: any) {
+      setRegErrorMessage(isAr ? 'حدث خطأ غير متوقع في الشبكة' : 'An unexpected network error occurred');
+    } finally {
+      setRegLoading(false);
+    }
   };
 
   const handleStart = () => {
@@ -214,7 +255,113 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
             </motion.div>
           )}
 
-          {/* STEP 3: Ready */}
+          {/* STEP 3: Phone & Governorate */}
+          {step === 'phone_gov' && (
+            <motion.div
+              key="phone_gov"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center space-y-2">
+                <h2 className="text-xl font-black text-white">
+                  {isAr ? 'التحقق والتسجيل الرسمي' : 'Official Verification & Registration'}
+                </h2>
+                <p className="text-slate-400 text-sm font-medium">
+                  {isAr 
+                    ? 'الرجاء إدخال رقم هاتفك المحمول واختيار محافظتك لتنشيط التطبيق' 
+                    : 'Please enter your phone number and governorate to activate the app'}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black text-emerald-400 block px-1">
+                    {isAr ? 'رقم الهاتف المحمول:' : 'Mobile Phone Number:'}
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={e => { setPhone(e.target.value); setPhoneError(false); }}
+                    placeholder={isAr ? 'مثال: 777123456' : 'Example: 777123456'}
+                    className={`w-full bg-slate-800/70 border-2 rounded-2xl px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors ${
+                      phoneError
+                        ? 'border-rose-500 focus:border-rose-400'
+                        : 'border-slate-700 focus:border-emerald-500'
+                    }`}
+                    dir="ltr"
+                    disabled={regLoading}
+                  />
+                  {phoneError && (
+                    <p className="text-rose-400 text-xs font-bold px-1">
+                      {isAr ? '⚠️ الرجاء إدخال رقم هاتف محمول صحيح (9 أرقام على الأقل)' : '⚠️ Please enter a valid phone number (at least 9 digits)'}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black text-emerald-400 block px-1">
+                    {isAr ? 'المحافظة:' : 'Governorate:'}
+                  </label>
+                  <select
+                    value={governorate}
+                    onChange={e => setGovernorate(e.target.value)}
+                    className="w-full bg-slate-800/70 border-2 border-slate-700 focus:border-emerald-500 rounded-2xl px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors"
+                    dir={isAr ? 'rtl' : 'ltr'}
+                    disabled={regLoading}
+                  >
+                    {(isAr ? GOVERNORATES_AR : GOVERNORATES_EN).map((g, idx) => {
+                      const value = isAr ? g : GOVERNORATES_EN[idx];
+                      return (
+                        <option key={value} value={value} className="bg-slate-900 text-white">
+                          {g}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                {regErrorMessage && (
+                  <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-2xl text-xs font-bold text-center leading-relaxed">
+                    ⚠️ {regErrorMessage}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep('name')}
+                  className="px-5 py-4 rounded-2xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
+                  disabled={regLoading}
+                >
+                  {isAr ? 'رجوع' : 'Back'}
+                </button>
+                <button
+                  onClick={handleRegister}
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                  disabled={regLoading}
+                >
+                  {regLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                      {isAr ? 'جاري التحقق والتسجيل...' : 'Verifying & Registering...'}
+                    </>
+                  ) : (
+                    <>
+                      {isAr ? 'تسجيل الحساب' : 'Register Account'}
+                      {isAr
+                        ? <ArrowLeft className="w-4 h-4 rotate-180" />
+                        : <ArrowRight className="w-4 h-4" />}
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: Ready */}
           {step === 'ready' && (
             <motion.div
               key="ready"
@@ -241,6 +388,11 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                     ? 'أنت الآن جاهز لبدء رحلتك في تعلم الأحياء. إليك ما ينتظرك:'
                     : 'You\'re all set to start your Biology journey. Here\'s what awaits:'}
                 </p>
+                {restoreMessage && (
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-2xl text-xs font-bold text-center leading-relaxed mt-4">
+                    {restoreMessage}
+                  </div>
+                )}
               </div>
 
               {/* Feature list */}
