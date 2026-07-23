@@ -14,7 +14,8 @@ export type ScreenId =
   | 'lesson-summary'     // Screen 8: ملخص أهم النقاط في الدرس والبطاقات
   | 'biology-quiz'       // Screen 9: اختبار الدرس التفاعلي (صح/خطأ، متعدد)
   | 'admin-dashboard'    // لوحة التحكم المرئية لمالك التطبيق (الإدارة)
-  | 'ministry-exams';    // Screen 10: نماذج الامتحانات الوزارية مع مؤقت 180 دقيقة
+  | 'ministry-exams'     // Screen 10: نماذج الامتحانات الوزارية مع مؤقت 180 دقيقة
+  | 'leaderboard';       // لوحة صدارة الطلاب المتفوقين سحابياً
 
 export interface VideoChapter {
   time: string;

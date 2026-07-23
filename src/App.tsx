@@ -17,6 +17,7 @@ import BiologyQuizScreen from './components/BiologyQuizScreen';
 import MinistryExamsScreen from './components/MinistryExamsScreen';
 import WelcomeScreen from './components/WelcomeScreen';
 import AdminDashboardScreen from './components/AdminDashboardScreen';
+import LeaderboardScreen from './components/LeaderboardScreen';
 import { Language } from './utils/translations';
 import { AppWrapper } from './AppWrapper';
 import { checkAndUpdate } from './utils/autoUpdate';
@@ -166,6 +167,8 @@ export default function App() {
         return <MinistryExamsScreen onNavigate={handleNavigate} lang={lang} lesson={selectedLesson} lessons={lessons} />;
       case 'admin-dashboard':
         return <AdminDashboardScreen onNavigate={handleNavigate} lang={lang} lessons={lessons} setLessons={setLessons} />;
+      case 'leaderboard':
+        return <LeaderboardScreen onNavigate={handleNavigate} lang={lang} />;
       default:
         return <MainDashboardScreen onNavigate={handleNavigate} lang={lang} onQuizNavigate={handleQuizNavigate} lessons={lessons} />;
     }

@@ -245,3 +245,68 @@ export async function claimActivationCode(code: string): Promise<{ success: bool
     return { success: false, message: `فشل التفعيل: ${error.message || 'خطأ في الشبكة'}` };
   }
 }
+
+// 6. Fetch leaderboard standings
+export async function getLeaderboard(): Promise<any[]> {
+  try {
+    const { data: results, error: resultsError } = await supabase
+      .from('quiz_results')
+      .select('student_phone, score, total_questions, lesson_id');
+      
+    if (resultsError) throw resultsError;
+    
+    const { data: students, error: studentsError } = await supabase
+      .from('students')
+      .select('phone, name, governorate');
+      
+    if (studentsError) throw studentsError;
+
+    const studentMap: Record<string, { phone: string; name: string; governorate: string; quizzesCount: number; totalScore: number; totalQuestions: number; completedLessons: Set<string> }> = {};
+    
+    students.forEach(s => {
+      studentMap[s.phone] = {
+        phone: s.phone,
+        name: s.name,
+        governorate: s.governorate || '',
+        quizzesCount: 0,
+        totalScore: 0,
+        totalQuestions: 0,
+        completedLessons: new Set()
+      };
+    });
+
+    results?.forEach(r => {
+      const phone = r.student_phone;
+      if (studentMap[phone]) {
+        studentMap[phone].quizzesCount += 1;
+        studentMap[phone].totalScore += r.score;
+        studentMap[phone].totalQuestions += r.total_questions;
+        if (r.lesson_id) {
+          studentMap[phone].completedLessons.add(r.lesson_id);
+        }
+      }
+    });
+
+    return Object.values(studentMap)
+      .filter(s => s.quizzesCount > 0)
+      .map(s => {
+        const accuracy = s.totalQuestions > 0 ? Math.round((s.totalScore / s.totalQuestions) * 100) : 0;
+        return {
+          name: s.name,
+          governorate: s.governorate,
+          lessonsCount: s.completedLessons.size,
+          quizzesCount: s.quizzesCount,
+          totalScore: s.totalScore,
+          accuracy: accuracy
+        };
+      })
+      .sort((a, b) => {
+        if (b.lessonsCount !== a.lessonsCount) return b.lessonsCount - a.lessonsCount;
+        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        return b.accuracy - a.accuracy;
+      });
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    return [];
+  }
+}

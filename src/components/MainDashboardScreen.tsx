@@ -27,7 +27,8 @@ import {
   X,
   Loader2,
   XCircle,
-  ChevronDown
+  ChevronDown,
+  Trophy
 } from 'lucide-react';
 import { ScreenId } from '../types';
 import { translations, Language } from '../utils/translations';
@@ -476,6 +477,24 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
                   <h4 className="font-black text-slate-855 dark:text-slate-100 text-xs">{t.openTraining}</h4>
+                </div>
+              </div>
+              {chevronIcon}
+            </div>
+
+            {/* Leaderboard Card */}
+            <div 
+              onClick={() => onNavigate('leaderboard', 'push')}
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/45 text-rose-600 dark:text-rose-300 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                  <Trophy className="w-5 h-5" />
+                </div>
+                <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+                  <h4 className="font-black text-slate-855 dark:text-slate-100 text-xs">
+                    {lang === 'ar' ? 'لوحة صدارة المتفوقين' : 'Students Leaderboard'}
+                  </h4>
                 </div>
               </div>
               {chevronIcon}
