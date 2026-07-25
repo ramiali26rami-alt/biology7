@@ -211,7 +211,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setShowFeedback(true);
     
     if (lesson) {
-      logQuestionResult(currentQ.id, lesson.id, currentQ.textAr || currentQ.textEn, correct).catch(() => {});
+      logQuestionResult(String(currentQ.id), lesson.id, currentQ.text, correct).catch(() => {});
       SecureStorage.setItem(`quiz_progress_${lesson.id}`, {
         questionIndex: currentQuestionIndex,
         selectedAnswer: key,
@@ -236,7 +236,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setShowFeedback(true);
     
     if (lesson) {
-      logQuestionResult(currentQ.id, lesson.id, currentQ.textAr || currentQ.textEn, correct).catch(() => {});
+      logQuestionResult(String(currentQ.id), lesson.id, currentQ.text, correct).catch(() => {});
       SecureStorage.setItem(`quiz_progress_${lesson.id}`, {
         questionIndex: currentQuestionIndex,
         selectedAnswer: fillInput,

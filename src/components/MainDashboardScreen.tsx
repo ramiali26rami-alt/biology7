@@ -141,10 +141,11 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
     setTutorLoading(true);
     setTutorError(null);
 
+    let serverUrl = '';
     try {
       const storedKey = localStorage.getItem('gemini_api_key') || '';
       
-      const serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
+      serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
       const response = await fetch(`${serverUrl}/api/tutor-chat`, {
         method: 'POST',
         headers: {

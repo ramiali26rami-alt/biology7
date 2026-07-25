@@ -30,7 +30,8 @@ import {
   FolderOpen,
   Key,
   Target,
-  Loader2
+  Loader2,
+  UserCheck
 } from 'lucide-react';
 import { ScreenId, Lesson, VideoChapter, Flashcard, GlossaryItem, ConfigQuestion } from '../types';
 import { translations, Language } from '../utils/translations';
