@@ -17,7 +17,8 @@ import {
   Crown,
   Dna,
   Binary,
-  GitBranch
+  GitBranch,
+  Brain
 } from 'lucide-react';
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
@@ -83,19 +84,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
 
   const unitStyles = [
     {
-      icon: (
-        <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="2.5" fill="currentColor" />
-          <path d="M12 9.5V4M12 4l-2-2M12 4l2-2" />
-          <path d="M9.5 12H4M4 12l-2-2M4 12l-2 2" />
-          <path d="M12 14.5v5.5M12 20l-2 2M12 20l2 2" />
-          <path d="M14.5 12h5.5M20 12l2-2M20 12l2 2" />
-          <path d="M10.2 10.2l-3-3M7.2 7.2l-2 1M7.2 7.2l1-2" />
-          <path d="M13.8 10.2l3-3M16.8 7.2l2-1M16.8 7.2l-1-2" />
-          <path d="M10.2 13.8l-3 3M7.2 16.8l-2-1M7.2 16.8l1 2" />
-          <path d="M13.8 13.8l3 3M16.8 16.8l2 1M16.8 16.8l-1 2" />
-        </svg>
-      ),
+      icon: <Brain className="w-8 h-8" />,
       bg: 'bg-emerald-50 dark:bg-emerald-950',
       text: 'text-emerald-600 dark:text-emerald-350',
       accentText: 'text-emerald-500 dark:text-emerald-400',
