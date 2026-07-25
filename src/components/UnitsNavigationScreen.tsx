@@ -83,7 +83,19 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
 
   const unitStyles = [
     {
-      icon: <GitBranch className="w-6 h-6" />,
+      icon: (
+        <svg className="w-6.5 h-6.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+          <path d="M12 9.5V4M12 4l-2-2M12 4l2-2" />
+          <path d="M9.5 12H4M4 12l-2-2M4 12l-2 2" />
+          <path d="M12 14.5v5.5M12 20l-2 2M12 20l2 2" />
+          <path d="M14.5 12h5.5M20 12l2-2M20 12l2 2" />
+          <path d="M10.2 10.2l-3-3M7.2 7.2l-2 1M7.2 7.2l1-2" />
+          <path d="M13.8 10.2l3-3M16.8 7.2l2-1M16.8 7.2l-1-2" />
+          <path d="M10.2 13.8l-3 3M7.2 16.8l-2-1M7.2 16.8l1 2" />
+          <path d="M13.8 13.8l3 3M16.8 16.8l2 1M16.8 16.8l-1 2" />
+        </svg>
+      ),
       bg: 'bg-emerald-50 dark:bg-emerald-950',
       text: 'text-emerald-600 dark:text-emerald-350',
       accentText: 'text-emerald-500 dark:text-emerald-400',
@@ -92,7 +104,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       hoverText: 'group-hover:text-emerald-500'
     },
     {
-      icon: <Dna className="w-6 h-6" />,
+      icon: <Dna className="w-6.5 h-6.5" />,
       bg: 'bg-purple-50 dark:bg-purple-950',
       text: 'text-purple-600 dark:text-purple-300',
       accentText: 'text-purple-500 dark:text-purple-400',
@@ -101,7 +113,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       hoverText: 'group-hover:text-purple-500'
     },
     {
-      icon: <Binary className="w-6 h-6" />,
+      icon: <Binary className="w-6.5 h-6.5" />,
       bg: 'bg-blue-50 dark:bg-blue-950',
       text: 'text-blue-600 dark:text-blue-300',
       accentText: 'text-blue-500 dark:text-blue-400',
@@ -195,28 +207,28 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
               <div 
                 key={unitNum}
                 onClick={() => handleUnitClick(unitId)}
-                className={`bg-white dark:bg-slate-900 border p-3 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-3 ${
+                className={`bg-white dark:bg-slate-900 border p-4.5 rounded-[22px] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-4 ${
                   isLocked 
                     ? 'border-slate-100 dark:border-slate-800 opacity-80' 
                     : `border-slate-100 dark:border-slate-800 ${style.hoverBorder}`
                 }`}
               >
-                <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
                     {style.icon}
                   </div>
                   <div className="flex-1 min-w-0 text-right">
-                    <h3 className="font-black text-slate-850 dark:text-white text-xs transition-colors leading-snug">
-                      <span className={`text-[10px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-1.5' : 'mr-1.5'} ${style.accentText}`}>
+                    <h3 className="font-black text-slate-850 dark:text-white text-sm transition-colors leading-snug">
+                      <span className={`text-[13px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-2' : 'mr-2'} ${style.accentText}`}>
                         {getUnitSubtitle(idx)}:
                       </span>
-                      <span className={`${style.hoverText}`}>{unitTitle}</span>
+                      <span className={`text-[14px] ${style.hoverText}`}>{unitTitle}</span>
                     </h3>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {isLocked && <Lock className="w-3.5 h-3.5 text-amber-500" />}
-                  <span className={`text-[9px] font-black text-white px-2 py-0.5 rounded-md shadow-sm shrink-0 ${style.badgeBg}`}>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  {isLocked && <Lock className="w-4 h-4 text-amber-500" />}
+                  <span className={`text-[11px] font-black text-white px-3 py-1 rounded-xl shadow-sm shrink-0 ${style.badgeBg}`}>
                     {lessonsCount} {t.lessonsQuantity}
                   </span>
                 </div>
