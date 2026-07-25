@@ -612,16 +612,7 @@ export default function StudentProfileScreen({
         {/* List Actions */}
         <section className="space-y-3">
           <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
-            <button className="w-full flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-lg">
-                  <FileCheck className="w-5 h-5 text-emerald-500" />
-                </div>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-250">{t.uploadedCertificates}</span>
-              </div>
-              <ChevronIcon className="w-5 h-5 text-emerald-500" />
-            </button>
-            <div className="mx-4 border-t border-slate-100 dark:border-slate-800"></div>
+
             <button 
               onClick={() => setShowSettingsModal(true)}
               className="w-full flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
