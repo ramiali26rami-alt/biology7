@@ -219,10 +219,10 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
                   </div>
                   <div className="flex-1 min-w-0 text-right">
                     <h3 className="font-black text-slate-850 dark:text-white transition-colors leading-snug">
-                      <span className={`text-[15px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-2' : 'mr-2'} ${style.accentText}`}>
+                      <span className={`text-[16px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-2' : 'mr-2'} ${style.accentText}`}>
                         {getUnitSubtitle(idx)}:
                       </span>
-                      <span className={`text-[16px] md:text-[18px] ${style.hoverText}`}>{unitTitle}</span>
+                      <span className={`text-[20px] ${style.hoverText}`}>{unitTitle}</span>
                     </h3>
                   </div>
                 </div>
