@@ -67,8 +67,14 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
 
   const currentUnitFolder = uniqueUnits[selectedUnit - 1] || '';
 
-  const getUnitTitle = () => {
-    return currentUnitFolder;
+  const getUnitFullTitle = () => {
+    const firstLesson = lessons.find(l => Number(l.unit) === selectedUnit);
+    if (!firstLesson) return lang === 'ar' ? `الوحدة ${selectedUnit}` : `Unit ${selectedUnit}`;
+    const unitTitle = lang === 'ar' ? firstLesson.unitNameAr : firstLesson.unitNameEn;
+    const unitNumberText = lang === 'ar' 
+      ? ['الوحدة الأولى', 'الوحدة الثانية', 'الوحدة الثالثة', 'الوحدة الرابعة', 'الوحدة الخامسة'][selectedUnit - 1] || `الوحدة ${selectedUnit}`
+      : `Unit ${selectedUnit}`;
+    return `${unitNumberText}: ${unitTitle}`;
   };
 
   // Filter lessons belonging to the currently selected unit
@@ -116,9 +122,9 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
         )}
         
         {/* Hero Branding Section */}
-        <div className="mb-2 mt-2">
-          <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">
-            {getUnitTitle()}
+        <div className="mb-1 mt-1">
+          <h2 className="text-md font-black text-emerald-600 dark:text-emerald-400 leading-tight">
+            {getUnitFullTitle()}
           </h2>
         </div>
 
