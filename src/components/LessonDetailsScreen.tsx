@@ -147,7 +147,7 @@ interface Flashcard3DProps {
 function Flashcard3D({ card, lang }: Flashcard3DProps) {
   const [flipped, setFlipped] = useState(false);
   return (
-    <div 
+    <div
       onClick={() => {
         playCardFlipSound();
         setFlipped(!flipped);
@@ -155,13 +155,14 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
       className="w-full h-64 perspective-1000 cursor-pointer select-none group"
     >
       <div className={`relative w-full h-full duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
-        {/* Front */}
-        <div className="absolute inset-0 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden">
+
+        {/* الوجه الأول (سؤال) — بقى بلون accent البرتقالي بدل بنفسجي غير مرتبط بالهوية */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-black text-purple-500 uppercase tracking-widest">
+            <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">
               {lang === 'ar' ? 'بطاقة مراجعة - سؤال' : 'Flashcard - Question'}
             </span>
-            <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
           </div>
           <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
             <h4 className="text-base md:text-lg font-black text-slate-900 dark:text-white leading-relaxed">
@@ -173,30 +174,30 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
               </p>
             )}
           </div>
-          <div className="text-[10px] text-slate-400 text-center font-bold">
+          <div className="text-[11px] text-slate-400 dark:text-slate-500 text-center font-bold">
             {lang === 'ar' ? 'اضغط لقلب البطاقة ورؤية الإجابة 🔄' : 'Click to flip and reveal answer 🔄'}
           </div>
         </div>
 
-        {/* Back */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-150 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
+        {/* الوجه الثاني (إجابة) — لون العلامة الأساسي، وتم تصحيح كلاس اللون الذي كان يختفي في الوضع الداكن */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+            <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
               {lang === 'ar' ? 'الإجابة النموذجية' : 'Model Answer'}
             </span>
             <CheckCircle className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
-            <h4 className="text-sm md:text-base font-extrabold text-slate-850 dark:text-white leading-relaxed">
+            <h4 className="text-sm md:text-base font-extrabold text-slate-900 dark:text-white leading-relaxed">
               {card.aAr}
             </h4>
             {card.aEn && (
-              <p className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold mt-1">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
                 {card.aEn}
               </p>
             )}
           </div>
-          <div className="text-[10px] text-emerald-500 text-center font-bold">
+          <div className="text-[11px] text-emerald-600 dark:text-emerald-400 text-center font-bold">
             {lang === 'ar' ? 'اضغط للعودة للسؤال 🔄' : 'Click to flip back 🔄'}
           </div>
         </div>
