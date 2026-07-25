@@ -115,7 +115,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
   const backIcon = lang === 'ar' ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <div className="flex items-center gap-4">
@@ -208,7 +208,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
                   </div>
                   <div className="flex-1 min-w-0 text-right">
                     <h3 className="font-black text-slate-850 dark:text-white transition-colors leading-snug">
-                      <span className={`text-[16px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-2' : 'mr-2'} ${style.accentText}`}>
+                      <span className={`text-[16px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ms-2' : 'me-2'} ${style.accentText}`}>
                         {getUnitSubtitle(idx)}:
                       </span>
                       <span className={`text-[20px] ${style.hoverText}`}>{unitTitle}</span>

@@ -71,7 +71,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
   }
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 fixed top-0 w-full z-50 shadow-md shadow-slate-150/30 dark:shadow-none">
         <div className="flex justify-between items-center w-full px-6 py-4">

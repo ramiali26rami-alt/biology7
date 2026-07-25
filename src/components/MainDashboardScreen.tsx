@@ -227,15 +227,17 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
   const chevronIcon = lang === 'ar' ? <ArrowLeft className="w-5 h-5 text-emerald-500" /> : <ArrowRight className="w-5 h-5 text-emerald-500" />;
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <div className="flex items-center gap-3">
           <div 
             onClick={() => onNavigate('student-profile', 'push')}
-            className="w-9 h-9 rounded-full overflow-hidden border border-emerald-500 cursor-pointer active:scale-95 transition-transform"
+            className="w-11 h-11 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
           >
-            <img src={avatarUrl} className="w-full h-full object-cover" alt="Student avatar" />
+            <div className="w-9 h-9 rounded-full overflow-hidden border border-emerald-500">
+              <img src={avatarUrl} className="w-full h-full object-cover" alt="Student avatar" />
+            </div>
           </div>
           <div>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">{t.biologyAcademy}</span>
@@ -253,7 +255,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           {/* WhatsApp Button */}
           <button 
             onClick={handleWhatsappClick}
-            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-emerald-500 active:scale-95 transition-all"
+            className="w-11 h-11 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-emerald-500 active:scale-95 transition-all cursor-pointer"
             title={lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
           >
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -264,7 +266,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           {/* Share Button */}
           <button 
             onClick={handleShareClick}
-            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 active:scale-95 transition-all"
+            className="w-11 h-11 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 active:scale-95 transition-all cursor-pointer"
             title={lang === 'ar' ? 'مشاركة التطبيق' : 'Share App'}
           >
             <Share2 className="w-5 h-5" />
@@ -308,7 +310,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   <ChevronDown className={`w-4 h-4 text-white transition-transform ${isStreakExpanded ? 'rotate-180' : ''}`} />
                   <button 
                     onClick={(e) => { e.stopPropagation(); dismissStreakBanner(); }} 
-                    className="text-white/60 hover:text-white active:scale-90 transition-transform ml-1"
+                    className="text-white/60 hover:text-white active:scale-90 transition-transform ms-1"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -377,7 +379,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         {/* Premium Banner (Dashboard CTA) */}
         {!premiumUnlocked && (
           <section 
-            className="bg-gradient-to-r from-emerald-500 to-teal-655 text-white p-3.5 rounded-[20px] shadow-md shadow-emerald-500/10 relative overflow-hidden transition-all duration-250"
+            className="bg-gradient-to-r from-emerald-500 to-teal-655 text-white p-3.5 rounded-[20px] shadow-md shadow-emerald-500/10 relative overflow-hidden transition-all duration-[250ms]"
           >
             <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
             <div className="relative z-10 flex flex-col gap-2">
@@ -399,7 +401,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   </p>
                   <button 
                     onClick={() => onNavigate('student-profile', 'push')}
-                    className="mt-2.5 bg-white text-emerald-600 hover:bg-emerald-50 font-black text-[11px] px-3.5 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1.5 mr-auto"
+                    className="mt-2.5 bg-white text-emerald-600 hover:bg-emerald-50 font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 me-auto cursor-pointer"
                   >
                     <span>{lang === 'ar' ? 'تفعيل الآن' : 'Activate Now'}</span>
                     {lang === 'ar' ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
@@ -412,7 +414,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
         {/* AI Biology Tutor General Banner */}
         <section 
-          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-3.5 rounded-[20px] shadow-md shadow-indigo-500/10 relative overflow-hidden transition-all duration-250"
+          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-3.5 rounded-[20px] shadow-md shadow-indigo-500/10 relative overflow-hidden transition-all duration-[250ms]"
         >
           <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
           <div className="relative z-10 flex flex-col gap-2">
@@ -434,7 +436,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 </p>
                 <button 
                   onClick={() => setIsTutorOpen(true)}
-                  className="mt-2.5 bg-white text-indigo-600 hover:bg-indigo-50 font-black text-[11px] px-3.5 py-1.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1.5 mr-auto"
+                  className="mt-2.5 bg-white text-indigo-600 hover:bg-indigo-50 font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 me-auto cursor-pointer"
                 >
                   <span>{lang === 'ar' ? 'افتح المحادثة' : 'Open Chat'}</span>
                   {lang === 'ar' ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
@@ -492,7 +494,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Units Syllabus Navigation Card */}
             <div 
               onClick={() => onNavigate('units-navigation', 'push')}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200 shrink-0">
@@ -508,7 +510,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Leaderboard Card */}
             <div 
               onClick={() => onNavigate('leaderboard', 'push')}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-sm flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/45 text-rose-600 dark:text-rose-300 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-200 shrink-0">
@@ -658,9 +660,9 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 </div>
                 <button
                   onClick={() => setIsTutorOpen(false)}
-                  className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
+                  className="w-11 h-11 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
                 >
-                  <XCircle className="w-5 h-5" />
+                  <XCircle className="w-5.5 h-5.5" />
                 </button>
               </div>
 

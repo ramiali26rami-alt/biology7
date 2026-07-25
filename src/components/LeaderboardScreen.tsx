@@ -42,7 +42,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
   };
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-20 font-sans transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-20 font-sans transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-sm">
         <button onClick={handleBack} className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full active:scale-95 transition-all">

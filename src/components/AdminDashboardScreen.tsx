@@ -1891,7 +1891,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   };
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-20 font-sans transition-colors duration-250" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-20 font-sans transition-colors duration-[250ms]" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Top Admin Header */}
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md">
         <div className="flex items-center gap-3">
@@ -1959,7 +1959,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
             >
               <BookOpen className="w-4 h-4" />
               <span>{lang === 'ar' ? 'قائمة المنهج' : 'Syllabus List'}</span>
-              <span className="ml-auto bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-sans">
+              <span className="ms-auto bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-sans">
                 {lessons.length}
               </span>
             </button>
@@ -2082,7 +2082,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 <div className="bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-450 p-3 rounded-xl border border-rose-100 dark:border-rose-900 text-xs font-bold">
                   {lang === 'ar' ? `يوجد ${validationErrors.length} ملاحظات تكوين:` : `Found ${validationErrors.length} validation warnings:`}
                 </div>
-                <div className="max-h-40 overflow-y-auto space-y-1 pr-1 text-[10px] text-rose-500 font-bold font-sans">
+                <div className="max-h-40 overflow-y-auto space-y-1 pe-1 text-[10px] text-rose-500 font-bold font-sans">
                   {validationErrors.map((err, i) => (
                     <p key={i} className="border-b border-slate-50 dark:border-slate-800 pb-1">• {err}</p>
                   ))}
@@ -2341,7 +2341,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
                             {lang === 'ar' ? '📂 مجلدات تم اكتشافها على السيرفر (انقر للربط التلقائي والذكي بالملفات):' : '📂 Detected folders on server (click to auto-link and match files):'}
                           </span>
-                          <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto pr-1">
+                          <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto pe-1">
                             {detectedFolders.map((fd, i) => {
                               const isLinked = editingLesson.folder === fd.path;
                               return (
@@ -3017,7 +3017,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             </span>
                           </div>
 
-                          <div className="space-y-1.5 max-h-[360px] overflow-y-auto pr-1">
+                          <div className="space-y-1.5 max-h-[360px] overflow-y-auto pe-1">
                             {editingLesson.quiz.map((q, idx) => {
                               const isActive = activeQuizIdx === idx;
                               const typeLabels = {
@@ -4981,7 +4981,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         setDraggingHotspotId(hotspot.id);
                       }}
                       style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
-                      className={`absolute w-6 h-6 -mt-3 -ml-3 flex items-center justify-center z-20 group focus:outline-none ${
+                      className={`absolute w-6 h-6 -mt-3 -ms-3 flex items-center justify-center z-20 group focus:outline-none ${
                         isDragging ? 'cursor-grabbing' : 'cursor-grab'
                       }`}
                       title={hotspot.labelAr}
@@ -5022,7 +5022,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         setDraggingArrowId(hotspot.id);
                       }}
                       style={{ left: `${arrowX}%`, top: `${arrowY}%` }}
-                      className={`absolute w-5 h-5 -mt-2.5 -ml-2.5 flex items-center justify-center z-30 focus:outline-none border border-amber-400 bg-amber-500 rounded-full shadow-lg cursor-pointer ${
+                      className={`absolute w-5 h-5 -mt-2.5 -ms-2.5 flex items-center justify-center z-30 focus:outline-none border border-amber-400 bg-amber-500 rounded-full shadow-lg cursor-pointer ${
                         isDraggingArrow ? 'bg-amber-600 scale-125 cursor-grabbing' : 'hover:scale-110 cursor-grab'
                       }`}
                       title={lang === 'ar' ? 'سهم التوجيه (اسحب للإشارة للعضو)' : 'Arrow tip (Drag to point to structure)'}
@@ -5035,7 +5035,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                 {/* Render Temporary Clicked Coordinate */}
                 {clickedCoords && (
                   <div
-                    className="absolute w-5 h-5 -mt-2.5 -ml-2.5 bg-red-500 border-2 border-white rounded-full shadow-lg shadow-red-500/50 animate-pulse pointer-events-none z-30"
+                    className="absolute w-5 h-5 -mt-2.5 -ms-2.5 bg-red-500 border-2 border-white rounded-full shadow-lg shadow-red-500/50 animate-pulse pointer-events-none z-30"
                     style={{ left: `${clickedCoords.x}%`, top: `${clickedCoords.y}%` }}
                   />
                 )}
@@ -5280,7 +5280,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                     <span className="text-[10px] font-black text-slate-400 uppercase block mb-1">
                       {lang === 'ar' ? `النقاط التفاعلية الحالية (${activeDiagram.hotspots.length}):` : `Anatomy Hotspots (${activeDiagram.hotspots.length}):`}
                     </span>
-                    <div className="max-h-[30vh] overflow-y-auto space-y-1.5 scrollbar-none pr-1">
+                    <div className="max-h-[30vh] overflow-y-auto space-y-1.5 scrollbar-none pe-1">
                       {activeDiagram.hotspots.map((h) => {
                         const isSelected = activeHotspotId === h.id;
                         return (
@@ -5306,7 +5306,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                               </span>
                               <span className="truncate">{h.labelAr}</span>
                             </div>
-                            <span className="text-[10px] font-mono text-slate-400 shrink-0 font-medium ml-2">
+                            <span className="text-[10px] font-mono text-slate-400 shrink-0 font-medium ms-2">
                               x: {h.x}%, y: {h.y}%
                             </span>
                           </div>

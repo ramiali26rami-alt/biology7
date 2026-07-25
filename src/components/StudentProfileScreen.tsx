@@ -256,19 +256,19 @@ export default function StudentProfileScreen({
   const backIcon = lang === 'ar' ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <button 
           onClick={() => onNavigate('main-dashboard', 'push_back')} 
-          className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
+          className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
         >
           {backIcon}
         </button>
         <h1 className="font-black text-lg text-slate-900 dark:text-white">{t.profileScreenTitle}</h1>
         <button 
           onClick={() => setShowSettingsModal(true)}
-          className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400"
+          className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 cursor-pointer"
           aria-label="Open settings"
         >
           <Settings className="w-5 h-5" />
@@ -646,12 +646,12 @@ export default function StudentProfileScreen({
               <button 
                 dir="ltr"
                 onClick={toggleDarkMode}
-                className={`w-12 h-6 rounded-full p-1 transition-colors duration-205 focus:outline-none shrink-0 relative flex items-center ${
+                className={`w-12 h-6 rounded-full p-1 transition-colors duration-[205ms] focus:outline-none shrink-0 relative flex items-center ${
                   isDarkMode ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-750'
                 }`}
                 aria-label="Toggle dark mode"
               >
-                <div className={`w-4 h-4 rounded-full bg-white shadow-md transform transition-all duration-205 ${
+                <div className={`w-4 h-4 rounded-full bg-white shadow-md transform transition-all duration-[205ms] ${
                   isDarkMode ? 'translate-x-6' : 'translate-x-0'
                 }`} />
               </button>
@@ -830,7 +830,7 @@ export default function StudentProfileScreen({
               </div>
 
               {/* Body Content */}
-              <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-1.5 scrollbar-thin">
+              <div className="space-y-4 overflow-y-auto max-h-[60vh] pe-1.5 scrollbar-thin">
                 {/* Font Size Settings */}
                 <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
                   <div className="flex items-center gap-3">
@@ -898,11 +898,11 @@ export default function StudentProfileScreen({
                   <button 
                     dir="ltr"
                     onClick={toggleSound}
-                    className={`w-12 h-6 rounded-full p-1 transition-colors duration-205 focus:outline-none shrink-0 relative flex items-center ${
+                    className={`w-12 h-6 rounded-full p-1 transition-colors duration-[205ms] focus:outline-none shrink-0 relative flex items-center ${
                       soundEnabled ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-750'
                     }`}
                   >
-                    <div className={`w-4 h-4 rounded-full bg-white shadow-md transform transition-all duration-205 ${
+                    <div className={`w-4 h-4 rounded-full bg-white shadow-md transform transition-all duration-[205ms] ${
                       soundEnabled ? 'translate-x-6' : 'translate-x-0'
                     }`} />
                   </button>

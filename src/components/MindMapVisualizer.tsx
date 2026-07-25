@@ -68,7 +68,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                 details: rootNode.details!
               });
             }}
-            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer shrink-0"
+            className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer shrink-0"
           >
             <Info className="w-5 h-5" />
           </button>
@@ -122,9 +122,9 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                       });
                     }}
                     style={{ color: color }}
-                    className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800/60 dark:hover:bg-slate-800 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                    className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800/60 dark:hover:bg-slate-800 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
                   >
-                    <Info className="w-4 h-4" />
+                    <Info className="w-5 h-5" />
                   </button>
                 )}
               </div>
@@ -173,9 +173,9 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                       });
                                     }}
                                     style={{ color: color }}
-                                    className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer"
+                                    className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer"
                                   >
-                                    <Info className="w-3.5 h-3.5" />
+                                    <Info className="w-5 h-5" />
                                   </button>
                                 )}
                               </div>
@@ -206,9 +206,9 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                                 details: leaf.details!
                                               })}
                                               style={{ color: color }}
-                                              className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                                              className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
                                             >
-                                              <Info className="w-3 h-3" />
+                                              <Info className="w-5 h-5" />
                                             </button>
                                           )}
                                         </div>
@@ -226,7 +226,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                               className="p-3.5 bg-slate-50/40 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-xl text-xs md:text-sm font-bold leading-relaxed text-slate-800 dark:text-slate-300 relative overflow-hidden flex items-center justify-between gap-3"
                             >
                               <div className="absolute right-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: color }} />
-                              <div className="flex items-start gap-2 mr-1">
+                              <div className="flex items-start gap-2 me-1">
                                 <span className="text-slate-700 dark:text-slate-300 leading-normal">
                                   {lang === 'ar' ? subNode.textAr : (subNode.textEn || subNode.textAr)}
                                 </span>
@@ -238,9 +238,9 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                     details: subNode.details!
                                   })}
                                   style={{ color: color }}
-                                  className="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                                  className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
                                 >
-                                  <Info className="w-3.5 h-3.5" />
+                                  <Info className="w-5 h-5" />
                                 </button>
                               )}
                             </div>
@@ -275,9 +275,9 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
               <div className="flex justify-between items-center mb-4">
                 <button
                   onClick={() => setSelectedNodeDetails(null)}
-                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-300 flex items-center justify-center transition-all cursor-pointer"
+                  className="w-11 h-11 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-350 flex items-center justify-center transition-all cursor-pointer"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
                 <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-emerald-500" />

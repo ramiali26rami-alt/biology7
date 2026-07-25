@@ -272,7 +272,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                       isActive ? 'bg-amber-400' : 'bg-emerald-400'
                     }`}></span>
                     {/* Inner circle */}
-                    <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border border-white transition-colors duration-250 ${
+                    <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border border-white transition-colors duration-[250ms] ${
                       isActive ? 'bg-amber-500' : 'bg-emerald-500'
                     }`}></span>
                   </button>

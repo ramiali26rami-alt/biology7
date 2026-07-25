@@ -211,7 +211,7 @@ export default function App() {
           ✅ تم تحديث المنهج — {updateInfo.newLessons} درس متاح الآن
         </div>
       )}
-      <div className="min-h-screen bg-[#f7f9fb] dark:bg-slate-950 w-full overflow-x-hidden relative transition-colors duration-250">
+      <div className="min-h-screen bg-[#f7f9fb] dark:bg-slate-950 w-full overflow-x-hidden relative transition-colors duration-[250ms]">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}

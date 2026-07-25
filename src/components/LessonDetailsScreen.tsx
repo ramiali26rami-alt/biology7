@@ -623,7 +623,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* CSS For 3D Flashcard flip */}
       <style>{`
         .perspective-1000 {
@@ -645,7 +645,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('lessons-list', 'push_back')} 
-            className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
+            className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
           </button>
@@ -754,12 +754,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         {activeTab === 'explore' && (
           <div className="flex flex-col h-full animate-fadeIn">
             {/* Explore Sub-Tabs Navigation */}
-            <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl gap-1.5 self-center w-full max-w-sm mx-auto mb-4 border border-slate-200/50 dark:border-slate-800 shrink-0">
+            <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-2xl gap-2 self-center w-full max-w-sm mx-auto mb-4 border border-slate-200/50 dark:border-slate-800 shrink-0">
               <button
                 onClick={() => setExploreSubTab('mindmap')}
-                className={`flex-1 text-center py-1.5 px-3 text-[11px] font-black rounded-lg transition-all ${
+                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-xl transition-all cursor-pointer ${
                   exploreSubTab === 'mindmap'
-                    ? 'bg-violet-600 text-white shadow-sm'
+                    ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
@@ -767,7 +767,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               </button>
               <button
                 onClick={() => setExploreSubTab('diagrams')}
-                className={`flex-1 text-center py-1.5 px-3 text-[11px] font-black rounded-lg transition-all ${
+                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-xl transition-all cursor-pointer ${
                   exploreSubTab === 'diagrams'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -777,9 +777,9 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               </button>
               <button
                 onClick={() => setExploreSubTab('pdf')}
-                className={`flex-1 text-center py-1.5 px-3 text-[11px] font-black rounded-lg transition-all ${
+                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-xl transition-all cursor-pointer ${
                   exploreSubTab === 'pdf'
-                    ? 'bg-teal-600 text-white shadow-sm'
+                    ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
@@ -966,7 +966,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       setCurrentFlashcardIndex((prev) => Math.max(0, prev - 1));
                     }}
                     disabled={currentFlashcardIndex === 0}
-                    className="flex items-center gap-1 text-xs font-black text-slate-700 dark:text-slate-300 disabled:opacity-30 active:scale-90 transition-transform"
+                    className="flex items-center gap-1.5 text-xs font-black text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-150 dark:border-slate-800/60 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-sm"
                   >
                     <ChevronRight className={`w-5 h-5 ${lang === 'ar' ? '' : 'rotate-180'}`} />
                     <span>{lang === 'ar' ? 'السابق' : 'Prev'}</span>
@@ -977,7 +977,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       <div 
                         key={idx} 
                         className={`h-1.5 rounded-full transition-all duration-300 ${
-                          currentFlashcardIndex === idx ? 'w-5 bg-purple-500' : 'w-1.5 bg-slate-200 dark:bg-slate-800'
+                          currentFlashcardIndex === idx ? 'w-5 bg-emerald-500' : 'w-1.5 bg-slate-200 dark:bg-slate-800'
                         }`} 
                       />
                     ))}
@@ -989,7 +989,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       setCurrentFlashcardIndex((prev) => Math.min(lesson.flashcards.length - 1, prev + 1));
                     }}
                     disabled={currentFlashcardIndex === lesson.flashcards.length - 1}
-                    className="flex items-center gap-1 text-xs font-black text-slate-700 dark:text-slate-300 disabled:opacity-30 active:scale-90 transition-transform"
+                    className="flex items-center gap-1.5 text-xs font-black text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-150 dark:border-slate-800/60 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-sm"
                   >
                     <span>{lang === 'ar' ? 'التالي' : 'Next'}</span>
                     <ChevronLeft className={`w-5 h-5 ${lang === 'ar' ? '' : 'rotate-180'}`} />
@@ -1184,10 +1184,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                               if (showFeedback) {
                                 if (isCorrectOpt) {
                                   optionStyle = 'border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20';
-                                  checkBadge = <CheckCircle className={`w-5 h-5 text-emerald-600 shrink-0 ${lang === 'ar' ? 'mr-auto' : 'ml-auto'}`} />;
+                                  checkBadge = <CheckCircle className={`w-5 h-5 text-emerald-600 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
                                 } else if (isSelected) {
                                   optionStyle = 'border-rose-450 bg-rose-50/30 dark:bg-rose-950/20';
-                                  checkBadge = <XCircle className={`w-5 h-5 text-rose-500 shrink-0 ${lang === 'ar' ? 'mr-auto' : 'ml-auto'}`} />;
+                                  checkBadge = <XCircle className={`w-5 h-5 text-rose-500 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
                                 }
                               }
 
@@ -1201,7 +1201,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                                   } ${optionStyle}`}
                                 >
                                   <span className={`w-7 h-7 flex items-center justify-center rounded-lg font-black transition-colors shrink-0 ${
-                                    lang === 'ar' ? 'ml-3' : 'mr-3'
+                                    lang === 'ar' ? 'ms-3' : 'me-3'
                                   } ${
                                     isSelected 
                                       ? (isCorrectOpt ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') 

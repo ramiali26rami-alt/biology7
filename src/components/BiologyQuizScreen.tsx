@@ -163,12 +163,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
   if (questions.length === 0) {
     return (
-      <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
           <div className="flex items-center gap-4 w-full">
             <button 
               onClick={() => onNavigate('lessons-list', 'push_back')}
-              className="active:scale-95 transition-transform text-slate-800 dark:text-slate-200"
+              className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               {backIcon}
             </button>
@@ -289,12 +289,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
   if (lesson.quizLocked) {
     return (
-      <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
           <div className="flex items-center gap-4 w-full">
             <button 
               onClick={() => onNavigate('lessons-list', 'push_back')}
-              className="active:scale-95 transition-transform text-slate-800 dark:text-slate-200"
+              className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               {backIcon}
             </button>
@@ -328,13 +328,13 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
   }
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
         <div className="flex items-center gap-4 w-full">
           <button 
             onClick={() => onNavigate('lessons-list', 'push_back')}
-            className="active:scale-95 transition-transform text-slate-800 dark:text-slate-200"
+            className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
           >
             {backIcon}
           </button>
@@ -440,10 +440,10 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                     if (showFeedback) {
                       if (isCorrectOpt) {
                         optionStyle = 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20';
-                        checkBadge = <CheckCircle className={`w-5 h-5 text-emerald-600 shrink-0 ${lang === 'ar' ? 'mr-auto' : 'ml-auto'}`} />;
+                        checkBadge = <CheckCircle className={`w-5 h-5 text-emerald-600 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
                       } else if (isSelected) {
                         optionStyle = 'border-rose-400 bg-rose-50/40 dark:bg-rose-950/20';
-                        checkBadge = <XCircle className={`w-5 h-5 text-rose-500 shrink-0 ${lang === 'ar' ? 'mr-auto' : 'ml-auto'}`} />;
+                        checkBadge = <XCircle className={`w-5 h-5 text-rose-500 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
                       }
                     }
 
@@ -457,7 +457,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                         disabled={showFeedback}
                       >
                         <span className={`w-6 h-6 flex items-center justify-center rounded-md text-[10px] font-black transition-colors shrink-0 ${
-                          lang === 'ar' ? 'ml-2.5' : 'mr-2.5'
+                          lang === 'ar' ? 'ms-2.5' : 'me-2.5'
                         } ${
                           isSelected 
                             ? (isCorrectOpt ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') 

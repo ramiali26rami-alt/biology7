@@ -207,7 +207,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
 
   if (lesson && lesson.ministryExamLocked) {
     return (
-      <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
           <div className="flex items-center gap-4 w-full">
             <button 
@@ -246,7 +246,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
   }
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-250" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <div className="flex items-center gap-4">
@@ -353,7 +353,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
             )}
 
             {/* Exam simulation questions list */}
-            <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin">
+            <div className="space-y-6 max-h-[40vh] overflow-y-auto pe-2 scrollbar-thin">
               {activeQuestions.map((q, idx) => (
                 <div key={q.id} className="space-y-3 border-b border-slate-50 dark:border-slate-800 pb-4 last:border-0 last:pb-0">
                   <p className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
