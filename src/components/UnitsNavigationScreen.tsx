@@ -195,34 +195,30 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
               <div 
                 key={unitNum}
                 onClick={() => handleUnitClick(unitId)}
-                className={`bg-white dark:bg-slate-900 border p-4 rounded-[24px] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex flex-col justify-between ${
+                className={`bg-white dark:bg-slate-900 border p-3 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-3 ${
                   isLocked 
                     ? 'border-slate-100 dark:border-slate-800 opacity-80' 
                     : `border-slate-100 dark:border-slate-800 ${style.hoverBorder}`
                 }`}
               >
-                <div className="flex justify-between items-start">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.bg} ${style.text}`}>
+                <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
                     {style.icon}
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    {isLocked && (
-                      <span className="bg-amber-500/10 text-amber-600 dark:text-amber-400 p-1.5 rounded-lg">
-                        <Lock className="w-3.5 h-3.5" />
-                      </span>
-                    )}
-                    <span className={`text-[10px] font-black text-white px-2.5 py-1 rounded-lg shadow-sm ${style.badgeBg}`}>
-                      {lessonsCount} {t.lessonsQuantity}
+                  <div className="flex-1 min-w-0 text-right">
+                    <span className={`text-[9px] font-black uppercase tracking-wide block ${style.accentText}`}>
+                      {getUnitSubtitle(idx)}
                     </span>
+                    <h3 className={`font-black text-slate-850 dark:text-white text-xs mt-0.5 transition-colors leading-tight ${style.hoverText}`}>
+                      {unitTitle}
+                    </h3>
                   </div>
                 </div>
-                <div className="mt-3">
-                  <span className={`text-[9px] font-extrabold uppercase tracking-wide block ${style.accentText}`}>
-                    {getUnitSubtitle(idx)}
+                <div className="flex items-center gap-2 shrink-0">
+                  {isLocked && <Lock className="w-3.5 h-3.5 text-amber-500" />}
+                  <span className={`text-[9px] font-black text-white px-2 py-0.5 rounded-md shadow-sm shrink-0 ${style.badgeBg}`}>
+                    {lessonsCount} {t.lessonsQuantity}
                   </span>
-                  <h3 className={`font-black text-slate-800 dark:text-white text-sm mt-0.5 transition-colors ${style.hoverText}`}>
-                    {unitTitle}
-                  </h3>
                 </div>
               </div>
             );
