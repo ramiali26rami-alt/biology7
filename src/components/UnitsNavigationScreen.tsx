@@ -84,7 +84,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
   const unitStyles = [
     {
       icon: (
-        <svg className="w-6.5 h-6.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="2.5" fill="currentColor" />
           <path d="M12 9.5V4M12 4l-2-2M12 4l2-2" />
           <path d="M9.5 12H4M4 12l-2-2M4 12l-2 2" />
@@ -104,7 +104,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       hoverText: 'group-hover:text-emerald-500'
     },
     {
-      icon: <Dna className="w-6.5 h-6.5" />,
+      icon: <Dna className="w-8 h-8" />,
       bg: 'bg-purple-50 dark:bg-purple-950',
       text: 'text-purple-600 dark:text-purple-300',
       accentText: 'text-purple-500 dark:text-purple-400',
@@ -113,7 +113,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       hoverText: 'group-hover:text-purple-500'
     },
     {
-      icon: <Binary className="w-6.5 h-6.5" />,
+      icon: <Binary className="w-8 h-8" />,
       bg: 'bg-blue-50 dark:bg-blue-950',
       text: 'text-blue-600 dark:text-blue-300',
       accentText: 'text-blue-500 dark:text-blue-400',
@@ -207,28 +207,28 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
               <div 
                 key={unitNum}
                 onClick={() => handleUnitClick(unitId)}
-                className={`bg-white dark:bg-slate-900 border p-4.5 rounded-[22px] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-4 ${
+                className={`bg-white dark:bg-slate-900 border p-5 rounded-[26px] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-4.5 ${
                   isLocked 
                     ? 'border-slate-100 dark:border-slate-800 opacity-80' 
                     : `border-slate-100 dark:border-slate-800 ${style.hoverBorder}`
                 }`}
               >
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
+                <div className="flex items-center gap-4.5 flex-1 min-w-0">
+                  <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
                     {style.icon}
                   </div>
                   <div className="flex-1 min-w-0 text-right">
-                    <h3 className="font-black text-slate-850 dark:text-white text-sm transition-colors leading-snug">
-                      <span className={`text-[13px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-2' : 'mr-2'} ${style.accentText}`}>
+                    <h3 className="font-black text-slate-850 dark:text-white transition-colors leading-snug">
+                      <span className={`text-[15px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ml-2' : 'mr-2'} ${style.accentText}`}>
                         {getUnitSubtitle(idx)}:
                       </span>
-                      <span className={`text-[14px] ${style.hoverText}`}>{unitTitle}</span>
+                      <span className={`text-[16px] md:text-[18px] ${style.hoverText}`}>{unitTitle}</span>
                     </h3>
                   </div>
                 </div>
-                <div className="flex items-center gap-2.5 shrink-0">
-                  {isLocked && <Lock className="w-4 h-4 text-amber-500" />}
-                  <span className={`text-[11px] font-black text-white px-3 py-1 rounded-xl shadow-sm shrink-0 ${style.badgeBg}`}>
+                <div className="flex items-center gap-3 shrink-0">
+                  {isLocked && <Lock className="w-4.5 h-4.5 text-amber-500" />}
+                  <span className={`text-[12px] font-black text-white px-3.5 py-1 rounded-[12px] shadow-sm shrink-0 ${style.badgeBg}`}>
                     {lessonsCount} {t.lessonsQuantity}
                   </span>
                 </div>
