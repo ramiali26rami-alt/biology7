@@ -165,11 +165,11 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
             <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
           </div>
           <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
-            <h4 className="text-base md:text-lg font-black text-slate-900 dark:text-white leading-relaxed">
+            <h4 className="text-lg md:text-xl font-black text-slate-900 dark:text-white leading-relaxed">
               {card.qAr}
             </h4>
             {card.qEn && (
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
+              <p className="text-[13px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
                 {card.qEn}
               </p>
             )}
@@ -188,11 +188,11 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
             <CheckCircle className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
-            <h4 className="text-sm md:text-base font-extrabold text-slate-900 dark:text-white leading-relaxed">
+            <h4 className="text-base md:text-lg font-extrabold text-slate-900 dark:text-white leading-relaxed">
               {card.aAr}
             </h4>
             {card.aEn && (
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
+              <p className="text-[13px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
                 {card.aEn}
               </p>
             )}
@@ -923,7 +923,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             {lesson.summaryPointsAr && lesson.summaryPointsAr.length > 0 && (
               <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-sm space-y-4">
                 <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-3">
-                  <span className="p-2 bg-purple-50 dark:bg-purple-950 rounded-xl text-purple-600 shrink-0">
+                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950/50 rounded-xl text-emerald-600 shrink-0">
                     <Award className="w-5 h-5" />
                   </span>
                   <h3 className="font-black text-slate-850 dark:text-white text-[15px]">
@@ -933,8 +933,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                 
                 <ul className="space-y-3">
                   {(lang === 'ar' ? lesson.summaryPointsAr : lesson.summaryPointsEn).map((point, index) => (
-                    <li key={index} className="flex items-start gap-2.5 text-xs text-slate-850 dark:text-slate-200 leading-relaxed">
-                      <CircleDot className="w-3.5 h-3.5 text-purple-500 shrink-0 mt-0.5" />
+                    <li key={index} className="flex items-start gap-2.5 text-[15px] font-semibold text-slate-850 dark:text-slate-200 leading-relaxed">
+                      <CircleDot className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-1" />
                       <span>{point}</span>
                     </li>
                   ))}
