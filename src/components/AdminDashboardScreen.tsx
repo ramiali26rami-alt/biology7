@@ -1171,7 +1171,12 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         summaryPointsAr: l.summaryPointsAr ? l.summaryPointsAr.join(' | ') : '',
         pdfFileName: l.pdfFile,
         imageFileName: l.folder ? `${l.folder}.webp` : '',
-        isPremiumLocked: l.locked ? 'TRUE' : 'FALSE'
+        isPremiumLocked: l.locked ? 'TRUE' : 'FALSE',
+        pdfLocked: l.pdfLocked ? 'TRUE' : 'FALSE',
+        mindmapLocked: l.mindmapLocked ? 'TRUE' : 'FALSE',
+        diagramLocked: l.diagramLocked ? 'TRUE' : 'FALSE',
+        quizLocked: l.quizLocked ? 'TRUE' : 'FALSE',
+        ministryExamLocked: l.ministryExamLocked ? 'TRUE' : 'FALSE'
       };
     });
 

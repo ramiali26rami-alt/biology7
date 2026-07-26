@@ -37,7 +37,8 @@ import {
   Trash2,
   Info,
   Bell,
-  BellOff
+  BellOff,
+  ShieldCheck
 } from 'lucide-react';
 import { ScreenId } from '../types';
 import { Lesson } from '../types';
@@ -101,6 +102,7 @@ export default function StudentProfileScreen({
   const [serverUrlInput, setServerUrlInput] = useState(() => localStorage.getItem('server_url') || '');
   const [adminClicks, setAdminClicks] = useState(0);
   const [showAdminOptions, setShowAdminOptions] = useState(false);
+  const [legalModalType, setLegalModalType] = useState<'about' | 'privacy' | 'terms' | null>(null);
 
   const handleActivateKey = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -379,26 +381,26 @@ export default function StudentProfileScreen({
         </section>
 
         {/* Premium Upgrade & Pricing Screen 1 Integration */}
-        <section className="bg-gradient-to-tr from-slate-900 to-slate-850 dark:from-emerald-950 dark:to-slate-900 text-white p-6 rounded-[32px] shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl"></div>
+        <section className="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/20 text-white p-6 rounded-[28px] shadow-xl relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
           <div className="relative z-10 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <span className="p-2 bg-emerald-500/20 rounded-xl">
+                <span className="p-2 bg-white/10 rounded-xl border border-white/10">
                   <CreditCard className="w-5 h-5 text-emerald-400" />
                 </span>
                 <h3 className="font-black text-lg">{t.premiumStatus}</h3>
               </div>
               <span className={`text-xs px-3 py-1.5 rounded-full font-black border uppercase tracking-wider ${
                 premiumUnlocked 
-                  ? 'bg-emerald-500/20 border-emerald-400 text-emerald-350' 
-                  : 'bg-amber-505 bg-amber-500/20 border-amber-400 text-amber-400'
+                  ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' 
+                  : 'bg-amber-500/20 border-amber-400 text-amber-300'
               }`}>
                 {premiumUnlocked ? t.premiumUnlocked : t.premiumLocked}
               </span>
             </div>
             
-            <p className="text-slate-300 text-xs font-semibold leading-relaxed">
+            <p className="text-emerald-100/90 text-xs font-semibold leading-relaxed">
               {lang === 'ar' 
                 ? 'شراء الباقة المميزة يمنحك حق الوصول الفوري إلى الوحدة الثانية والثالثة من منهج الأحياء للصف الثالث الثانوي بالجمهورية اليمنية، وحل نماذج الامتحانات الوزارية مع بنك الأسئلة الممتد.' 
                 : 'Upgrading unlocks Unit 2, Unit 3, past Yemeni Ministry exam simulations, and all interactive flashcard packages instantly.'
@@ -407,10 +409,10 @@ export default function StudentProfileScreen({
 
             <button 
               onClick={handleTogglePremium}
-              className={`w-full font-black text-sm py-3.5 rounded-xl active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 ${
+              className={`w-full font-black text-sm py-3.5 rounded-xl active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
                 premiumUnlocked 
-                  ? 'bg-slate-800 hover:bg-slate-750 text-emerald-400 border border-slate-700' 
-                  : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-900/30'
+                  ? 'bg-white/10 hover:bg-white/15 text-emerald-300 border border-white/10' 
+                  : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-950/30'
               }`}
             >
               <Flame className="w-4 h-4" />
@@ -421,8 +423,8 @@ export default function StudentProfileScreen({
             </button>
 
             {!premiumUnlocked && (
-              <form onSubmit={handleActivateKey} className="border-t border-slate-800/80 pt-4 mt-4 space-y-3 text-right">
-                <label className="text-[11px] font-black text-slate-400 block">
+              <form onSubmit={handleActivateKey} className="border-t border-white/10 pt-4 mt-4 space-y-3 text-right">
+                <label className="text-xs font-extrabold text-emerald-200 block">
                   {t.enterActivationKey}
                 </label>
                 <div className="flex gap-2">
@@ -432,12 +434,12 @@ export default function StudentProfileScreen({
                     onChange={(e) => setActivationKey(e.target.value)}
                     placeholder={t.activationKeyPlaceholder}
                     disabled={activationLoading}
-                    className="flex-1 bg-slate-950/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-xl px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider focus:outline-none transition-all"
                   />
                   <button
                     type="submit"
                     disabled={activationLoading || !activationKey.trim()}
-                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-md shrink-0 flex items-center justify-center gap-1.5"
+                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-md shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     {activationLoading ? t.activating : t.activateBtn}
                   </button>
@@ -455,8 +457,8 @@ export default function StudentProfileScreen({
             )}
 
             {/* Advanced Server Settings */}
-            <div className="border-t border-slate-800/80 pt-4 mt-4 space-y-3 text-right">
-              <label className="text-[11px] font-black text-slate-400 block">
+            <div className="border-t border-white/10 pt-4 mt-4 space-y-3 text-right">
+              <label className="text-xs font-extrabold text-emerald-200 block">
                 {lang === 'ar' ? 'عنوان خادم المعلم الافتراضي (اختياري)' : 'AI Tutor Server URL (Optional)'}
               </label>
               <div className="flex gap-2">
@@ -468,10 +470,10 @@ export default function StudentProfileScreen({
                     localStorage.setItem('server_url', e.target.value.trim());
                   }}
                   placeholder="https://biology-server.up.railway.app"
-                  className="flex-1 bg-slate-950/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs font-mono text-white placeholder-slate-655 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600"
+                  className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-xl px-4 py-2.5 text-xs font-mono focus:outline-none transition-all"
                 />
               </div>
-              <p className="text-[9px] text-slate-500 font-bold leading-tight">
+              <p className="text-[11.5px] text-emerald-200/70 font-bold leading-normal">
                 {lang === 'ar' 
                   ? 'ملاحظة: اتركه فارغاً لاستخدام خادم التطبيق الافتراضي. مفيد جداً لتشغيل خدمات الذكاء الاصطناعي أوفلاين على الهواتف.'
                   : 'Note: Leave blank to use default application server. Helpful for offline AI features on mobile apps.'}
@@ -973,6 +975,34 @@ export default function StudentProfileScreen({
                   </>
                 )}
 
+                {/* Platform Policies & Terms Section */}
+                <div className="bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <span className="text-xs font-bold">{lang === 'ar' ? 'حول التطبيق والسياسات' : 'About & Policies'}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 pt-1">
+                    <button
+                      onClick={() => setLegalModalType('about')}
+                      className="text-[10px] font-black py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
+                    >
+                      {lang === 'ar' ? 'من نحن' : 'About'}
+                    </button>
+                    <button
+                      onClick={() => setLegalModalType('terms')}
+                      className="text-[10px] font-black py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
+                    >
+                      {lang === 'ar' ? 'الشروط' : 'Terms'}
+                    </button>
+                    <button
+                      onClick={() => setLegalModalType('privacy')}
+                      className="text-[10px] font-black py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
+                    >
+                      {lang === 'ar' ? 'الخصوصية' : 'Privacy'}
+                    </button>
+                  </div>
+                </div>
+
                 {/* Developer Info Section */}
                 <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-2.5">
                   <div className="flex items-center gap-2">
@@ -1012,6 +1042,102 @@ export default function StudentProfileScreen({
                 <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold tracking-wider">
                   © 2026 Biotech Academy. All rights reserved.
                 </span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Legal terms overlay (about, privacy, terms) */}
+      <AnimatePresence>
+        {legalModalType && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setLegalModalType(null)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            />
+            
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right text-slate-800 dark:text-slate-100 font-sans"
+              dir={lang === 'ar' ? 'rtl' : 'ltr'}
+            >
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                  {legalModalType === 'about' && (lang === 'ar' ? 'من نحن' : 'About Us')}
+                  {legalModalType === 'terms' && (lang === 'ar' ? 'شروط الاستخدام' : 'Terms of Use')}
+                  {legalModalType === 'privacy' && (lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy')}
+                </h3>
+                <button
+                  onClick={() => setLegalModalType(null)}
+                  className="text-slate-400 hover:text-slate-800 dark:hover:text-white text-xs font-black p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-bold space-y-3 whitespace-pre-line">
+                {legalModalType === 'about' && (
+                  lang === 'ar' 
+                    ? "منصة تعليمية متكاملة تقودها نخبة من المعلمين والتربويين ذوي الخبرة والكفاءة في تدريس مادة الأحياء. نسعى لتقديم تجربة تعليمية تفاعلية بصرية حديثة، تعتمد على التكنولوجيا لتبسيط المفاهيم الصعبة وتهيئة الطالب بشكل كامل لاجتياز امتحانات الشهادة الثانوية بتفوق ونيل الدرجات الكاملة."
+                    : "An integrated educational platform led by an elite group of experienced and qualified teachers in biology. We strive to provide a modern visual interactive learning experience that leverages technology to simplify difficult concepts, preparing students to successfully pass high school certificate exams with excellence."
+                )}
+
+                {legalModalType === 'terms' && (
+                  lang === 'ar'
+                    ? `1. شروط الاستخدام:
+                       باستخدامك هذا التطبيق، فإنك توافق على الالتزام بشروط الخدمة هذه.
+                       
+                       2. استخدام شخصي:
+                       الحساب مخصص للاستخدام الشخصي للطالب المسجل فقط على جهاز واحد. يُمنع مشاركة الحساب أو محاولة تجاوزه.
+                       
+                       3. الملكية الفكرية:
+                       جميع الحقوق محفوظة للمنصة، بما في ذلك التصاميم، الأسئلة، الملخصات والخرائط الذهنية المتضمنة.`
+                    : `1. Terms of Use:
+                       By using this app, you agree to comply with these terms of service.
+                       
+                       2. Personal Use:
+                       The account is for the personal use of the registered student only on a single device. Sharing accounts or attempting bypasses is prohibited.
+                       
+                       3. Intellectual Property:
+                       All rights are reserved to the platform, including designs, questions, summaries, and mindmaps.`
+                )}
+
+                {legalModalType === 'privacy' && (
+                  lang === 'ar'
+                    ? `1. جمع البيانات:
+                       نحن نجمع فقط البيانات الأساسية اللازمة لتشغيل حسابك (الاسم، رقم الهاتف، المحافظة، ومعرّف الجهاز UUID لتأمين الحساب).
+                       
+                       2. أمان البيانات:
+                       نحن لا نبيع أو نشارك بياناتك الشخصية مع أي طرف ثالث خارج إطار تفعيل وتحسين خدمات التطبيق.
+                       
+                       3. التخزين السحابي:
+                       يتم حفظ إحصائيات إنجاز الكويزات سحابياً لغرض تحسين لوحة الصدارة ورصد الأسئلة الصعبة لتقديم دعم أكاديمي أفضل.`
+                    : `1. Data Collection:
+                       We only collect basic data required to operate your account (Name, Phone number, Governorate, and Device UUID for security).
+                       
+                       2. Data Security:
+                       We do not sell or share your personal data with any third party outside the scope of app operations.
+                       
+                       3. Cloud Storage:
+                       Quiz progress statistics are stored in the cloud to compute leaderboards and analyze difficult questions.`
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setLegalModalType(null)}
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2.5 rounded-xl transition-all cursor-pointer active:scale-95 text-center"
+                >
+                  {lang === 'ar' ? 'إغلاق' : 'Close'}
+                </button>
               </div>
             </motion.div>
           </div>
