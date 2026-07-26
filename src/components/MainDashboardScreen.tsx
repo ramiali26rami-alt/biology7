@@ -37,6 +37,7 @@ import { overallPercent, getStreak, loadProgress } from '../utils/progress';
 import { scheduleReminderNotification } from '../utils/notifications';
 import { Lesson } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { SecureStorage } from '../utils/security';
 
 interface MainDashboardScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -174,7 +175,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
   };
 
   useEffect(() => {
-    const storedName = localStorage.getItem('student_name');
+    const storedName = SecureStorage.getItem('student_name');
     if (storedName) setStudentName(storedName);
     else setStudentName(lang === 'ar' ? 'أحمد محمد' : 'Ahmed Mohamed');
 
