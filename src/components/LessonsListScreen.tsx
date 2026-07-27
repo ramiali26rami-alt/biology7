@@ -115,7 +115,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={lang === 'ar' ? 'ابحث عن درس...' : 'Search lessons...'}
-              className="w-full bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-2xl px-4 py-3 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors shadow-sm"
+              className="w-full bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-app-btn px-4 py-3 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors shadow-sm"
               dir={lang === 'ar' ? 'rtl' : 'ltr'}
             />
           </div>
@@ -129,10 +129,10 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
         </div>
 
         {/* Compact Horizontal Statistics Bar */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl shadow-sm flex items-center justify-between gap-4">
+        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center justify-between gap-4">
           {/* Completion Rate */}
           <div className="flex items-center gap-2.5 flex-1">
-            <span className="w-8 h-8 rounded-lg bg-emerald-55 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
+            <span className="w-8 h-8 rounded-app-btn bg-emerald-55 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
               <Sparkles className="w-4.5 h-4.5 fill-emerald-500/20" />
             </span>
             <div className="flex-1 min-w-0">
@@ -148,7 +148,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
 
           {/* Study Streak */}
           <div className="flex items-center gap-2.5 flex-1">
-            <span className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-955/50 dark:bg-amber-950 text-amber-500 flex items-center justify-center shrink-0">
+            <span className="w-8 h-8 rounded-app-btn bg-amber-50 dark:bg-amber-955/50 dark:bg-amber-950 text-amber-500 flex items-center justify-center shrink-0">
               <Flame className="w-4.5 h-4.5 fill-amber-500" />
             </span>
             <div className="flex-1 min-w-0">
@@ -202,14 +202,14 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
                 <div 
                   key={lesson.id}
                   onClick={() => handleLessonClick(lesson)}
-                  className={`bg-white dark:bg-slate-900 border p-5 rounded-[24px] flex items-center justify-between transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-sm group ${
+                  className={`bg-white dark:bg-slate-900 border p-5 rounded-app-card flex items-center justify-between transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-sm group ${
                     isLocked 
                       ? 'border-slate-100 dark:border-slate-800/80 opacity-70'
                       : `border-slate-100 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg`
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:text-white transition-colors duration-200 ${scheme.iconBg} ${isLocked ? '' : scheme.activeBg}`}>
+                    <div className={`w-12 h-12 rounded-app-btn flex items-center justify-center group-hover:text-white transition-colors duration-200 ${scheme.iconBg} ${isLocked ? '' : scheme.activeBg}`}>
                       <BookOpen className="w-6 h-6" />
                     </div>
                     <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -270,7 +270,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
 
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>

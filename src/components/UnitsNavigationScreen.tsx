@@ -196,14 +196,14 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
               <div 
                 key={unitNum}
                 onClick={() => handleUnitClick(unitId)}
-                className={`bg-white dark:bg-slate-900 border p-5 rounded-[26px] shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-4.5 ${
+                className={`bg-white dark:bg-slate-900 border p-5 rounded-app-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-4.5 ${
                   isLocked 
                     ? 'border-slate-100 dark:border-slate-800 opacity-80' 
                     : `border-slate-100 dark:border-slate-800 ${style.hoverBorder}`
                 }`}
               >
                 <div className="flex items-center gap-4.5 flex-1 min-w-0">
-                  <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
+                  <div className={`w-14 h-14 rounded-app-card flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
                     {style.icon}
                   </div>
                   <div className="flex-1 min-w-0 text-right">
@@ -217,7 +217,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   {isLocked && <Lock className="w-4.5 h-4.5 text-amber-500" />}
-                  <span className={`text-[12px] font-black text-white px-3.5 py-1 rounded-[12px] shadow-sm shrink-0 ${style.badgeBg}`}>
+                  <span className={`text-[12px] font-black text-white px-3.5 py-1 rounded-app-btn shadow-sm shrink-0 ${style.badgeBg}`}>
                     {lessonsCount} {t.lessonsQuantity}
                   </span>
                 </div>
@@ -240,7 +240,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
         
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>

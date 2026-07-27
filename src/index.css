@@ -8,6 +8,9 @@
   --radius-premium-btn: 12px;
   --radius-premium-dialog: 24px;
   --radius-icon-container: 14px;
+  --radius-app-btn: 12px;
+  --radius-app-card: 20px;
+  --radius-app-dialog: 24px;
 
   --text-h1: 20px;
   --text-title: 15px;
@@ -15,6 +18,15 @@
   --text-muted: 11px;
 
   --signature-motif-opacity: 0.06;
+}
+
+@utility tap-target {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* Custom scrollbar utility */

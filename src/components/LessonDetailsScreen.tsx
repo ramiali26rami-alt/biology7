@@ -157,7 +157,7 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
       <div className={`relative w-full h-full duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
 
         {/* الوجه الأول (سؤال) — بقى بلون accent البرتقالي بدل بنفسجي غير مرتبط بالهوية */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden">
+        <div className="absolute inset-0 bg-gradient-to-tr from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-app-card p-4 flex flex-col justify-between shadow-md backface-hidden">
           <div className="flex justify-between items-center">
             <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">
               {lang === 'ar' ? 'بطاقة مراجعة - سؤال' : 'Flashcard - Question'}
@@ -180,7 +180,7 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
         </div>
 
         {/* الوجه الثاني (إجابة) — لون العلامة الأساسي، وتم تصحيح كلاس اللون الذي كان يختفي في الوضع الداكن */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
+        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-app-card p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
           <div className="flex justify-between items-center">
             <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
               {lang === 'ar' ? 'الإجابة النموذجية' : 'Model Answer'}

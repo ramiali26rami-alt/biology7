@@ -256,7 +256,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           {/* WhatsApp Button */}
           <button 
             onClick={handleWhatsappClick}
-            className="w-11 h-11 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-emerald-500 active:scale-95 transition-all cursor-pointer"
+            className="tap-target hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-emerald-500 active:scale-95 transition-all cursor-pointer"
             title={lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
           >
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -267,7 +267,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           {/* Share Button */}
           <button 
             onClick={handleShareClick}
-            className="w-11 h-11 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 active:scale-95 transition-all cursor-pointer"
+            className="tap-target hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 active:scale-95 transition-all cursor-pointer"
             title={lang === 'ar' ? 'مشاركة التطبيق' : 'Share App'}
           >
             <Share2 className="w-5 h-5" />
@@ -293,7 +293,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           <motion.section
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-amber-500 rounded-[20px] p-3.5 shadow-md shadow-amber-500/20 relative overflow-hidden"
+            className="bg-amber-500 rounded-app-card p-3.5 shadow-md shadow-amber-500/20 relative overflow-hidden"
           >
             <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-lg" />
             <div className="flex flex-col gap-2">
@@ -340,7 +340,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           <motion.section
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-[24px] p-4"
+            className="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-app-dialog p-4"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-xl flex items-center justify-center shrink-0">
@@ -380,7 +380,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         {/* Premium Banner (Dashboard CTA) */}
         {!premiumUnlocked && (
           <section 
-            className="bg-gradient-to-r from-emerald-500 to-teal-655 text-white p-3.5 rounded-[20px] shadow-md shadow-emerald-500/10 relative overflow-hidden transition-all duration-[250ms]"
+            className="bg-gradient-to-r from-emerald-500 to-teal-655 text-white p-3.5 rounded-app-card shadow-md shadow-emerald-500/10 relative overflow-hidden transition-all duration-[250ms]"
           >
             <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
             <div className="relative z-10 flex flex-col gap-2">
@@ -415,7 +415,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
         {/* AI Biology Tutor General Banner */}
         <section 
-          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-3.5 rounded-[20px] shadow-md shadow-indigo-500/10 relative overflow-hidden transition-all duration-[250ms]"
+          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-3.5 rounded-app-card shadow-md shadow-indigo-500/10 relative overflow-hidden transition-all duration-[250ms]"
         >
           <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
           <div className="relative z-10 flex flex-col gap-2">
@@ -451,7 +451,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         <section className="grid grid-cols-2 gap-3">
           
           {/* Bento Stats 1: Streak */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl shadow-sm flex items-center gap-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center gap-3">
             <span className="w-9 h-9 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-500 flex items-center justify-center shrink-0">
               <Flame className="w-5 h-5 fill-amber-500" />
             </span>
@@ -462,7 +462,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           </div>
 
           {/* Bento Stats 2: Completion Rate */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl shadow-sm flex items-center gap-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center gap-3">
             <span className="w-9 h-9 bg-emerald-50 dark:bg-emerald-950/50 rounded-xl text-emerald-500 flex items-center justify-center shrink-0">
               <TrendingUp className="w-5 h-5" />
             </span>
@@ -561,7 +561,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           const fact = facts[dayOfYear % facts.length];
 
           return (
-            <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[32px] shadow-xl shadow-slate-200/20 dark:shadow-none relative overflow-hidden">
+            <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-xl shadow-slate-200/20 dark:shadow-none relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-5">
                 <Sparkles className="w-16 h-16 text-emerald-500" />
               </div>
@@ -642,7 +642,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: '100%', opacity: 0.9 }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="bg-white dark:bg-slate-900 border-t md:border border-slate-200 dark:border-slate-800 rounded-t-[32px] md:rounded-[32px] w-full max-w-lg h-[80vh] md:h-[75vh] flex flex-col overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans"
+              className="bg-white dark:bg-slate-900 border-t md:border border-slate-200 dark:border-slate-800 rounded-t-app-dialog md:rounded-app-dialog w-full max-w-lg h-[80vh] md:h-[75vh] flex flex-col overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 shrink-0">

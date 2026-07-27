@@ -281,9 +281,9 @@ export default function StudentProfileScreen({
       <main className="pt-20 px-6 max-w-2xl mx-auto space-y-6">
         
         {/* Profile Header & Avatar Editor */}
-        <section className="flex flex-col items-center mt-6 bg-white dark:bg-slate-900 p-6 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none">
+        <section className="flex flex-col items-center mt-6 bg-white dark:bg-slate-900 p-6 rounded-app-card border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-[32px] overflow-hidden border-4 border-emerald-500 dark:border-emerald-400 shadow-xl shadow-emerald-250/20">
+            <div className="w-24 h-24 rounded-app-card overflow-hidden border-4 border-emerald-500 dark:border-emerald-400 shadow-xl shadow-emerald-250/20">
               <img 
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover" 
@@ -302,21 +302,21 @@ export default function StudentProfileScreen({
 
           {/* Preset Avatar Selection Grid */}
           {showAvatarPicker && (
-            <div className="w-full bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 mt-4 animate-fadeIn">
+            <div className="w-full bg-slate-50 dark:bg-slate-800/50 p-4 rounded-app-card border border-slate-100 dark:border-slate-800 mt-4 animate-fadeIn">
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-3 text-center">{t.chooseAvatar}</p>
               <div className="grid grid-cols-4 gap-3">
                 {PRESET_AVATARS.map((av) => (
                   <button
                     key={av.id}
                     onClick={() => handleSelectAvatar(av.url)}
-                    className="w-12 h-12 rounded-xl overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all active:scale-95 mx-auto"
+                    className="w-12 h-12 rounded-app-btn overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all active:scale-95 mx-auto"
                   >
                     <img src={av.url} className="w-full h-full object-cover" alt={av.name} />
                   </button>
                 ))}
               </div>
               <div className="mt-3 flex items-center justify-center">
-                <label className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold px-4 py-2 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors text-center w-full">
+                <label className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold px-4 py-2 rounded-app-btn cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors text-center w-full">
                   <span>{lang === 'ar' ? 'تحميل صورة من جهازك' : 'Upload From Device'}</span>
                   <input type="file" accept="image/*" className="hidden" onChange={handleSimulateUpload} />
                 </label>
@@ -381,7 +381,7 @@ export default function StudentProfileScreen({
         </section>
 
         {/* Premium Upgrade & Pricing Screen 1 Integration */}
-        <section className="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/20 text-white p-6 rounded-[28px] shadow-xl relative overflow-hidden">
+        <section className="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/20 text-white p-6 rounded-app-card shadow-xl relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
           <div className="relative z-10 space-y-4">
             <div className="flex justify-between items-center">
@@ -507,7 +507,7 @@ export default function StudentProfileScreen({
             <>
               {/* Stats Grid */}
               <section className="grid grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-xl shadow-slate-200/30 dark:shadow-none">
+                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-app-card shadow-xl shadow-slate-200/30 dark:shadow-none">
                   <div className="flex items-center justify-between mb-2">
                     <LineChart className="w-6 h-6 text-emerald-500" />
                     <span className="text-xs bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 rounded-full font-bold">
@@ -523,7 +523,7 @@ export default function StudentProfileScreen({
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-between">
+                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-app-card shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-2">
                     <Flame className="w-6 h-6 text-amber-500 fill-amber-400" />
                   </div>
@@ -537,7 +537,7 @@ export default function StudentProfileScreen({
 
               {/* Performance Analysis */}
               {scoredLessons.length > 0 && (
-                <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-5 shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
+                <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-5 shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
                   <div className="flex items-center gap-3 border-b border-slate-50 dark:border-slate-800 pb-3">
                     <span className="p-2 bg-indigo-50 dark:bg-indigo-950 rounded-xl text-indigo-500">
                       <Award className="w-5 h-5" />
@@ -613,7 +613,7 @@ export default function StudentProfileScreen({
 
         {/* List Actions */}
         <section className="space-y-3">
-          <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
+          <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
 
             <button 
               onClick={() => setShowSettingsModal(true)}
@@ -811,7 +811,7 @@ export default function StudentProfileScreen({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] w-full max-w-md p-6 overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans flex flex-col max-h-[85vh]"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-dialog w-full max-w-md p-6 overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans flex flex-col max-h-[85vh]"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
