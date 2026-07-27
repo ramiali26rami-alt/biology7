@@ -204,7 +204,7 @@ export default function App() {
       {updateInfo.show && (
         <div
           className="fixed top-4 right-4 left-4 z-50
-            bg-green-500 text-white p-4 rounded-2xl
+            bg-green-500 text-white p-4 rounded-app-card
             shadow-xl text-center font-bold text-sm"
           dir="rtl"
         >

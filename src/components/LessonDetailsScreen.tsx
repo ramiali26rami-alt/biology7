@@ -77,7 +77,7 @@ export function LockedOverlay({ messageAr, messageEn, onUnlockClick }: LockedOve
       </p>
       <button
         onClick={onUnlockClick}
-        className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-6 py-3 rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
+        className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-6 py-3 rounded-app-btn shadow-md transition-all active:scale-95 cursor-pointer"
       >
         تفعيل النسخة الكاملة الآن 🔑
       </button>
@@ -94,7 +94,7 @@ interface SubjectiveQuestionItemProps {
 function SubjectiveQuestionItem({ q, lang, addQuestionToErrors }: SubjectiveQuestionItemProps) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
+    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-4 shadow-sm space-y-3">
       <div className="flex justify-between items-start gap-2">
         <span className="text-[9px] font-black uppercase px-2.5 py-1 bg-violet-50 dark:bg-violet-950 text-violet-600 dark:text-violet-400 rounded-md shrink-0">
           {q.category}
@@ -105,7 +105,7 @@ function SubjectiveQuestionItem({ q, lang, addQuestionToErrors }: SubjectiveQues
       </p>
       
       {expanded && (
-        <div className="bg-emerald-50/30 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-950 p-4 rounded-xl text-right animate-fadeIn">
+        <div className="bg-emerald-50/30 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-950 p-4 rounded-app-btn text-right animate-fadeIn">
           <span className="text-[10px] font-black text-emerald-500 block mb-1">
             {lang === 'ar' ? 'الإجابة النموذجية المعتمدة:' : 'Model Textbook Answer:'}
           </span>
@@ -157,7 +157,7 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
       <div className={`relative w-full h-full duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
 
         {/* الوجه الأول (سؤال) — بقى بلون accent البرتقالي بدل بنفسجي غير مرتبط بالهوية */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-app-card p-4 flex flex-col justify-between shadow-md backface-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-slate-900 border border-amber-100 dark:border-slate-800 rounded-app-card p-4 flex flex-col justify-between shadow-md backface-hidden">
           <div className="flex justify-between items-center">
             <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">
               {lang === 'ar' ? 'بطاقة مراجعة - سؤال' : 'Flashcard - Question'}
@@ -180,7 +180,7 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
         </div>
 
         {/* الوجه الثاني (إجابة) — لون العلامة الأساسي، وتم تصحيح كلاس اللون الذي كان يختفي في الوضع الداكن */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-app-card p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-slate-800 rounded-app-card p-4 flex flex-col justify-between shadow-md backface-hidden rotate-y-180">
           <div className="flex justify-between items-center">
             <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
               {lang === 'ar' ? 'الإجابة النموذجية' : 'Model Answer'}
@@ -645,7 +645,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('lessons-list', 'push_back')} 
-            className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
+            className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
           </button>
@@ -659,7 +659,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
           {lesson.videoUrl && (
             <button
               onClick={() => onNavigate('lesson-video', 'none')}
-              className="p-2 rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 active:scale-95 transition-transform"
+              className="tap-target p-2 rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 active:scale-95 transition-transform"
               title={lang === 'ar' ? 'فيديو الشرح' : 'Lesson Video'}
             >
               <Play className="w-5 h-5 fill-red-500/20" />
@@ -701,7 +701,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
           
           <button 
             onClick={() => setBookmarked(!bookmarked)}
-            className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             <Bookmark className={`w-5 h-5 transition-colors ${bookmarked ? 'text-emerald-500 fill-emerald-500' : 'text-slate-450'}`} />
           </button>
@@ -754,10 +754,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         {activeTab === 'explore' && (
           <div className="flex flex-col h-full animate-fadeIn">
             {/* Explore Sub-Tabs Navigation */}
-            <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-2xl gap-2 self-center w-full max-w-sm mx-auto mb-4 border border-slate-200/50 dark:border-slate-800 shrink-0">
+            <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-app-card gap-2 self-center w-full max-w-sm mx-auto mb-4 border border-slate-200/50 dark:border-slate-800 shrink-0">
               <button
                 onClick={() => setExploreSubTab('mindmap')}
-                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-app-btn transition-all cursor-pointer ${
                   exploreSubTab === 'mindmap'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -767,7 +767,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               </button>
               <button
                 onClick={() => setExploreSubTab('diagrams')}
-                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-app-btn transition-all cursor-pointer ${
                   exploreSubTab === 'diagrams'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -777,7 +777,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               </button>
               <button
                 onClick={() => setExploreSubTab('pdf')}
-                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 text-center py-2.5 px-3 text-xs font-black rounded-app-btn transition-all cursor-pointer ${
                   exploreSubTab === 'pdf'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200'
@@ -790,7 +790,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             {/* Sub-tab content area */}
             <div className="flex-1 min-h-0 relative">
               {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
-                <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-2xl overflow-y-auto p-4 shadow-sm scrollbar-none">
+                <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-app-card overflow-y-auto p-4 shadow-sm scrollbar-none">
                   {lesson.mindmapLocked && !premiumUnlocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
@@ -812,7 +812,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       )}
                       {mapError && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#0a0e1a] z-10 p-6 text-center">
-                          <div className="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center">
+                          <div className="w-14 h-14 bg-amber-500/10 rounded-app-card flex items-center justify-center">
                             <AlertTriangle className="w-7 h-7 text-amber-400" />
                           </div>
                           <div>
@@ -839,7 +839,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     </>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#0a0e1a] z-10 p-6 text-center animate-fadeIn">
-                      <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400">
+                      <div className="w-14 h-14 bg-emerald-500/10 rounded-app-card flex items-center justify-center text-emerald-400">
                         <BookOpen className="w-7 h-7" />
                       </div>
                       <div>
@@ -876,10 +876,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               )}
 
               {exploreSubTab === 'pdf' && lesson.pdfFile && (
-                <section className="bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-emerald-900 p-6 rounded-[28px] shadow-sm animate-fadeIn">
+                <section className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-emerald-900 p-6 rounded-app-card shadow-sm animate-fadeIn">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="p-2 bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 rounded-2xl font-black text-xs">
+                      <span className="p-2 bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 rounded-app-card font-black text-xs">
                         PDF
                       </span>
                       <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -896,7 +896,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     <button 
                       onClick={handleViewPdf}
                       disabled={loadingPdf}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 flex items-center gap-1.5 cursor-pointer"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-5 py-2.5 rounded-app-btn text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 flex items-center gap-1.5 cursor-pointer"
                     >
                       {loadingPdf ? (
                         <>
@@ -921,9 +921,9 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
           <div className="space-y-6 animate-fadeIn">
             {/* Visual Academy Summary */}
             {lesson.summaryPointsAr && lesson.summaryPointsAr.length > 0 && (
-              <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-sm space-y-4">
+              <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm space-y-4">
                 <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-3">
-                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950/50 rounded-xl text-emerald-600 shrink-0">
+                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950/50 rounded-app-btn text-emerald-600 shrink-0">
                     <Award className="w-5 h-5" />
                   </span>
                   <h3 className="font-black text-slate-850 dark:text-white text-[15px]">
@@ -966,7 +966,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       setCurrentFlashcardIndex((prev) => Math.max(0, prev - 1));
                     }}
                     disabled={currentFlashcardIndex === 0}
-                    className="flex items-center gap-1.5 text-xs font-black text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-150 dark:border-slate-800/60 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-sm"
+                    className="flex items-center gap-1.5 text-xs font-black text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-2.5 rounded-app-btn border border-slate-150 dark:border-slate-800/60 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-sm"
                   >
                     <ChevronRight className={`w-5 h-5 ${lang === 'ar' ? '' : 'rotate-180'}`} />
                     <span>{lang === 'ar' ? 'السابق' : 'Prev'}</span>
@@ -989,7 +989,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       setCurrentFlashcardIndex((prev) => Math.min(lesson.flashcards.length - 1, prev + 1));
                     }}
                     disabled={currentFlashcardIndex === lesson.flashcards.length - 1}
-                    className="flex items-center gap-1.5 text-xs font-black text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-150 dark:border-slate-800/60 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-sm"
+                    className="flex items-center gap-1.5 text-xs font-black text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-2.5 rounded-app-btn border border-slate-150 dark:border-slate-800/60 disabled:opacity-30 active:scale-95 transition-all cursor-pointer shadow-sm"
                   >
                     <span>{lang === 'ar' ? 'التالي' : 'Next'}</span>
                     <ChevronLeft className={`w-5 h-5 ${lang === 'ar' ? '' : 'rotate-180'}`} />
@@ -1025,10 +1025,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                   <div className="grid grid-cols-1 gap-4 animate-fadeIn">
                     <button 
                       onClick={() => startQuiz('quiz')}
-                      className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-sm flex items-center justify-between hover:border-emerald-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
+                      className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm flex items-center justify-between hover:border-emerald-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
-                        <span className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 rounded-2xl group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                        <span className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 rounded-app-card group-hover:bg-emerald-500 group-hover:text-white transition-colors">
                           <PenTool className="w-6 h-6" />
                         </span>
                         <div>
@@ -1045,10 +1045,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
                     <button 
                       onClick={() => startQuiz('ministry')}
-                      className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-sm flex items-center justify-between hover:border-red-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
+                      className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm flex items-center justify-between hover:border-red-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
-                        <span className="p-3 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-2xl group-hover:bg-red-500 group-hover:text-white transition-colors">
+                        <span className="p-3 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-app-card group-hover:bg-red-500 group-hover:text-white transition-colors">
                           <Award className="w-6 h-6" />
                         </span>
                         <div>
@@ -1068,10 +1068,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     {errorQuestions.length > 0 && (
                       <button 
                         onClick={() => startQuiz('errors')}
-                        className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-250 dark:border-amber-900 p-6 rounded-[28px] shadow-sm flex items-center justify-between hover:bg-amber-500/10 transition-all text-right w-full active:scale-98 group cursor-pointer"
+                        className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-250 dark:border-amber-900 p-6 rounded-app-card shadow-sm flex items-center justify-between hover:bg-amber-500/10 transition-all text-right w-full active:scale-98 group cursor-pointer"
                       >
                         <div className="flex items-center gap-4">
-                          <span className="p-3 bg-amber-500 text-white rounded-2xl">
+                          <span className="p-3 bg-amber-500 text-white rounded-app-card">
                             <AlertTriangle className="w-6 h-6" />
                           </span>
                           <div>
@@ -1094,7 +1094,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                   <div className="space-y-4 animate-fadeIn">
                     
                     {/* Active Quiz Header / Timer */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-sm flex justify-between items-center">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-app-card shadow-sm flex justify-between items-center">
                       <button 
                         onClick={() => {
                           setTimerActive(false);
@@ -1118,7 +1118,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     {!quizFinished ? (
                       <div className="space-y-4">
                         {/* Question body */}
-                        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[24px] shadow-sm">
+                        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm">
                           <div className="flex justify-between items-center mb-3">
                             <span className="text-[10px] font-black text-emerald-500 tracking-wider">
                               {lang === 'ar' ? `سؤال ${currentQuestionIndex + 1} من ${activeQuestions.length}` : `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`}
@@ -1136,7 +1136,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                         {(activeQuestions[currentQuestionIndex].hintAr || activeQuestions[currentQuestionIndex].definitionAr) && !showFeedback && (
                           <div className="flex flex-col items-end">
                             {showHintMsg ? (
-                              <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-4 rounded-2xl text-right animate-fadeIn">
+                              <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-4 rounded-app-card text-right animate-fadeIn">
                                 <span className="text-xs font-black text-amber-600 dark:text-amber-400 block mb-1">
                                   💡 {lang === 'ar' ? 'التلميح المنهجي المتاح:' : 'Available Study Hint:'}
                                 </span>
@@ -1162,7 +1162,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                                     setShowHintMsg(true);
                                   }
                                 }}
-                                className="flex items-center gap-1.5 text-xs text-amber-500 hover:text-amber-600 font-extrabold bg-amber-500/10 px-3.5 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
+                                className="flex items-center gap-1.5 text-xs text-amber-500 hover:text-amber-600 font-extrabold bg-amber-500/10 px-3.5 py-1.5 rounded-app-btn transition-all active:scale-95 cursor-pointer"
                               >
                                 <span>💡</span>
                                 <span>{lang === 'ar' ? 'عرض تلميح المساعدة (-0.25 د)' : 'Show Help Hint (-0.25 pts)'}</span>
@@ -1196,11 +1196,11 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                                   key={opt.key}
                                   onClick={() => handleOptionClick(opt.key)}
                                   disabled={showFeedback}
-                                  className={`w-full flex items-center p-4 rounded-xl border transition-all active:scale-[0.99] ${
+                                  className={`w-full flex items-center p-4 rounded-app-btn border transition-all active:scale-[0.99] ${
                                     lang === 'ar' ? 'text-right' : 'text-left'
                                   } ${optionStyle}`}
                                 >
-                                  <span className={`w-7 h-7 flex items-center justify-center rounded-lg font-black transition-colors shrink-0 ${
+                                  <span className={`w-7 h-7 flex items-center justify-center rounded-app-btn font-black transition-colors shrink-0 ${
                                     lang === 'ar' ? 'ms-3' : 'me-3'
                                   } ${
                                     isSelected 
@@ -1217,13 +1217,13 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           </div>
                         ) : (
                           // Fill in the blanks input
-                          <div className="space-y-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px]">
+                          <div className="space-y-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-app-card">
                             <input 
                               type="text" 
                               value={fillInput} 
                               onChange={(e) => setFillInput(e.target.value)}
                               disabled={showFeedback}
-                              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-3 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                               placeholder={lang === 'ar' ? 'اكتب كلمتك الإملائية الصحيحة...' : 'Type correct word...'}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && fillInput.trim()) {
@@ -1235,12 +1235,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                               <button 
                                 onClick={handleFillSubmit}
                                 disabled={!fillInput.trim()}
-                                className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold py-3.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
+                                className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold py-3.5 rounded-app-btn text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
                               >
                                 {lang === 'ar' ? 'تحقق من صحة العبارة' : 'Submit & Verify'}
                               </button>
                             ) : (
-                              <div className="text-xs font-bold p-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-650">
+                              <div className="text-xs font-bold p-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-app-btn text-slate-650">
                                 {lang === 'ar' ? `إجابتك المسجلة: ${fillInput}` : `Your Answer: ${fillInput}`}
                               </div>
                             )}
@@ -1249,7 +1249,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
                         {/* Active Feedback display */}
                         {showFeedback && (
-                          <div className={`p-5 rounded-[24px] border flex gap-3 animate-fadeIn ${
+                          <div className={`p-5 rounded-app-card border flex gap-3 animate-fadeIn ${
                             isAnswerCorrect 
                               ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-250 dark:border-emerald-900 text-emerald-900 dark:text-emerald-350' 
                               : 'bg-rose-50 dark:bg-rose-950/20 border-rose-150 dark:border-rose-950 text-rose-900 dark:text-rose-350'
@@ -1275,7 +1275,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           <div className={`flex ${lang === 'ar' ? 'justify-end' : 'justify-start'}`}>
                             <button 
                               onClick={handleNextQuestion}
-                              className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-8 py-3 rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+                              className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-8 py-3 rounded-app-btn text-xs shadow-md active:scale-95 transition-all cursor-pointer"
                             >
                               {currentQuestionIndex === activeQuestions.length - 1 
                                 ? (lang === 'ar' ? 'عرض النتيجة النهائية' : 'Show Scorecard') 
@@ -1286,16 +1286,16 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       </div>
                     ) : (
                       // Quiz Finished view
-                      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 text-center space-y-4 animate-scaleUp">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 text-center space-y-4 animate-scaleUp">
                         <div className="flex justify-center">
-                          <div className="w-16 h-16 bg-amber-400 text-white rounded-2xl flex items-center justify-center shadow-lg">
+                          <div className="w-16 h-16 bg-amber-400 text-white rounded-app-card flex items-center justify-center shadow-lg">
                             <Trophy className="w-8 h-8" />
                           </div>
                         </div>
                         <h3 className="font-black text-slate-800 dark:text-white text-base">
                           {lang === 'ar' ? 'تهانينا! لقد أنهيت الاختبار' : 'Great Job! Test Completed'}
                         </h3>
-                        <div className="flex justify-around items-center py-4 bg-slate-50 dark:bg-slate-950 rounded-2xl">
+                        <div className="flex justify-around items-center py-4 bg-slate-50 dark:bg-slate-950 rounded-app-btn">
                           <div>
                             <span className="block text-2xl font-black text-emerald-500">{score} / {activeQuestions.length}</span>
                             <span className="text-[10px] text-slate-400 font-bold">{lang === 'ar' ? 'الدرجة الكلية' : 'Final Score'}</span>
@@ -1310,13 +1310,13 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                         <div className="flex gap-2">
                           <button
                             onClick={() => startQuiz(quizMode)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 py-3 rounded-xl text-xs font-bold active:scale-95 transition-all"
+                            className="flex-1 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 py-3 rounded-app-btn text-xs font-bold active:scale-95 transition-all"
                           >
                             {lang === 'ar' ? 'إعادة الاختبار 🔄' : 'Retake Exam 🔄'}
                           </button>
                           <button
                             onClick={() => setQuizMode('select')}
-                            className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-xs font-black active:scale-95 transition-all shadow-md shadow-emerald-500/10"
+                            className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-app-btn text-xs font-black active:scale-95 transition-all shadow-md shadow-emerald-500/10"
                           >
                             {lang === 'ar' ? 'خروج للرئيسية' : 'Exit to Main'}
                           </button>
@@ -1345,7 +1345,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             const nextTitle = nextLesson.folder.split('/')[1] ||
               (lang === 'ar' ? nextLesson.titleAr : nextLesson.titleEn);
             return (
-              <section className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[28px] p-5 shadow-xl shadow-emerald-500/20 relative overflow-hidden animate-fadeIn">
+              <section className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-app-card p-5 shadow-xl shadow-emerald-500/20 relative overflow-hidden animate-fadeIn">
                 <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-xl" />
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-1">
@@ -1361,7 +1361,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       setActiveTab('explore');
                       onNavigate('lesson-details', 'push');
                     }}
-                    className="w-full bg-white/20 hover:bg-white/30 text-white font-black py-3 rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2 border border-white/20 cursor-pointer"
+                    className="w-full bg-white/20 hover:bg-white/30 text-white font-black py-3 rounded-app-btn active:scale-95 transition-all text-sm flex items-center justify-center gap-2 border border-white/20 cursor-pointer"
                   >
                     {lang === 'ar' ? 'انتقال إلى الدرس التالي' : 'Start Next Lesson'}
                     {lang === 'ar'
@@ -1389,7 +1389,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>
@@ -1432,12 +1432,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: '100%', opacity: 0.9 }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="bg-white dark:bg-slate-900 border-t md:border border-slate-200 dark:border-slate-800 rounded-t-[32px] md:rounded-[32px] w-full max-w-lg h-[80vh] md:h-[75vh] flex flex-col overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans"
+              className="bg-white dark:bg-slate-900 border-t md:border border-slate-200 dark:border-slate-800 rounded-t-app-dialog md:rounded-app-dialog w-full max-w-lg h-[80vh] md:h-[75vh] flex flex-col overflow-hidden shadow-2xl relative z-10 text-slate-800 dark:text-slate-100 font-sans"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
                 <div className="flex items-center gap-2.5">
-                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-app-btn">
                     <Sparkles className="w-5 h-5 animate-pulse" />
                   </span>
                   <div className="text-right">
@@ -1459,7 +1459,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/20">
-                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-lg font-mono text-center shrink-0">
+                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-app-btn font-mono text-center shrink-0">
                   Debug - LocalStorage Server URL: "{localStorage.getItem('server_url') || 'none'}" | Env URL: "{import.meta.env.VITE_SERVER_URL || 'none'}"
                 </div>
                 {tutorMessages.map((msg, i) => (
@@ -1468,7 +1468,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-[20px] p-3 text-xs leading-relaxed shadow-sm font-semibold whitespace-pre-line ${
+                      className={`max-w-[85%] rounded-app-card p-3 text-xs leading-relaxed shadow-sm font-semibold whitespace-pre-line ${
                         msg.role === 'user'
                           ? 'bg-emerald-500 text-white rounded-br-none'
                           : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-150 border border-slate-100 dark:border-slate-850 rounded-bl-none'
@@ -1481,7 +1481,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                 
                 {tutorLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-850 rounded-[20px] rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-850 rounded-app-card rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
                       <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
                       <span>المعلم الافتراضي يفكر في الإجابة...</span>
                     </div>
@@ -1489,7 +1489,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                 )}
 
                 {tutorError && (
-                  <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-xl p-3 text-xs text-rose-600 dark:text-rose-400 font-extrabold text-center">
+                  <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-app-btn p-3 text-xs text-rose-600 dark:text-rose-400 font-extrabold text-center">
                     ⚠️ {tutorError}
                   </div>
                 )}
@@ -1509,12 +1509,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     value={tutorInput}
                     onChange={(e) => setTutorInput(e.target.value)}
                     placeholder="اكتب سؤالك هنا عن الدرس..."
-                    className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
                     disabled={tutorLoading}
                   />
                   <button
                     type="submit"
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-2.5 rounded-xl shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer border-0"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-2.5 rounded-app-btn shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer border-0"
                     disabled={!tutorInput.trim() || tutorLoading}
                   >
                     إرسال

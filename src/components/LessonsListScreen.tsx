@@ -88,7 +88,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
           <div className="flex items-center gap-4">
             <button 
               onClick={() => onNavigate('units-navigation', 'push_back')} 
-              className="active:scale-95 transition-transform p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-800 dark:text-slate-200"
+              className="active:scale-95 transition-transform tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-800 dark:text-slate-200"
             >
               {backIcon}
             </button>
@@ -96,7 +96,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
           </div>
           <button
             onClick={() => { setShowSearch(s => !s); setSearchQuery(''); }}
-            className={`p-2 rounded-full transition-colors text-slate-600 dark:text-slate-400 ${showSearch ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+            className={`tap-target p-2 rounded-full transition-colors text-slate-600 dark:text-slate-400 ${showSearch ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
           >
             <Search className="w-5 h-5" />
           </button>

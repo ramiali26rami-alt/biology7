@@ -121,7 +121,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('main-dashboard', 'push_back')} 
-            className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
+            className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
           </button>
@@ -148,7 +148,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
 
         {/* Locked/Premium Gating Modal Prompt */}
         {showPremiumPrompt && (
-          <div className="bg-gradient-to-tr from-slate-900 to-slate-850 text-white p-6 rounded-[28px] border border-slate-700 shadow-2xl space-y-4 animate-scaleUp">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-850 text-white p-6 rounded-app-card border border-slate-700 shadow-2xl space-y-4 animate-scaleUp">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2">
                 <Crown className="w-5 h-5 text-amber-400 fill-amber-400" />
@@ -156,7 +156,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
               </div>
               <button 
                 onClick={() => setShowPremiumPrompt(false)}
-                className="text-slate-400 hover:text-white font-extrabold text-sm"
+                className="tap-target text-slate-400 hover:text-white font-extrabold text-sm"
               >
                 ✕
               </button>
@@ -167,13 +167,13 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
             <div className="flex gap-3">
               <button 
                 onClick={() => setShowPremiumPrompt(false)} 
-                className="flex-1 bg-slate-850 text-slate-400 hover:text-white font-bold py-2 rounded-xl text-xs border border-slate-700"
+                className="flex-1 bg-slate-850 text-slate-400 hover:text-white font-bold py-2 rounded-app-btn text-xs border border-slate-700"
               >
                 {lang === 'ar' ? 'إغلاق' : 'Close'}
               </button>
               <button 
                 onClick={() => onNavigate('student-profile', 'push')} 
-                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl text-xs shadow-md"
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-app-btn text-xs shadow-md"
               >
                 {t.premiumButtonText}
               </button>

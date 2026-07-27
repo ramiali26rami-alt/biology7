@@ -62,11 +62,11 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   if (!imgUrl) return null;
 
   return (
-    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1.5 rounded-xl shadow-sm overflow-hidden my-2">
+    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1.5 rounded-app-btn shadow-sm overflow-hidden my-2">
       <img 
         src={imgUrl} 
         alt="Question Diagram" 
-        className="max-h-28 object-contain rounded-lg"
+        className="max-h-28 object-contain rounded-app-btn"
       />
     </div>
   );
@@ -168,7 +168,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
           <div className="flex items-center gap-4 w-full">
             <button 
               onClick={() => onNavigate('lessons-list', 'push_back')}
-              className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
+              className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               {backIcon}
             </button>
@@ -185,7 +185,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
           </p>
           <button 
             onClick={() => onNavigate('lessons-list', 'push_back')}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-app-btn text-xs shadow-md active:scale-95 transition-all cursor-pointer"
           >
             {lang === 'ar' ? 'العودة لقائمة الدروس' : 'Back to Lessons List'}
           </button>
@@ -294,7 +294,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
           <div className="flex items-center gap-4 w-full">
             <button 
               onClick={() => onNavigate('lessons-list', 'push_back')}
-              className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
+              className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
             >
               {backIcon}
             </button>
@@ -317,7 +317,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
             </p>
             <button
               onClick={() => onNavigate('student-profile', 'push')}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-6 py-3 rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-6 py-3 rounded-app-btn shadow-md transition-all active:scale-95 cursor-pointer"
             >
               تفعيل النسخة الكاملة الآن 🔑
             </button>
@@ -334,7 +334,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
         <div className="flex items-center gap-4 w-full">
           <button 
             onClick={() => onNavigate('lessons-list', 'push_back')}
-            className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
+            className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
           >
             {backIcon}
           </button>
@@ -346,7 +346,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
       <main className="pt-18 px-4 max-w-2xl mx-auto space-y-3.5">
         
         {/* Progress Header */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-2xl shadow-sm">
+        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-app-card shadow-sm">
           <div className="flex justify-between items-end mb-2">
             <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
               <span className="text-[10px] text-slate-450 dark:text-slate-500 font-bold block">
@@ -379,7 +379,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
             )}
 
             {/* Question Box */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-2xl shadow-sm">
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-app-card shadow-sm">
               <p className="text-slate-850 dark:text-slate-100 text-xs font-black leading-relaxed">
                 <strong>{currentQuestionIndex + 1}.</strong> {currentQ.text}
               </p>
@@ -389,7 +389,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
             {(currentQ.hint || currentQ.definition) && !showFeedback && (
               <div className="flex flex-col items-end pt-1">
                 {showHintMsg ? (
-                  <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-4 rounded-2xl text-right animate-fadeIn">
+                  <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-4 rounded-app-card text-right animate-fadeIn">
                     <span className="text-xs font-black text-amber-600 dark:text-amber-400 block mb-1">
                       💡 {lang === 'ar' ? 'التلميح التعليمي / التعريف:' : 'Study Hint / Definition:'}
                     </span>
@@ -415,7 +415,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                         setShowHintMsg(true);
                       }
                     }}
-                    className="flex items-center gap-1.5 text-xs text-amber-500 hover:text-amber-600 font-extrabold bg-amber-500/10 hover:bg-amber-500/15 px-3.5 py-2 rounded-xl transition-all active:scale-95 cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs text-amber-500 hover:text-amber-600 font-extrabold bg-amber-500/10 hover:bg-amber-500/15 px-3.5 py-2 rounded-app-btn transition-all active:scale-95 cursor-pointer"
                   >
                     <span>💡</span>
                     <span>{lang === 'ar' ? 'عرض التلميح (خصم 0.25 د)' : 'Show Hint (-0.25 pts)'}</span>
@@ -451,7 +451,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                       <button 
                         key={opt.key}
                         onClick={() => handleOptionClick(opt.key)}
-                        className={`w-full flex items-center p-2.5 rounded-xl border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
+                        className={`w-full flex items-center p-2.5 rounded-app-btn border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
                           lang === 'ar' ? 'text-right' : 'text-left'
                         } ${optionStyle}`}
                         disabled={showFeedback}
@@ -474,13 +474,13 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
               </div>
             ) : (
               /* Fill in the Blank Form */
-              <div className="space-y-2.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-xl">
+              <div className="space-y-2.5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-btn">
                 <input 
                   type="text" 
                   value={fillInput} 
                   onChange={(e) => setFillInput(e.target.value)}
                   disabled={showFeedback}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   placeholder={lang === 'ar' ? 'اكتب كلمتك هنا...' : 'Type your word here...'}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && fillInput.trim()) {
@@ -493,12 +493,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                   <button 
                     onClick={handleFillSubmit}
                     disabled={!fillInput.trim()}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 dark:disabled:bg-slate-855 disabled:text-slate-400 text-white font-extrabold py-2.5 rounded-xl text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 dark:disabled:bg-slate-855 disabled:text-slate-400 text-white font-extrabold py-2.5 rounded-app-btn text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
                   >
                     {lang === 'ar' ? 'إنهاء الإجابة والتحقق' : 'Submit & Verify Answer'}
                   </button>
                 ) : (
-                  <div className="text-xs font-bold p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-650 dark:text-slate-350">
+                  <div className="text-xs font-bold p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-app-btn text-slate-650 dark:text-slate-350">
                     {lang === 'ar' 
                       ? `إجابتك: ${fillInput}` 
                       : `Your Answer: ${fillInput}`}
@@ -509,7 +509,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
             {/* Explanation Alert Banner */}
             {showFeedback && (
-              <div className={`p-3 rounded-xl flex items-start gap-2.5 border animate-fadeIn ${
+              <div className={`p-3 rounded-app-btn flex items-start gap-2.5 border animate-fadeIn ${
                 isAnswerCorrect 
                   ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-250 dark:border-emerald-900 text-emerald-900 dark:text-emerald-350' 
                   : 'bg-rose-50 dark:bg-rose-950/20 border-rose-150 dark:border-rose-950 text-rose-900 dark:text-rose-350'
@@ -535,7 +535,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
               <div className={`flex ${lang === 'ar' ? 'justify-end' : 'justify-start'} pt-1`}>
                 <button 
                   onClick={handleNextQuestion}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-6 py-2.5 rounded-app-btn text-xs shadow-md active:scale-95 transition-all cursor-pointer"
                 >
                   {currentQuestionIndex === questions.length - 1 
                     ? (lang === 'ar' ? 'عرض النتائج النهائية' : 'Show Final Results') 
@@ -547,10 +547,10 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
         ) : (
           /* Finished Score Card View */
           <>
-          <section className="bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden animate-scaleUp">
+          <section className="bg-white dark:bg-slate-900 rounded-app-card p-6 shadow-xl border border-slate-100 dark:border-slate-800 text-center relative overflow-hidden animate-scaleUp">
             {/* Trophy icon */}
             <div className="flex justify-center mb-3">
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${
+              <div className={`w-16 h-16 rounded-app-card flex items-center justify-center shadow-lg ${
                 Math.round((score / questions.length) * 100) === 100
                   ? 'bg-amber-400 shadow-amber-300/40'
                   : Math.round((score / questions.length) * 100) >= 75
@@ -593,14 +593,14 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
             <div className="flex gap-3">
               <button 
                 onClick={handleRestartQuiz}
-                className="flex-1 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-slate-200 font-bold py-3 rounded-xl active:scale-95 transition-all text-xs border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-slate-200 font-bold py-3 rounded-app-btn active:scale-95 transition-all text-xs border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RotateCw className="w-4 h-4" />
                 {t.retakeQuiz}
               </button>
               <button 
                 onClick={() => onNavigate('lessons-list', 'push_back')}
-                className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-xl active:scale-95 transition-all text-xs cursor-pointer"
+                className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-app-btn active:scale-95 transition-all text-xs cursor-pointer"
               >
                 {lang === 'ar' ? 'قائمة الدروس' : 'Lessons List'}
               </button>
@@ -618,7 +618,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
               const nextTitle = nextLesson.folder.split('/')[1] ||
                 (lang === 'ar' ? nextLesson.titleAr : nextLesson.titleEn);
               return (
-                <section className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[28px] p-6 shadow-xl shadow-emerald-500/20 relative overflow-hidden">
+                <section className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-app-card p-6 shadow-xl shadow-emerald-500/20 relative overflow-hidden">
                   <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-xl" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-1">
@@ -633,7 +633,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                         onSelectLesson(nextLesson);
                         onNavigate('lesson-details', 'push');
                       }}
-                      className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white font-black py-3.5 rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2 border border-white/20"
+                      className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white font-black py-3.5 rounded-app-btn active:scale-95 transition-all text-sm flex items-center justify-center gap-2 border border-white/20"
                     >
                       {lang === 'ar' ? 'انتقل للدرس التالي' : 'Go to Next Lesson'}
                       {lang === 'ar'
@@ -645,7 +645,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
               );
             } else {
               return (
-                <section className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-[28px] p-6 shadow-xl shadow-amber-500/20 text-center relative overflow-hidden">
+                <section className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-app-card p-6 shadow-xl shadow-amber-500/20 text-center relative overflow-hidden">
                   <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-xl" />
                   <div className="relative z-10">
                     <div className="text-4xl mb-2">🎉</div>
@@ -685,7 +685,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
         <button 
           onClick={() => onNavigate('biology-quiz', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <PenTool className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.openTraining}</span>

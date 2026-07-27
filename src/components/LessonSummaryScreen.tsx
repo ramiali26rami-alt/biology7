@@ -55,13 +55,13 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('lesson-video', 'push_back')} 
-            className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
+            className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
           </button>
           <h1 className="font-black text-lg text-slate-900 dark:text-white">{t.summaryHeading}</h1>
         </div>
-        <button className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-emerald-500">
+        <button className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-emerald-500">
           <Sparkles className="w-5 h-5" />
         </button>
       </header>
@@ -95,9 +95,9 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
         </nav>
 
         {/* High-Yield Point Checklist */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
+        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-3">
-            <span className="p-2 bg-amber-50 dark:bg-amber-950 rounded-xl text-amber-500">
+            <span className="p-2 bg-amber-50 dark:bg-amber-950 rounded-app-btn text-amber-500">
               <Award className="w-5 h-5 fill-amber-500" />
             </span>
             <h3 className="font-black text-slate-800 dark:text-white text-[15px]">{t.highYieldTitle}</h3>
@@ -146,9 +146,9 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
                         isFlipped ? 'rotate-y-180' : ''
                       }`}>
                         {/* Front Side */}
-                        <div className="absolute inset-0 w-full h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 shadow-md backface-hidden flex items-center justify-between gap-4">
+                        <div className="absolute inset-0 w-full h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-5 shadow-md backface-hidden flex items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
-                            <span className="p-2.5 bg-emerald-50 dark:bg-emerald-950 rounded-xl text-emerald-500 shrink-0">
+                            <span className="p-2.5 bg-emerald-50 dark:bg-emerald-950 rounded-app-btn text-emerald-500 shrink-0">
                               <HelpCircle className="w-5 h-5" />
                             </span>
                             <p className={`text-xs font-black text-slate-800 dark:text-slate-100 leading-normal ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
@@ -159,9 +159,9 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
                         </div>
 
                         {/* Back Side */}
-                        <div className="absolute inset-0 w-full h-full bg-emerald-500 text-white rounded-2xl p-5 shadow-md backface-hidden rotate-y-180 flex items-center justify-between gap-4">
+                        <div className="absolute inset-0 w-full h-full bg-emerald-500 text-white rounded-app-card p-5 shadow-md backface-hidden rotate-y-180 flex items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
-                            <span className="p-2.5 bg-white/20 rounded-xl text-white shrink-0">
+                            <span className="p-2.5 bg-white/20 rounded-app-btn text-white shrink-0">
                               <Sparkles className="w-5 h-5 fill-white" />
                             </span>
                             <p className={`text-xs font-black leading-relaxed ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
@@ -187,7 +187,7 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
         <div className={`flex items-center mt-6 ${lang === 'ar' ? 'justify-end' : 'justify-start'}`}>
           <button 
             onClick={() => onNavigate('biology-quiz', 'push')}
-            className="flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-extrabold shadow-md hover:scale-[1.02] active:scale-95 group transition-all"
+            className="flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-app-btn text-xs font-extrabold shadow-md hover:scale-[1.02] active:scale-95 group transition-all"
           >
             {t.nextPhase}
             {lang === 'ar' ? (
@@ -211,7 +211,7 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
         
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>

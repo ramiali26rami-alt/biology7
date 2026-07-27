@@ -263,14 +263,14 @@ export default function StudentProfileScreen({
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <button 
           onClick={() => onNavigate('main-dashboard', 'push_back')} 
-          className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
+          className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
         >
           {backIcon}
         </button>
         <h1 className="font-black text-lg text-slate-900 dark:text-white">{t.profileScreenTitle}</h1>
         <button 
           onClick={() => setShowSettingsModal(true)}
-          className="active:scale-95 w-11 h-11 flex items-center justify-center rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 cursor-pointer"
+          className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 cursor-pointer"
           aria-label="Open settings"
         >
           <Settings className="w-5 h-5" />
@@ -293,7 +293,7 @@ export default function StudentProfileScreen({
             </div>
             <button 
               onClick={() => setShowAvatarPicker(!showAvatarPicker)}
-              className="absolute bottom-0 right-0 bg-emerald-500 dark:bg-emerald-600 text-white p-2 rounded-xl border-2 border-white dark:border-slate-900 shadow-md hover:bg-emerald-600 active:scale-90 transition-all flex items-center justify-center"
+              className="absolute bottom-0 right-0 bg-emerald-500 dark:bg-emerald-600 text-white p-2 rounded-app-btn border-2 border-white dark:border-slate-900 shadow-md hover:bg-emerald-600 active:scale-90 transition-all flex items-center justify-center"
               title={t.uploadPhoto}
             >
               <Camera className="w-4 h-4" />
@@ -346,7 +346,7 @@ export default function StudentProfileScreen({
                   type="text" 
                   value={inputName} 
                   onChange={(e) => setInputName(e.target.value)} 
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
                   required
                 />
               </div>
@@ -356,7 +356,7 @@ export default function StudentProfileScreen({
                   type="email" 
                   value={inputEmail} 
                   onChange={(e) => setInputEmail(e.target.value)} 
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
                   required
                 />
               </div>
@@ -364,13 +364,13 @@ export default function StudentProfileScreen({
                 <button 
                   type="button" 
                   onClick={() => setIsEditing(false)} 
-                  className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold py-2.5 rounded-xl text-xs active:scale-95 transition-transform"
+                  className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold py-2.5 rounded-app-btn text-xs active:scale-95 transition-transform"
                 >
                   {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs active:scale-95 transition-transform flex items-center justify-center gap-1.5"
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-app-btn text-xs active:scale-95 transition-transform flex items-center justify-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   {t.save}
@@ -386,7 +386,7 @@ export default function StudentProfileScreen({
           <div className="relative z-10 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <span className="p-2 bg-white/10 rounded-xl border border-white/10">
+                <span className="p-2 bg-white/10 rounded-app-btn border border-white/10">
                   <CreditCard className="w-5 h-5 text-emerald-400" />
                 </span>
                 <h3 className="font-black text-lg">{t.premiumStatus}</h3>
@@ -409,7 +409,7 @@ export default function StudentProfileScreen({
 
             <button 
               onClick={handleTogglePremium}
-              className={`w-full font-black text-sm py-3.5 rounded-xl active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+              className={`w-full font-black text-sm py-3.5 rounded-app-btn active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
                 premiumUnlocked 
                   ? 'bg-white/10 hover:bg-white/15 text-emerald-300 border border-white/10' 
                   : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-950/30'
@@ -434,18 +434,18 @@ export default function StudentProfileScreen({
                     onChange={(e) => setActivationKey(e.target.value)}
                     placeholder={t.activationKeyPlaceholder}
                     disabled={activationLoading}
-                    className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-xl px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider focus:outline-none transition-all"
+                    className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-app-btn px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider focus:outline-none transition-all"
                   />
                   <button
                     type="submit"
                     disabled={activationLoading || !activationKey.trim()}
-                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 shadow-md shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-4 py-2.5 rounded-app-btn transition-all active:scale-95 shadow-md shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     {activationLoading ? t.activating : t.activateBtn}
                   </button>
                 </div>
                 {activationMessage && (
-                  <div className={`text-[10px] font-black px-3 py-2 rounded-lg ${
+                  <div className={`text-[10px] font-black px-3 py-2 rounded-app-btn ${
                     activationMessage.type === 'success' 
                       ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
                       : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
@@ -470,7 +470,7 @@ export default function StudentProfileScreen({
                     localStorage.setItem('server_url', e.target.value.trim());
                   }}
                   placeholder="https://biology-server.up.railway.app"
-                  className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-xl px-4 py-2.5 text-xs font-mono focus:outline-none transition-all"
+                  className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-app-btn px-4 py-2.5 text-xs font-mono focus:outline-none transition-all"
                 />
               </div>
               <p className="text-[11.5px] text-emerald-200/70 font-bold leading-normal">
@@ -539,7 +539,7 @@ export default function StudentProfileScreen({
               {scoredLessons.length > 0 && (
                 <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-5 shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
                   <div className="flex items-center gap-3 border-b border-slate-50 dark:border-slate-800 pb-3">
-                    <span className="p-2 bg-indigo-50 dark:bg-indigo-950 rounded-xl text-indigo-500">
+                    <span className="p-2 bg-indigo-50 dark:bg-indigo-950 rounded-app-btn text-indigo-500">
                       <Award className="w-5 h-5" />
                     </span>
                     <h3 className="font-black text-slate-800 dark:text-white text-[15px]">
@@ -573,7 +573,7 @@ export default function StudentProfileScreen({
                   {(strong.length > 0 || weak.length > 0) && (
                     <div className="grid grid-cols-2 gap-3 pt-1">
                       {strong.length > 0 && (
-                        <div className="bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl p-3 border border-emerald-100 dark:border-emerald-900">
+                        <div className="bg-emerald-50 dark:bg-emerald-950/40 rounded-app-card p-3 border border-emerald-100 dark:border-emerald-900">
                           <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2">
                             ✅ {lang === 'ar' ? 'نقاط القوة' : 'Strengths'}
                           </p>
@@ -583,7 +583,7 @@ export default function StudentProfileScreen({
                         </div>
                       )}
                       {weak.length > 0 && (
-                        <div className="bg-rose-50 dark:bg-rose-950/40 rounded-2xl p-3 border border-rose-100 dark:border-rose-900">
+                        <div className="bg-rose-50 dark:bg-rose-950/40 rounded-app-card p-3 border border-rose-100 dark:border-rose-900">
                           <p className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-2">
                             📚 {lang === 'ar' ? 'تحتاج مراجعة' : 'Needs Review'}
                           </p>
@@ -620,7 +620,7 @@ export default function StudentProfileScreen({
               className="w-full flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-lg">
+                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-app-btn">
                   <Sliders className="w-5 h-5 text-purple-500" />
                 </div>
                 <span className="text-sm font-bold text-slate-800 dark:text-slate-250">{t.appSettings}</span>
@@ -633,7 +633,7 @@ export default function StudentProfileScreen({
             {/* الوضع الداكن / Dark Mode Toggle */}
             <div className="w-full flex items-center justify-between p-4 bg-transparent transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-lg">
+                <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 flex items-center justify-center rounded-app-btn">
                   {isDarkMode ? (
                     <Moon className="w-5 h-5 text-indigo-500 fill-indigo-100" />
                   ) : (
@@ -664,7 +664,7 @@ export default function StudentProfileScreen({
           <div className="mx-4 border-t border-slate-100 dark:border-slate-800"></div>
           <div className="p-4 space-y-3">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${
+              <div className={`w-10 h-10 flex items-center justify-center rounded-app-btn ${
                 notifStatus === 'granted'
                   ? 'bg-indigo-100 dark:bg-indigo-900'
                   : 'bg-slate-100 dark:bg-slate-800'
@@ -692,13 +692,13 @@ export default function StudentProfileScreen({
                     setNotifStatus(res as 'granted'|'denied'|'default');
                     if (res === 'granted') scheduleReminderNotification(reminderTime, lang);
                   }}
-                  className="bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] px-3 py-1.5 rounded-lg active:scale-95 transition-all shrink-0"
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] px-3 py-1.5 rounded-app-btn active:scale-95 transition-all shrink-0"
                 >
                   {lang === 'ar' ? 'تفعيل' : 'Enable'}
                 </button>
               )}
               {notifStatus === 'granted' && (
-                <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 dark:bg-indigo-950 px-2 py-1 rounded-lg shrink-0">
+                <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 dark:bg-indigo-950 px-2 py-1 rounded-app-btn shrink-0">
                   {lang === 'ar' ? 'مفعّلة ✓' : 'Active ✓'}
                 </span>
               )}
@@ -706,7 +706,7 @@ export default function StudentProfileScreen({
 
             {/* Time Picker — only if granted */}
             {notifStatus === 'granted' && (
-              <div className={`flex items-center gap-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl p-3 border border-indigo-100 dark:border-indigo-900`}>
+              <div className={`flex items-center gap-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-app-card p-3 border border-indigo-100 dark:border-indigo-900`}>
                 <Bell className="w-4 h-4 text-indigo-400 shrink-0" />
                 <div className={`flex-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
                   <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 mb-1">
@@ -716,7 +716,7 @@ export default function StudentProfileScreen({
                     type="time"
                     value={reminderTime}
                     onChange={(e) => { setReminderTimeState(e.target.value); setReminderSaved(false); }}
-                    className="bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl px-3 py-1.5 text-sm font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:border-indigo-500 w-full"
+                    className="bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-app-btn px-3 py-1.5 text-sm font-black text-indigo-700 dark:text-indigo-300 focus:outline-none focus:border-indigo-500 w-full"
                   />
                 </div>
                 <button
@@ -725,7 +725,7 @@ export default function StudentProfileScreen({
                     setReminderSaved(true);
                     setTimeout(() => setReminderSaved(false), 2000);
                   }}
-                  className={`shrink-0 font-black text-[10px] px-3 py-1.5 rounded-xl active:scale-95 transition-all ${
+                  className={`shrink-0 font-black text-[10px] px-3 py-1.5 rounded-app-btn active:scale-95 transition-all ${
                     reminderSaved
                       ? 'bg-emerald-500 text-white'
                       : 'bg-indigo-500 hover:bg-indigo-600 text-white'
@@ -741,10 +741,10 @@ export default function StudentProfileScreen({
 
           <button 
             onClick={handleResetData}
-            className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-rose-100 dark:border-rose-950 rounded-[24px] hover:bg-rose-50/50 dark:hover:bg-rose-950/20 transition-colors group shadow-md shadow-rose-100/20"
+            className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-rose-100 dark:border-rose-950 rounded-app-card hover:bg-rose-50/50 dark:hover:bg-rose-950/20 transition-colors group shadow-md shadow-rose-100/20"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center rounded-xl text-rose-600">
+              <div className="w-10 h-10 bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center rounded-app-btn text-rose-600">
                 <LogOut className="w-5 h-5" />
               </div>
               <span className="text-sm font-extrabold text-rose-600">{t.logout}</span>
@@ -786,7 +786,7 @@ export default function StudentProfileScreen({
 
         <button 
           onClick={() => onNavigate('student-profile', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <User className="w-5 h-5 mb-0.5" />
           <span className="text-xs">{t.myProfile}</span>
@@ -816,7 +816,7 @@ export default function StudentProfileScreen({
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2.5">
-                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-app-btn">
                     <Settings className="w-5 h-5" />
                   </span>
                   <h3 className="font-black text-sm text-slate-900 dark:text-white">
@@ -825,7 +825,7 @@ export default function StudentProfileScreen({
                 </div>
                 <button
                   onClick={() => setShowSettingsModal(false)}
-                  className="p-2 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-full text-slate-400 dark:text-slate-500 transition-colors"
+                  className="tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-855 rounded-full text-slate-400 dark:text-slate-500 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -834,9 +834,9 @@ export default function StudentProfileScreen({
               {/* Body Content */}
               <div className="space-y-4 overflow-y-auto max-h-[60vh] pe-1.5 scrollbar-thin">
                 {/* Font Size Settings */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm text-emerald-500">
+                    <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm text-emerald-500">
                       <Sliders className="w-4 h-4" />
                     </div>
                     <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -848,12 +848,12 @@ export default function StudentProfileScreen({
                   </div>
                   
                   {/* Segmented Selector for Font Sizes */}
-                  <div className="grid grid-cols-4 gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="grid grid-cols-4 gap-1 bg-white dark:bg-slate-900 p-1 rounded-app-btn border border-slate-100 dark:border-slate-800">
                     {(['small', 'normal', 'large', 'xlarge'] as const).map((size) => (
                       <button
                         key={size}
                         onClick={() => setFontSize(size)}
-                        className={`text-[10px] font-black py-2 rounded-lg transition-all active:scale-95 cursor-pointer ${
+                        className={`text-[10px] font-black py-2 rounded-app-btn transition-all active:scale-95 cursor-pointer ${
                           fontSize === size
                             ? 'bg-emerald-500 text-white shadow-sm'
                             : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -868,7 +868,7 @@ export default function StudentProfileScreen({
                   </div>
 
                   {/* Font Size Preview Text */}
-                  <div className="bg-white dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-850/50 text-center">
+                  <div className="bg-white dark:bg-slate-900/50 p-2.5 rounded-app-btn border border-slate-100 dark:border-slate-850/50 text-center">
                     <p 
                       className="text-slate-850 dark:text-slate-200 font-bold transition-all"
                       style={{ 
@@ -881,9 +881,9 @@ export default function StudentProfileScreen({
                 </div>
 
                 {/* Audio/Sound Settings */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm">
+                    <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm">
                       {soundEnabled ? (
                         <Volume2 className="w-4 h-4 text-emerald-500" />
                       ) : (
@@ -913,9 +913,9 @@ export default function StudentProfileScreen({
                 {showAdminOptions && (
                   <>
                     {/* Demo Control: Unlock All Content */}
-                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm">
+                        <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm">
                           <Flame className="w-4 h-4 text-amber-500" />
                         </div>
                         <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -936,10 +936,10 @@ export default function StudentProfileScreen({
                     </div>
 
                     {/* Admin Dashboard Entry */}
-                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
+                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-xl shadow-sm text-emerald-500">
+                          <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm text-emerald-500">
                             <UserCheck className="w-4 h-4" />
                           </div>
                           <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -955,7 +955,7 @@ export default function StudentProfileScreen({
                         <input
                           type="password"
                           placeholder={lang === 'ar' ? 'أدخل الرمز السري' : 'Enter Admin PIN'}
-                          className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 text-center"
+                          className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 text-center"
                           maxLength={8}
                           id="admin-pin-input"
                           onKeyDown={(e) => {
@@ -966,7 +966,7 @@ export default function StudentProfileScreen({
                         />
                         <button
                           onClick={handleCheckAdminPin}
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-4 py-1.5 rounded-xl active:scale-95 transition-all shrink-0"
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-4 py-1.5 rounded-app-btn active:scale-95 transition-all shrink-0"
                         >
                           {lang === 'ar' ? 'دخول' : 'Enter'}
                         </button>
@@ -976,7 +976,7 @@ export default function StudentProfileScreen({
                 )}
 
                 {/* Platform Policies & Terms Section */}
-                <div className="bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-3">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                     <span className="text-xs font-bold">{lang === 'ar' ? 'حول التطبيق والسياسات' : 'About & Policies'}</span>
@@ -984,19 +984,19 @@ export default function StudentProfileScreen({
                   <div className="grid grid-cols-3 gap-1.5 pt-1">
                     <button
                       onClick={() => setLegalModalType('about')}
-                      className="text-[10px] font-black py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
+                      className="text-[10px] font-black py-2 rounded-app-btn bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
                     >
                       {lang === 'ar' ? 'من نحن' : 'About'}
                     </button>
                     <button
                       onClick={() => setLegalModalType('terms')}
-                      className="text-[10px] font-black py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
+                      className="text-[10px] font-black py-2 rounded-app-btn bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
                     >
                       {lang === 'ar' ? 'الشروط' : 'Terms'}
                     </button>
                     <button
                       onClick={() => setLegalModalType('privacy')}
-                      className="text-[10px] font-black py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
+                      className="text-[10px] font-black py-2 rounded-app-btn bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-500 hover:border-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm text-center"
                     >
                       {lang === 'ar' ? 'الخصوصية' : 'Privacy'}
                     </button>
@@ -1004,7 +1004,7 @@ export default function StudentProfileScreen({
                 </div>
 
                 {/* Developer Info Section */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-2.5">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-2.5">
                   <div className="flex items-center gap-2">
                     <Info className="w-4 h-4 text-blue-500 shrink-0" />
                     <span className="text-xs font-bold">{lang === 'ar' ? 'معلومات التطبيق' : 'About Application'}</span>
@@ -1029,7 +1029,7 @@ export default function StudentProfileScreen({
                 <div className="pt-2">
                   <button
                     onClick={handleResetData}
-                    className="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/30 dark:border-rose-900/50 font-black text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200/30 dark:border-rose-900/50 font-black text-xs py-3.5 rounded-app-btn transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                     {lang === 'ar' ? 'إعادة ضبط وحذف جميع البيانات' : 'Reset All App Data'}
@@ -1066,7 +1066,7 @@ export default function StudentProfileScreen({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right text-slate-800 dark:text-slate-100 font-sans"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right text-slate-800 dark:text-slate-100 font-sans"
               dir={lang === 'ar' ? 'rtl' : 'ltr'}
             >
               <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -1134,7 +1134,7 @@ export default function StudentProfileScreen({
               <div className="pt-2">
                 <button
                   onClick={() => setLegalModalType(null)}
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2.5 rounded-xl transition-all cursor-pointer active:scale-95 text-center"
+                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2.5 rounded-app-btn transition-all cursor-pointer active:scale-95 text-center"
                 >
                   {lang === 'ar' ? 'إغلاق' : 'Close'}
                 </button>

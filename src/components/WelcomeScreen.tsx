@@ -112,7 +112,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center mb-10"
         >
-          <div className="w-20 h-20 rounded-[28px] overflow-hidden bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-900/40 mb-4 border border-slate-800">
+          <div className="w-20 h-20 rounded-app-card overflow-hidden bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-900/40 mb-4 border border-slate-800">
             <img src="/logo.png" className="w-full h-full object-cover" alt="Smart Bio Logo" />
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">
@@ -148,7 +148,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => { setLang('ar'); localStorage.setItem('lang', 'ar'); }}
-                  className={`p-5 rounded-2xl border-2 transition-all active:scale-95 flex flex-col items-center gap-3 ${
+                  className={`p-5 rounded-app-card border-2 transition-all active:scale-95 flex flex-col items-center gap-3 ${
                     lang === 'ar'
                       ? 'border-emerald-500 bg-emerald-500/10'
                       : 'border-slate-700 bg-slate-800/50 hover:border-slate-500'
@@ -166,7 +166,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
                 <button
                   onClick={() => { setLang('en'); localStorage.setItem('lang', 'en'); }}
-                  className={`p-5 rounded-2xl border-2 transition-all active:scale-95 flex flex-col items-center gap-3 ${
+                  className={`p-5 rounded-app-card border-2 transition-all active:scale-95 flex flex-col items-center gap-3 ${
                     lang === 'en'
                       ? 'border-emerald-500 bg-emerald-500/10'
                       : 'border-slate-700 bg-slate-800/50 hover:border-slate-500'
@@ -185,7 +185,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
               <button
                 onClick={() => setStep('name')}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
               >
                 {isAr ? 'التالي' : 'Next'}
                 {isAr
@@ -237,7 +237,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                   onChange={e => { setName(e.target.value); setNameError(false); }}
                   onKeyDown={e => { if (e.key === 'Enter') handleNameNext(); }}
                   placeholder={isAr ? 'أدخل اسمك الكامل...' : 'Enter your full name...'}
-                  className={`w-full bg-slate-800/70 border-2 rounded-2xl px-5 py-4 text-white font-bold text-sm placeholder:text-slate-500 focus:outline-none transition-colors ${
+                  className={`w-full bg-slate-800/70 border-2 rounded-app-btn px-5 py-4 text-white font-bold text-sm placeholder:text-slate-500 focus:outline-none transition-colors ${
                     nameError
                       ? 'border-rose-500 focus:border-rose-400'
                       : 'border-slate-700 focus:border-emerald-500'
@@ -254,13 +254,13 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep('lang')}
-                  className="px-5 py-4 rounded-2xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
+                  className="px-5 py-4 rounded-app-btn border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
                 >
                   {isAr ? 'رجوع' : 'Back'}
                 </button>
                 <button
                   onClick={handleNameNext}
-                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
                 >
                   {isAr ? 'التالي' : 'Next'}
                   {isAr
@@ -302,7 +302,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                     value={phone}
                     onChange={e => { setPhone(e.target.value); setPhoneError(false); }}
                     placeholder={isAr ? 'مثال: 777123456' : 'Example: 777123456'}
-                    className={`w-full bg-slate-800/70 border-2 rounded-2xl px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors ${
+                    className={`w-full bg-slate-800/70 border-2 rounded-app-btn px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors ${
                       phoneError
                         ? 'border-rose-500 focus:border-rose-400'
                         : 'border-slate-700 focus:border-emerald-500'
@@ -324,7 +324,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                   <select
                     value={governorate}
                     onChange={e => setGovernorate(e.target.value)}
-                    className="w-full bg-slate-800/70 border-2 border-slate-700 focus:border-emerald-500 rounded-2xl px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors"
+                    className="w-full bg-slate-800/70 border-2 border-slate-700 focus:border-emerald-500 rounded-app-btn px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors"
                     dir={isAr ? 'rtl' : 'ltr'}
                     disabled={regLoading}
                   >
@@ -340,7 +340,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 </div>
 
                 {regErrorMessage && (
-                  <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-2xl text-xs font-bold text-center leading-relaxed">
+                  <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed">
                     ⚠️ {regErrorMessage}
                   </div>
                 )}
@@ -349,14 +349,14 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep('name')}
-                  className="px-5 py-4 rounded-2xl border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
+                  className="px-5 py-4 rounded-app-btn border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
                   disabled={regLoading}
                 >
                   {isAr ? 'رجوع' : 'Back'}
                 </button>
                 <button
                   onClick={handleRegister}
-                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
                   disabled={regLoading}
                 >
                   {regLoading ? (
@@ -405,7 +405,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                     : 'You\'re all set to start your Biology journey. Here\'s what awaits:'}
                 </p>
                 {restoreMessage && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-2xl text-xs font-bold text-center leading-relaxed mt-4">
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed mt-4">
                     {restoreMessage}
                   </div>
                 )}
@@ -419,9 +419,9 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                     initial={{ opacity: 0, x: isAr ? 20 : -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15 + i * 0.1 }}
-                    className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3"
+                    className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-app-btn px-4 py-3"
                   >
-                    <span className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center shrink-0">
+                    <span className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-app-btn flex items-center justify-center shrink-0">
                       {f.icon}
                     </span>
                     <span className="text-sm font-bold text-slate-200">{f.text}</span>
@@ -434,7 +434,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
                 onClick={handleStart}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl text-sm active:scale-95 transition-all shadow-xl shadow-emerald-900/50 flex items-center justify-center gap-2"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-xl shadow-emerald-900/50 flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
                 {isAr ? 'ابدأ رحلتك الآن!' : 'Start Your Journey!'}
@@ -480,7 +480,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-slate-900 border border-slate-800 rounded-[28px] max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right"
+              className="bg-slate-900 border border-slate-800 rounded-app-card max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right"
               dir={isAr ? 'rtl' : 'ltr'}
             >
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -491,7 +491,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 </h3>
                 <button
                   onClick={() => setModalType(null)}
-                  className="text-slate-400 hover:text-white text-xs font-black p-1 hover:bg-slate-800 rounded-full"
+                  className="tap-target text-slate-400 hover:text-white text-xs font-black p-1 hover:bg-slate-800 rounded-full"
                 >
                   ✕
                 </button>
@@ -548,7 +548,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="pt-2">
                 <button
                   onClick={() => setModalType(null)}
-                  className="w-full bg-slate-800 hover:bg-slate-750 text-white font-black py-2.5 rounded-xl text-xs"
+                  className="w-full bg-slate-800 hover:bg-slate-750 text-white font-black py-2.5 rounded-app-btn text-xs"
                 >
                   {isAr ? 'إغلاق' : 'Close'}
                 </button>

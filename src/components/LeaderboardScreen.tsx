@@ -62,7 +62,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
             {lang === 'ar' ? 'جاري تحميل لوحة الصدارة سحابياً...' : 'Loading leaderboard standings...'}
           </div>
         ) : standings.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-8 text-center shadow-sm">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-8 text-center shadow-sm">
             <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🏆</div>
             <h3 className="font-black text-slate-800 dark:text-white text-sm mb-1">{lang === 'ar' ? 'لا توجد بيانات بعد' : 'No Standings Yet'}</h3>
             <p className="text-xs text-slate-400 font-bold leading-relaxed">{lang === 'ar' ? 'كن أول من ينجز كويزات الدروس ليتصدر اسمك لوحة الشرف!' : 'Be the first to finish quizzes and top the honor board!'}</p>
@@ -82,7 +82,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
                   >
                     <div className="relative">
                       {/* Avatar Circle with initials */}
-                      <div className={`w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-450 to-teal-500 flex items-center justify-center text-white text-md font-black shadow-lg shadow-emerald-500/10 border-2 ${rank === 1 ? 'border-amber-400' : 'border-slate-200 dark:border-slate-700'}`}>
+                      <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-emerald-450 to-teal-500 flex items-center justify-center text-white text-md font-black shadow-lg shadow-emerald-500/10 border-2 ${rank === 1 ? 'border-amber-400' : 'border-slate-200 dark:border-slate-700'}`}>
                         {data.name.split(' ').slice(0, 2).map((n: string) => n[0]).join('')}
                       </div>
                       <span className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md border border-slate-100 dark:border-slate-800">
@@ -112,7 +112,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
             )}
 
             {/* Rest of the leaderboard list */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] shadow-xl shadow-slate-100/20 dark:shadow-none overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card shadow-xl shadow-slate-100/20 dark:shadow-none overflow-hidden">
               <div className="p-5 border-b border-slate-50 dark:border-slate-850 flex justify-between items-center">
                 <span className="text-xs font-black text-slate-850 dark:text-white">{lang === 'ar' ? 'قائمة المتصدرين' : 'Rankings Table'}</span>
                 <span className="text-[10px] font-bold text-slate-400">{standings.length} {lang === 'ar' ? 'طالب نشط' : 'active students'}</span>

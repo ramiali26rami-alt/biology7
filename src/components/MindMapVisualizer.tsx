@@ -50,7 +50,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
   return (
     <div className="w-full text-right select-none animate-fadeIn pb-28">
       {/* البانر الرئيسي — بقى بتدرج لون العلامة الأساسي بدل بنفسجي/إندگو منفصل */}
-      <div className="mb-5 bg-gradient-to-r from-[#10b981] to-[#059669] dark:from-emerald-900/60 dark:to-emerald-950/60 border border-emerald-500/20 rounded-2xl p-5 shadow-sm flex items-center justify-between gap-4">
+      <div className="mb-5 bg-gradient-to-r from-[#10b981] to-[#059669] dark:from-emerald-900/60 dark:to-emerald-950/60 border border-emerald-500/20 rounded-app-card p-5 shadow-sm flex items-center justify-between gap-4">
         <div className="flex-1">
           <span className="text-[10px] uppercase tracking-wider font-extrabold text-emerald-100 block mb-1">
             {lang === 'ar' ? 'المفهوم الرئيسي للحصة' : 'Core Lesson Concept'}
@@ -84,7 +84,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
           return (
             <div
               key={branch.id}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl overflow-hidden shadow-sm transition-all"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-app-card overflow-hidden shadow-sm transition-all"
             >
               <div
                 onClick={() => toggleBranch(branch.id)}
@@ -92,7 +92,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0"
+                    className="w-7 h-7 rounded-app-btn flex items-center justify-center transition-all shrink-0"
                     style={{
                       backgroundColor: isBranchExpanded ? `${color}1A` : (isDarkMode ? '#1e293b' : '#f1f5f9'),
                       color: color
@@ -122,7 +122,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                       });
                     }}
                     style={{ color: color }}
-                    className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800/60 dark:hover:bg-slate-800 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                    className="w-11 h-11 rounded-app-btn bg-slate-100 dark:bg-slate-800/60 dark:hover:bg-slate-800 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
                   >
                     <Info className="w-5 h-5" />
                   </button>
@@ -147,7 +147,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="border border-slate-100 dark:border-slate-800/60 rounded-xl overflow-hidden"
+                              className="border border-slate-100 dark:border-slate-800/60 rounded-app-btn overflow-hidden"
                             >
                               <div
                                 onClick={() => toggleSub(subNode.id)}
@@ -173,7 +173,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                       });
                                     }}
                                     style={{ color: color }}
-                                    className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer"
+                                    className="w-11 h-11 rounded-app-btn bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer"
                                   >
                                     <Info className="w-5 h-5" />
                                   </button>
@@ -193,7 +193,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                         <div
                                           key={leaf.id}
                                           /* مستوى 3 (نهائي) */
-                                          className="p-3 bg-slate-50/50 dark:bg-slate-900/40 rounded-lg text-xs md:text-sm font-semibold leading-relaxed text-slate-800 dark:text-slate-300 flex items-center justify-between gap-3"
+                                          className="p-3 bg-slate-50/50 dark:bg-slate-900/40 rounded-app-btn text-xs md:text-sm font-semibold leading-relaxed text-slate-800 dark:text-slate-300 flex items-center justify-between gap-3"
                                         >
                                           <div className="flex items-start gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: color }} />
@@ -206,7 +206,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                                 details: leaf.details!
                                               })}
                                               style={{ color: color }}
-                                              className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                                              className="w-11 h-11 rounded-app-btn bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
                                             >
                                               <Info className="w-5 h-5" />
                                             </button>
@@ -223,7 +223,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="p-3.5 bg-slate-50/40 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-xl text-xs md:text-sm font-bold leading-relaxed text-slate-800 dark:text-slate-300 relative overflow-hidden flex items-center justify-between gap-3"
+                              className="p-3.5 bg-slate-50/40 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-app-btn text-xs md:text-sm font-bold leading-relaxed text-slate-800 dark:text-slate-300 relative overflow-hidden flex items-center justify-between gap-3"
                             >
                               <div className="absolute right-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: color }} />
                               <div className="flex items-start gap-2 me-1">
@@ -238,7 +238,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                     details: subNode.details!
                                   })}
                                   style={{ color: color }}
-                                  className="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                                  className="w-11 h-11 rounded-app-btn bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 opacity-70 hover:opacity-100 flex items-center justify-center transition-all cursor-pointer shrink-0"
                                 >
                                   <Info className="w-5 h-5" />
                                 </button>
@@ -270,7 +270,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
               initial={{ scale: 0.95, y: 15, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 15, opacity: 0 }}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700/80 rounded-2xl p-6 shadow-2xl max-w-sm w-full relative z-10 text-right animate-fadeIn"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700/80 rounded-app-card p-6 shadow-2xl max-w-sm w-full relative z-10 text-right animate-fadeIn"
             >
               <div className="flex justify-between items-center mb-4">
                 <button

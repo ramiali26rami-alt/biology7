@@ -247,7 +247,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         </div>
         <div className="flex items-center gap-2">
           {premiumUnlocked && (
-            <span className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-black px-2.5 py-1 rounded-lg">
+            <span className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-black px-2.5 py-1 rounded-app-btn">
               <Crown className="w-3.5 h-3.5 fill-amber-500 animate-pulse" />
               {lang === 'ar' ? 'مميز' : 'PREMIUM'}
             </span>
@@ -325,7 +325,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   </p>
                   <button
                     onClick={() => onNavigate('units-navigation', 'push')}
-                    className="mt-2 bg-white text-amber-600 font-black text-[11px] px-3.5 py-1.5 rounded-lg active:scale-95 transition-transform"
+                    className="mt-2 bg-white text-amber-600 font-black text-[11px] px-3.5 py-1.5 rounded-app-btn active:scale-95 transition-transform"
                   >
                     {lang === 'ar' ? 'اذهب للدروس ←' : 'Go to Lessons →'}
                   </button>
@@ -343,7 +343,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             className="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-app-dialog p-4"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-xl flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-app-btn flex items-center justify-center shrink-0">
                 <Bell className="w-5 h-5 text-indigo-500" />
               </div>
               <div className="flex-1 min-w-0">
@@ -357,7 +357,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               <div className="flex gap-2 shrink-0">
                 <button
                   onClick={handleEnableNotifications}
-                  className="bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] px-3 py-1.5 rounded-lg active:scale-95 transition-all"
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white font-black text-[10px] px-3 py-1.5 rounded-app-btn active:scale-95 transition-all"
                 >
                   {lang === 'ar' ? 'تفعيل' : 'Enable'}
                 </button>
@@ -402,7 +402,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   </p>
                   <button 
                     onClick={() => onNavigate('student-profile', 'push')}
-                    className="mt-2.5 bg-white text-emerald-600 hover:bg-emerald-50 font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 me-auto cursor-pointer"
+                    className="mt-2.5 bg-white text-emerald-600 hover:bg-emerald-50 font-black text-xs px-4 py-2.5 rounded-app-btn active:scale-95 transition-transform flex items-center gap-1.5 me-auto cursor-pointer"
                   >
                     <span>{lang === 'ar' ? 'تفعيل الآن' : 'Activate Now'}</span>
                     {lang === 'ar' ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
@@ -437,7 +437,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 </p>
                 <button 
                   onClick={() => setIsTutorOpen(true)}
-                  className="mt-2.5 bg-white text-indigo-600 hover:bg-indigo-50 font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-transform flex items-center gap-1.5 me-auto cursor-pointer"
+                  className="mt-2.5 bg-white text-indigo-600 hover:bg-indigo-50 font-black text-xs px-4 py-2.5 rounded-app-btn active:scale-95 transition-transform flex items-center gap-1.5 me-auto cursor-pointer"
                 >
                   <span>{lang === 'ar' ? 'افتح المحادثة' : 'Open Chat'}</span>
                   {lang === 'ar' ? <ArrowLeft className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
@@ -452,7 +452,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           
           {/* Bento Stats 1: Streak */}
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center gap-3">
-            <span className="w-9 h-9 bg-amber-50 dark:bg-amber-950/50 rounded-xl text-amber-500 flex items-center justify-center shrink-0">
+            <span className="w-9 h-9 bg-amber-50 dark:bg-amber-950/50 rounded-app-btn text-amber-500 flex items-center justify-center shrink-0">
               <Flame className="w-5 h-5 fill-amber-500" />
             </span>
             <div className="flex-1 min-w-0">
@@ -463,7 +463,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
           {/* Bento Stats 2: Completion Rate */}
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center gap-3">
-            <span className="w-9 h-9 bg-emerald-50 dark:bg-emerald-950/50 rounded-xl text-emerald-500 flex items-center justify-center shrink-0">
+            <span className="w-9 h-9 bg-emerald-50 dark:bg-emerald-950/50 rounded-app-btn text-emerald-500 flex items-center justify-center shrink-0">
               <TrendingUp className="w-5 h-5" />
             </span>
             <div className="flex-1 min-w-0">
@@ -498,7 +498,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               className="card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                <div className="w-9 h-9 rounded-app-btn bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200 shrink-0">
                   <BookOpen className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -514,7 +514,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               className="card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/45 text-rose-600 dark:text-rose-300 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-200 shrink-0">
+                <div className="w-9 h-9 rounded-app-btn bg-rose-50 dark:bg-rose-950/45 text-rose-600 dark:text-rose-300 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-200 shrink-0">
                   <Trophy className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -566,7 +566,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 <Sparkles className="w-16 h-16 text-emerald-500" />
               </div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="p-2 bg-emerald-50 dark:bg-emerald-950 rounded-xl text-emerald-500">
+                <span className="p-2 bg-emerald-50 dark:bg-emerald-950 rounded-app-btn text-emerald-500">
                   <Sparkles className="w-5 h-5 text-emerald-500 animate-pulse" />
                 </span>
                 <div className="flex-1">
@@ -592,7 +592,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
       <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/30 z-50">
         <button 
           onClick={() => onNavigate('main-dashboard', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <Compass className="w-5 h-5 mb-0.5" />
           <span className="text-xs">{t.home}</span>
@@ -647,7 +647,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
                 <div className="flex items-center gap-2.5">
-                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                  <span className="p-2 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-app-btn">
                     <Sparkles className="w-5 h-5 animate-pulse" />
                   </span>
                   <div className="text-right">
@@ -661,7 +661,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 </div>
                 <button
                   onClick={() => setIsTutorOpen(false)}
-                  className="w-11 h-11 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
+                  className="tap-target hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
                 >
                   <XCircle className="w-5.5 h-5.5" />
                 </button>
@@ -669,7 +669,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/20">
-                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-lg font-mono text-center shrink-0">
+                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-app-btn font-mono text-center shrink-0">
                   Debug - LocalStorage Server URL: "{localStorage.getItem('server_url') || 'none'}" | Env URL: "{import.meta.env.VITE_SERVER_URL || 'none'}"
                 </div>
                 {tutorMessages.map((msg, i) => (
@@ -678,7 +678,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-[20px] p-3 text-xs leading-relaxed shadow-sm font-semibold whitespace-pre-line ${
+                      className={`max-w-[85%] rounded-app-card p-3 text-xs leading-relaxed shadow-sm font-semibold whitespace-pre-line ${
                         msg.role === 'user'
                           ? 'bg-emerald-500 text-white rounded-br-none'
                           : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-150 border border-slate-100 dark:border-slate-850 rounded-bl-none'
@@ -691,7 +691,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 
                 {tutorLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-850 rounded-[20px] rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-850 rounded-app-card rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
                       <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
                       <span>المعلم الافتراضي يفكر في الإجابة...</span>
                     </div>
@@ -699,7 +699,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 )}
 
                 {tutorError && (
-                  <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-xl p-3 text-xs text-rose-600 dark:text-rose-400 font-extrabold text-center">
+                  <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-app-btn p-3 text-xs text-rose-600 dark:text-rose-400 font-extrabold text-center">
                     ⚠️ {tutorError}
                   </div>
                 )}
@@ -718,12 +718,12 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                     value={tutorInput}
                     onChange={(e) => setTutorInput(e.target.value)}
                     placeholder="اكتب سؤالك العام هنا..."
-                    className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
                     disabled={tutorLoading}
                   />
                   <button
                     type="submit"
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-2.5 rounded-xl shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer border-0"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-2.5 rounded-app-btn shadow-md active:scale-95 transition-all disabled:opacity-50 cursor-pointer border-0"
                     disabled={!tutorInput.trim() || tutorLoading}
                   >
                     إرسال

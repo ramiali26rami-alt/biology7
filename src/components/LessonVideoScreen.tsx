@@ -99,7 +99,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
       <main className="pt-20 px-6 max-w-2xl mx-auto space-y-6">
         
         {/* Video Player Box - Dynamic iframe player */}
-        <section className="relative w-full aspect-video bg-black overflow-hidden shadow-2xl rounded-2xl">
+        <section className="relative w-full aspect-video bg-black overflow-hidden shadow-2xl rounded-app-card">
           <iframe
             src={lesson.videoUrl.includes('embed') ? lesson.videoUrl : lesson.videoUrl.replace('watch?v=', 'embed/')}
             title={lang === 'ar' ? lesson.titleAr : lesson.titleEn}
@@ -157,7 +157,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
               lesson.videoChapters.map((chapter, idx) => (
                 <div 
                   key={idx}
-                  className="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 hover:shadow-xs transition-all border border-slate-100 dark:border-slate-800 group"
+                  className="flex items-start gap-4 p-4 rounded-app-card bg-white dark:bg-slate-900 hover:shadow-xs transition-all border border-slate-100 dark:border-slate-800 group"
                 >
                   <Clock className="w-5 h-5 text-emerald-500 mt-1 shrink-0" />
                   <div className="flex-1">
@@ -183,17 +183,17 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
         </section>
 
         {/* Study Notebook Component / المفكرة الدراسية */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-xl shadow-slate-200/20 dark:shadow-none space-y-3">
+        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-xl shadow-slate-200/20 dark:shadow-none space-y-3">
           <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              <span className="p-2 bg-emerald-50 dark:bg-emerald-950 rounded-xl text-emerald-500 shrink-0">
+              <span className="p-2 bg-emerald-50 dark:bg-emerald-950 rounded-app-btn text-emerald-500 shrink-0">
                 <Edit className="w-5 h-5" />
               </span>
               <h3 className="font-black text-slate-850 dark:text-white text-[15px]">{t.myNotes}</h3>
             </div>
             <button 
               onClick={handleSaveNotes}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-[10px] active:scale-95 transition-all shadow-md cursor-pointer"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-app-btn text-[10px] active:scale-95 transition-all shadow-md cursor-pointer"
             >
               {isSavedNotes ? (lang === 'ar' ? 'تم الحفظ!' : 'Saved!') : (lang === 'ar' ? 'حفظ الملاحظة' : 'Save Note')}
             </button>
@@ -201,7 +201,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs font-semibold text-slate-700 dark:text-slate-350 focus:outline-none focus:border-emerald-500 min-h-[100px] leading-relaxed resize-none"
+            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-app-card p-4 text-xs font-semibold text-slate-700 dark:text-slate-350 focus:outline-none focus:border-emerald-500 min-h-[100px] leading-relaxed resize-none"
             placeholder={t.writeNotesPlaceholder}
           ></textarea>
         </section>
@@ -210,7 +210,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
         <div className={`flex items-center mt-6 ${lang === 'ar' ? 'justify-end' : 'justify-start'}`}>
           <button 
             onClick={() => onNavigate('lesson-summary', 'push')}
-            className="flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-extrabold shadow-md hover:scale-[1.02] active:scale-95 group transition-all"
+            className="flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-app-btn text-xs font-extrabold shadow-md hover:scale-[1.02] active:scale-95 group transition-all"
           >
             {lang === 'ar' ? 'ملخص بطاقات الدرس الفلاشية' : 'Revision Summary & Cards'}
             {lang === 'ar' ? (
@@ -235,7 +235,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
         
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>

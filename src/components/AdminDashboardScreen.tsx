@@ -1902,7 +1902,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         <div className="flex items-center gap-3">
           <button 
             onClick={() => onNavigate('student-profile', 'push_back')} 
-            className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             {backIcon}
           </button>
@@ -1920,26 +1920,26 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         <div className="flex items-center gap-2">
           {/* Save Status Badge */}
           {saveStatus === 'saving' && (
-            <span className="flex items-center gap-1.5 text-xs font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-800">
+            <span className="flex items-center gap-1.5 text-xs font-black text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-app-btn border border-amber-200 dark:border-amber-800">
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
               <span className="hidden sm:inline">{lang === 'ar' ? 'جارٍ الحفظ...' : 'Saving...'}</span>
             </span>
           )}
           {saveStatus === 'saved' && (
-            <span className="flex items-center gap-1.5 text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+            <span className="flex items-center gap-1.5 text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-app-btn border border-emerald-200 dark:border-emerald-800">
               <CheckCircle className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{lang === 'ar' ? 'تم الحفظ تلقائياً ✓' : 'Auto-Saved ✓'}</span>
             </span>
           )}
           {saveStatus === 'error' && (
-            <span className="flex items-center gap-1.5 text-xs font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-800">
+            <span className="flex items-center gap-1.5 text-xs font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 px-3 py-1.5 rounded-app-btn border border-rose-200 dark:border-rose-800">
               <X className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">{lang === 'ar' ? 'خطأ في الحفظ' : 'Save Error'}</span>
             </span>
           )}
           <button
             onClick={handleTriggerDownload}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3 py-2 rounded-xl active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{lang === 'ar' ? 'تصدير المنهج' : 'Download JSON'}</span>
@@ -1952,11 +1952,11 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         
         {/* Navigation Sidebar (Vertical on Desktop, Horizontal on Mobile) */}
         <section className="lg:col-span-1 space-y-3">
-          <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-4 shadow-xl shadow-slate-100/30 dark:shadow-none flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible">
+          <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-4 shadow-xl shadow-slate-100/30 dark:shadow-none flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible">
             
             <button
               onClick={() => setActiveTab('lessons-list')}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'lessons-list'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -1981,7 +1981,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   handleCreateNewLesson();
                 }
               }}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'lesson-editor'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -2009,7 +2009,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   alert(lang === 'ar' ? 'الرجاء إضافة درس أولاً لمعاينته!' : 'Please add a lesson first to preview!');
                 }
               }}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'preview'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -2021,7 +2021,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
             <button
               onClick={() => setActiveTab('export')}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'export'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -2033,7 +2033,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
             <button
               onClick={() => setActiveTab('keys')}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'keys'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -2045,7 +2045,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
             <button
               onClick={() => setActiveTab('helper')}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'helper'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -2057,7 +2057,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
             <button
               onClick={() => setActiveTab('students')}
-              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-black transition-all shrink-0 ${
+              className={`flex-1 lg:flex-initial flex items-center gap-3 px-4 py-3 rounded-app-btn text-sm font-black transition-all shrink-0 ${
                 activeTab === 'students'
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -2070,7 +2070,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
           </div>
 
           {/* Validation Status Widget */}
-          <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-5 shadow-xl shadow-slate-100/30 dark:shadow-none space-y-3">
+          <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-5 shadow-xl shadow-slate-100/30 dark:shadow-none space-y-3">
             <div className="flex items-center gap-2">
               <Sliders className="w-4 h-4 text-emerald-500" />
               <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider">
@@ -2078,13 +2078,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               </h4>
             </div>
             {validationErrors.length === 0 ? (
-              <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900 text-xs font-bold">
+              <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 p-3 rounded-app-btn border border-emerald-100 dark:border-emerald-900 text-xs font-bold">
                 <CheckCircle className="w-4 h-4 shrink-0" />
                 <span>{lang === 'ar' ? 'جميع البيانات سليمة وجاهزة!' : 'All configurations verified!'}</span>
               </div>
             ) : (
               <div className="space-y-2">
-                <div className="bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-450 p-3 rounded-xl border border-rose-100 dark:border-rose-900 text-xs font-bold">
+                <div className="bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-450 p-3 rounded-app-btn border border-rose-100 dark:border-rose-900 text-xs font-bold">
                   {lang === 'ar' ? `يوجد ${validationErrors.length} ملاحظات تكوين:` : `Found ${validationErrors.length} validation warnings:`}
                 </div>
                 <div className="max-h-40 overflow-y-auto space-y-1 pe-1 text-[10px] text-rose-500 font-bold font-sans">
@@ -2102,7 +2102,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               </span>
               <div className="flex flex-wrap gap-1">
                 {lessons.map((l, i) => (
-                  <span key={i} className="text-[9px] font-bold font-sans bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-750">
+                  <span key={i} className="text-[9px] font-bold font-sans bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-app-btn text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-750">
                     {i + 1}: {l.id || '❔'}
                   </span>
                 ))}
@@ -2135,7 +2135,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   </div>
                   <button
                     onClick={handleCreateNewLesson}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-4 py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
                   >
                     <Plus className="w-4 h-4" />
                     <span>{lang === 'ar' ? 'درس جديد' : 'New Lesson'}</span>
@@ -2151,10 +2151,10 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     return (
                       <div 
                         key={lesson.id} 
-                        className="bg-white dark:bg-slate-900 rounded-[20px] border border-slate-100 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-emerald-500/50 transition-colors"
+                        className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-emerald-500/50 transition-colors"
                       >
                         <div className="flex items-start gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                          <div className="w-10 h-10 rounded-app-btn bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                             <BookOpen className="w-5 h-5" />
                           </div>
                           <div>
@@ -2204,7 +2204,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                               setEditorSubTab('basic');
                               setActiveTab('lesson-editor');
                             }}
-                            className="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 p-2.5 rounded-xl transition-colors active:scale-95 flex items-center gap-1.5 text-xs font-black"
+                            className="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 p-2.5 rounded-app-btn transition-colors active:scale-95 flex items-center gap-1.5 text-xs font-black"
                             title={lang === 'ar' ? 'تعديل المحتوى والأسئلة' : 'Edit content'}
                           >
                             <Edit className="w-4 h-4" />
@@ -2219,14 +2219,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                               setPreviewShowExpl(false);
                               setActiveTab('preview');
                             }}
-                            className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 p-2.5 rounded-xl transition-colors active:scale-95"
+                            className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 p-2.5 rounded-app-btn transition-colors active:scale-95"
                             title={lang === 'ar' ? 'معاينة الطالب' : 'Preview student view'}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteLesson(lesson.id)}
-                            className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-450 p-2.5 rounded-xl transition-colors active:scale-95"
+                            className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-450 p-2.5 rounded-app-btn transition-colors active:scale-95"
                             title={lang === 'ar' ? 'حذف الدرس نهائياً' : 'Delete lesson'}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -2249,7 +2249,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 className="space-y-4"
               >
                 {/* Editor Top Bar */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-[20px] border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-app-card border border-slate-100 dark:border-slate-800 shadow-sm">
                   <div>
                     <span className="text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full uppercase">
                       {lang === 'ar' ? 'تحرير نشط' : 'Active Editor'}
@@ -2261,13 +2261,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setActiveTab('lessons-list')}
-                      className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs active:scale-95 transition-transform"
+                      className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-app-btn font-bold text-xs active:scale-95 transition-transform"
                     >
                       {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                     </button>
                     <button
                       onClick={handleSaveLessonEdit}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-black text-xs active:scale-95 transition-transform flex items-center gap-1.5 shadow-md shadow-emerald-550/20"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-app-btn font-black text-xs active:scale-95 transition-transform flex items-center gap-1.5 shadow-md shadow-emerald-550/20"
                     >
                       <Save className="w-4 h-4" />
                       <span>{lang === 'ar' ? 'حفظ المنهج' : 'Save Changes'}</span>
@@ -2276,7 +2276,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Sub-tabs for Editor Category */}
-                <div className="flex border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-[20px] p-2 gap-1 overflow-x-auto shadow-sm">
+                <div className="flex border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-app-card p-2 gap-1 overflow-x-auto shadow-sm">
                   {(['basic', 'chapters', 'summary-flash', 'quiz', 'files'] as EditorSubTab[]).map(sub => {
                     const labels: Record<EditorSubTab, string> = {
                       'basic': lang === 'ar' ? '📖 الأساسيات' : 'Basics',
@@ -2289,7 +2289,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       <button
                         key={sub}
                         onClick={() => setEditorSubTab(sub)}
-                        className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all shrink-0 ${
+                        className={`px-4 py-2.5 rounded-app-btn text-xs font-black transition-all shrink-0 ${
                           editorSubTab === sub
                             ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-white shadow-sm'
                             : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -2303,7 +2303,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                 {/* SUB-TAB: Basics */}
                 {editorSubTab === 'basic' && (
-                  <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
                     <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400 border-b border-slate-50 dark:border-slate-800 pb-2">
                       {lang === 'ar' ? 'المعلومات الأساسية والملفات' : 'Basic Specifications & Attachments'}
                     </h4>
@@ -2315,7 +2315,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="text" 
                           value={editingLesson.id} 
                           onChange={(e) => updateEditingLessonField('id', e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           required
                         />
                       </div>
@@ -2325,7 +2325,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="number" 
                           value={editingLesson.unit} 
                           onChange={(e) => updateEditingLessonField('unit', parseInt(e.target.value) || 1)}
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           required
                         />
                       </div>
@@ -2337,12 +2337,12 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         type="text" 
                         value={editingLesson.folder} 
                         onChange={(e) => updateEditingLessonField('folder', e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
                         required
                       />
                       
                       {detectedFolders.length > 0 && (
-                        <div className="mt-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200/60 dark:border-slate-850 space-y-2">
+                        <div className="mt-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-btn border border-slate-200/60 dark:border-slate-850 space-y-2">
                           <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
                             {lang === 'ar' ? '📂 مجلدات تم اكتشافها على السيرفر (انقر للربط التلقائي والذكي بالملفات):' : '📂 Detected folders on server (click to auto-link and match files):'}
                           </span>
@@ -2402,7 +2402,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     setEditingLesson(updated);
                                     setLessons(prev => prev.map((l, idx) => idx === editingLessonIndex ? updated : l));
                                   }}
-                                  className={`flex items-center justify-between p-2.5 rounded-xl text-xs font-black border transition-all text-right ${
+                                  className={`flex items-center justify-between p-2.5 rounded-app-btn text-xs font-black border transition-all text-right ${
                                     isLinked
                                       ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm'
                                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-350'
@@ -2430,7 +2430,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="text" 
                           value={editingLesson.titleAr} 
                           onChange={(e) => updateEditingLessonField('titleAr', e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           required
                         />
                       </div>
@@ -2440,7 +2440,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="text" 
                           value={editingLesson.titleEn} 
                           onChange={(e) => updateEditingLessonField('titleEn', e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           required
                         />
                       </div>
@@ -2452,7 +2452,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         type="text" 
                         value={editingLesson.videoUrl} 
                         onChange={(e) => updateEditingLessonField('videoUrl', e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
                       />
                     </div>
 
@@ -2469,13 +2469,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             type="text" 
                             value={editingLesson.pdfFile || ''} 
                             onChange={(e) => updateEditingLessonField('pdfFile', e.target.value)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
                           />
                           <button
                             type="button"
                             onClick={() => handleFileUpload('pdfFile', '.pdf')}
                             disabled={uploadingField === 'pdfFile'}
-                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-xl transition-colors text-[10px] font-black flex items-center gap-1"
+                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
                             title={lang === 'ar' ? 'رفع ملف PDF جديد' : 'Upload new PDF'}
                           >
                             {uploadingField === 'pdfFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
@@ -2492,13 +2492,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             type="text" 
                             value={editingLesson.diagramFile || ''} 
                             onChange={(e) => updateEditingLessonField('diagramFile', e.target.value)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
                           />
                           <button
                             type="button"
                             onClick={() => handleFileUpload('diagramFile', 'image/*')}
                             disabled={uploadingField === 'diagramFile'}
-                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-xl transition-colors text-[10px] font-black flex items-center gap-1"
+                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
                             title={lang === 'ar' ? 'رفع صورة جديدة' : 'Upload new image'}
                           >
                             {uploadingField === 'diagramFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
@@ -2515,13 +2515,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             type="text" 
                             value={editingLesson.mindmapFile || ''} 
                             onChange={(e) => updateEditingLessonField('mindmapFile', e.target.value)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
                           />
                           <button
                             type="button"
                             onClick={() => handleFileUpload('mindmapFile', '.html,.htm')}
                             disabled={uploadingField === 'mindmapFile'}
-                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-xl transition-colors text-[10px] font-black flex items-center gap-1"
+                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
                             title={lang === 'ar' ? 'رفع ملف HTML جديد' : 'Upload new HTML'}
                           >
                             {uploadingField === 'mindmapFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
@@ -2538,13 +2538,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             type="text" 
                             value={editingLesson.summaryFile || ''} 
                             onChange={(e) => updateEditingLessonField('summaryFile', e.target.value)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
                           />
                           <button
                             type="button"
                             onClick={() => handleFileUpload('summaryFile', 'image/*')}
                             disabled={uploadingField === 'summaryFile'}
-                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-xl transition-colors text-[10px] font-black flex items-center gap-1"
+                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
                             title={lang === 'ar' ? 'رفع صورة جديدة' : 'Upload new image'}
                           >
                             {uploadingField === 'summaryFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
@@ -2561,13 +2561,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             type="text" 
                             value={editingLesson.quizFile || ''} 
                             onChange={(e) => updateEditingLessonField('quizFile', e.target.value)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
                           />
                           <button
                             type="button"
                             onClick={() => handleFileUpload('quizFile', '.html,.htm')}
                             disabled={uploadingField === 'quizFile'}
-                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-xl transition-colors text-[10px] font-black flex items-center gap-1"
+                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
                             title={lang === 'ar' ? 'رفع ملف HTML جديد' : 'Upload new HTML'}
                           >
                             {uploadingField === 'quizFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
@@ -2584,13 +2584,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             type="text" 
                             value={editingLesson.ministryExamFile || ''} 
                             onChange={(e) => updateEditingLessonField('ministryExamFile', e.target.value)}
-                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                            className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
                           />
                           <button
                             type="button"
                             onClick={() => handleFileUpload('ministryExamFile', '.pdf,.html,.htm')}
                             disabled={uploadingField === 'ministryExamFile'}
-                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-xl transition-colors text-[10px] font-black flex items-center gap-1"
+                            className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
                             title={lang === 'ar' ? 'رفع ملف جديد' : 'Upload new file'}
                           >
                             {uploadingField === 'ministryExamFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
@@ -2605,7 +2605,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                 {/* SUB-TAB: Video Chapters */}
                 {editorSubTab === 'chapters' && (
-                  <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                       <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
                         {lang === 'ar' ? 'أجزاء وفصول الفيديو التعليمي' : 'Lesson Video Chapter Timings'}
@@ -2629,7 +2629,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     ) : (
                       <div className="space-y-4">
                         {editingLesson.videoChapters.map((chap, idx) => (
-                          <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 relative group">
+                          <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-100 dark:border-slate-850 space-y-3 relative group">
                             
                             {/* Delete chapter button */}
                             <button
@@ -2654,7 +2654,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     list[idx].time = e.target.value;
                                     updateEditingLessonField('videoChapters', list);
                                   }}
-                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-center"
+                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold text-center"
                                   placeholder="00:00"
                                 />
                               </div>
@@ -2668,7 +2668,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     list[idx].titleAr = e.target.value;
                                     updateEditingLessonField('videoChapters', list);
                                   }}
-                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                 />
                               </div>
                             </div>
@@ -2684,7 +2684,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     list[idx].titleEn = e.target.value;
                                     updateEditingLessonField('videoChapters', list);
                                   }}
-                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                 />
                               </div>
                               <div>
@@ -2697,7 +2697,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     list[idx].descAr = e.target.value;
                                     updateEditingLessonField('videoChapters', list);
                                   }}
-                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                 />
                               </div>
                             </div>
@@ -2712,7 +2712,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 {editorSubTab === 'summary-flash' && (
                   <div className="space-y-4">
                     {/* Summary Points Card */}
-                    <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                         <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
                           {lang === 'ar' ? 'نقاط التلخيص الأساسية للدرس' : 'Key Takeaways / Summary Points'}
@@ -2746,7 +2746,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                   list[idx] = e.target.value;
                                   updateEditingLessonField('summaryPointsAr', list);
                                 }}
-                                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                 placeholder="النص العربي"
                               />
                               <input 
@@ -2757,7 +2757,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     list[idx] = e.target.value;
                                     updateEditingLessonField('summaryPointsEn', list);
                                 }}
-                                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold font-sans text-left"
+                                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold font-sans text-left"
                                 placeholder="English text"
                               />
                               <button
@@ -2778,7 +2778,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     </div>
 
                     {/* Flashcards Card */}
-                    <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
                       <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                         <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
                           {lang === 'ar' ? 'بطاقات الأسئلة والأجوبة السريعة (Flashcards)' : 'Interactive Q&A Flashcards'}
@@ -2802,7 +2802,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       ) : (
                         <div className="space-y-4">
                           {editingLesson.flashcards.map((card, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-850 space-y-3 relative group">
+                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-100 dark:border-slate-850 space-y-3 relative group">
                               <button
                                 onClick={() => {
                                   const list = editingLesson.flashcards.filter((_, i) => i !== idx);
@@ -2824,7 +2824,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                       list[idx].qAr = e.target.value;
                                       updateEditingLessonField('flashcards', list);
                                     }}
-                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                   />
                                 </div>
                                 <div>
@@ -2837,7 +2837,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                       list[idx].qEn = e.target.value;
                                       updateEditingLessonField('flashcards', list);
                                     }}
-                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                   />
                                 </div>
                               </div>
@@ -2853,7 +2853,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                       list[idx].aAr = e.target.value;
                                       updateEditingLessonField('flashcards', list);
                                     }}
-                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                   />
                                 </div>
                                 <div>
@@ -2866,7 +2866,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                       list[idx].aEn = e.target.value;
                                       updateEditingLessonField('flashcards', list);
                                     }}
-                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                   />
                                 </div>
                               </div>
@@ -2878,7 +2878,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   </div>
                 )}
                 {editorSubTab === 'quiz' && (
-                  <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 mb-6">
+                  <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 mb-6">
                     <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 border-b border-slate-50 dark:border-slate-800 pb-2">
                       <Sparkles className="w-5 h-5 animate-pulse" />
                       <h4 className="font-black text-sm">{t.aiQuizGenerator}</h4>
@@ -2895,7 +2895,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           value={localApiKey}
                           onChange={(e) => handleApiKeyChange(e.target.value)}
                           placeholder={t.apiKeyPlaceholder}
-                          className="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono"
+                          className="w-full text-xs font-medium px-3.5 py-2.5 rounded-app-btn border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono"
                         />
                       </div>
 
@@ -2907,7 +2907,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         <select
                           value={aiCount}
                           onChange={(e) => setAiCount(Number(e.target.value))}
-                          className="w-full text-xs font-black px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                          className="w-full text-xs font-black px-3.5 py-2.5 rounded-app-btn border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                         >
                           {[3, 5, 8, 10, 15, 20].map(n => (
                             <option key={n} value={n}>{n}</option>
@@ -2923,7 +2923,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         <select
                           value={aiType}
                           onChange={(e) => setAiType(e.target.value as any)}
-                          className="w-full text-xs font-black px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                          className="w-full text-xs font-black px-3.5 py-2.5 rounded-app-btn border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                         >
                           <option value="all">{t.allTypes}</option>
                           <option value="mcq">{t.mcqOnly}</option>
@@ -2938,7 +2938,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         type="button"
                         onClick={handleGenerateAIQuiz}
                         disabled={aiLoading}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs px-5 py-3 rounded-xl transition-all active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs px-5 py-3 rounded-app-btn transition-all active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {aiLoading ? (
                           <>
@@ -2954,7 +2954,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </button>
 
                       {aiStatusMsg && (
-                        <div className={`text-xs font-black px-3 py-2 rounded-xl flex items-center gap-1.5 ${
+                        <div className={`text-xs font-black px-3 py-2 rounded-app-btn flex items-center gap-1.5 ${
                           aiStatusMsg.type === 'success' 
                             ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400' 
                             : 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-450'
@@ -2972,7 +2972,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 )}
 
                 {editorSubTab === 'quiz' && (
-                  <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
                     <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                       <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
                         {lang === 'ar' ? 'أسئلة اختبار كويز الدرس' : 'Quiz Questions Bank'}
@@ -3003,7 +3003,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             updateEditingLessonField('quiz', [newQ]);
                             setActiveQuizIdx(0);
                           }}
-                          className="mx-auto flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-4 py-2 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="mx-auto flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-4 py-2 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           <Plus className="w-4 h-4" />
                           <span>{lang === 'ar' ? 'إضافة السؤال الأول' : 'Add First Question'}</span>
@@ -3012,7 +3012,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {/* Questions sidebar */}
-                        <div className="md:col-span-1 bg-slate-50 dark:bg-slate-950 p-4 rounded-[20px] border border-slate-150 dark:border-slate-850 space-y-3 h-fit">
+                        <div className="md:col-span-1 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-850 space-y-3 h-fit">
                           <div className="flex items-center justify-between border-b border-slate-205 dark:border-slate-800 pb-2">
                             <span className="text-[11px] font-black text-slate-500 dark:text-slate-400">
                               {lang === 'ar' ? 'قائمة الأسئلة' : 'Questions List'}
@@ -3034,7 +3034,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                 <div
                                   key={idx}
                                   onClick={() => setActiveQuizIdx(idx)}
-                                  className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer select-none ${
+                                  className={`flex items-center justify-between p-2 rounded-app-btn border transition-all cursor-pointer select-none ${
                                     isActive
                                       ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-800'
                                       : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800/60 hover:border-slate-200 dark:hover:border-slate-700'
@@ -3099,7 +3099,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                               updateEditingLessonField('quiz', newList);
                               setActiveQuizIdx(newList.length - 1);
                             }}
-                            className="w-full flex items-center justify-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2 rounded-xl transition-all active:scale-95 shadow-sm shadow-emerald-500/10 mt-1"
+                            className="w-full flex items-center justify-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2 rounded-app-btn transition-all active:scale-95 shadow-sm shadow-emerald-500/10 mt-1"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>{lang === 'ar' ? 'إضافة سؤال جديد' : 'Add Question'}</span>
@@ -3107,7 +3107,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         </div>
 
                         {/* Main editor area for selected question */}
-                        <div className="md:col-span-3 bg-slate-50 dark:bg-slate-950/20 p-5 rounded-[20px] border border-slate-150 dark:border-slate-850 space-y-4 relative">
+                        <div className="md:col-span-3 bg-slate-50 dark:bg-slate-950/20 p-5 rounded-app-card border border-slate-150 dark:border-slate-850 space-y-4 relative">
                           {editingLesson.quiz[activeQuizIdx] && (() => {
                             const q = editingLesson.quiz[activeQuizIdx];
                             const qIdx = activeQuizIdx;
@@ -3157,7 +3157,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                             }
                                             updateEditingLessonField('quiz', list);
                                           }}
-                                          className={`flex-1 py-1.5 rounded-xl text-[10px] font-black border transition-all ${
+                                          className={`flex-1 py-1.5 rounded-app-btn text-[10px] font-black border transition-all ${
                                             isSelected 
                                               ? 'bg-slate-900 text-white dark:bg-emerald-500 border-transparent shadow-sm' 
                                               : 'bg-white dark:bg-slate-900 text-slate-655 dark:text-slate-400 border-slate-200 dark:border-slate-800'
@@ -3181,7 +3181,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                         list[qIdx].textAr = e.target.value;
                                         updateEditingLessonField('quiz', list);
                                       }}
-                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold h-16 focus:outline-none"
+                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold h-16 focus:outline-none"
                                     />
                                   </div>
                                   <div>
@@ -3193,14 +3193,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                         list[qIdx].textEn = e.target.value;
                                         updateEditingLessonField('quiz', list);
                                       }}
-                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold h-16 focus:outline-none"
+                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold h-16 focus:outline-none"
                                     />
                                   </div>
                                 </div>
 
                                 {/* Options for MCQ / TF */}
                                 {q.type !== 'fill' && q.options && (
-                                  <div className="space-y-3 bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-150 dark:border-slate-800/80">
+                                  <div className="space-y-3 bg-white dark:bg-slate-900/60 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80">
                                     <label className="block text-[9px] font-extrabold text-slate-450">{lang === 'ar' ? 'الخيارات المتاحة (وحدد الإجابة الصحيحة)' : 'Available Options (Select correct answer)'}</label>
                                     <div className="space-y-2">
                                       {q.options.map((opt, oIdx) => {
@@ -3234,7 +3234,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                                 }
                                               }}
                                               placeholder="الخيار بالعربي"
-                                              className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                              className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                             />
                                             <input 
                                               type="text" 
@@ -3247,7 +3247,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                                 }
                                               }}
                                               placeholder="Option (EN)"
-                                              className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold"
+                                              className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold"
                                             />
                                           </div>
                                         );
@@ -3258,7 +3258,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                                 {/* Correct Answers for Fill in the Blank */}
                                 {q.type === 'fill' && (
-                                  <div className="bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-150 dark:border-slate-800/80 space-y-2">
+                                  <div className="bg-white dark:bg-slate-900/60 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-2">
                                     <div className="flex items-center justify-between">
                                       <label className="block text-[9px] font-extrabold text-slate-450">{lang === 'ar' ? 'الإجابات المقبولة للفراغ (يفصل بينها بفاصلة ,)' : 'Accepted Answers (comma separated)'}</label>
                                     </div>
@@ -3270,7 +3270,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                         list[qIdx].correctAnswers = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
                                         updateEditingLessonField('quiz', list);
                                       }}
-                                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold font-mono"
+                                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold font-mono"
                                       placeholder="مثال: شبكة, شبكه, net"
                                     />
                                   </div>
@@ -3287,7 +3287,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                         list[qIdx].explanationAr = e.target.value;
                                         updateEditingLessonField('quiz', list);
                                       }}
-                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold h-12 focus:outline-none"
+                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold h-12 focus:outline-none"
                                     />
                                   </div>
                                   <div>
@@ -3299,7 +3299,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                         list[qIdx].explanationEn = e.target.value;
                                         updateEditingLessonField('quiz', list);
                                       }}
-                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold h-12 focus:outline-none"
+                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-1.5 text-xs font-bold h-12 focus:outline-none"
                                     />
                                   </div>
                                 </div>
@@ -3308,7 +3308,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     type="button"
                                     onClick={() => setActiveQuizIdx(prev => Math.max(0, prev - 1))}
                                     disabled={activeQuizIdx === 0}
-                                    className="flex items-center gap-1.5 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none px-4 py-2 rounded-xl text-xs font-black transition-all active:scale-95 shadow-sm"
+                                    className="flex items-center gap-1.5 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none px-4 py-2 rounded-app-btn text-xs font-black transition-all active:scale-95 shadow-sm"
                                   >
                                     {lang === 'ar' ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
                                     <span>{lang === 'ar' ? 'السؤال السابق' : 'Previous'}</span>
@@ -3322,7 +3322,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     type="button"
                                     onClick={() => setActiveQuizIdx(prev => Math.min(editingLesson.quiz.length - 1, prev + 1))}
                                     disabled={activeQuizIdx === editingLesson.quiz.length - 1}
-                                    className="flex items-center gap-1.5 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none px-4 py-2 rounded-xl text-xs font-black transition-all active:scale-95 shadow-sm"
+                                    className="flex items-center gap-1.5 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 disabled:opacity-40 disabled:pointer-events-none px-4 py-2 rounded-app-btn text-xs font-black transition-all active:scale-95 shadow-sm"
                                   >
                                     <span>{lang === 'ar' ? 'السؤال التالي' : 'Next'}</span>
                                     {lang === 'ar' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -3338,7 +3338,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 )}
                 {/* ── SUB-TAB: File Editor (HTML & Binary Uploads) ──────────────────────── */}
                 {editorSubTab === 'files' && (
-                  <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-5">
+                  <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-5">
                     <div className="border-b border-slate-50 dark:border-slate-800 pb-3">
                       <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
                         {lang === 'ar' ? '📁 ملفات ومرفقات الدرس' : '📁 Lesson Files & Attachments'}
@@ -3353,7 +3353,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
                       {/* 1. PDF */}
-                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-card p-4 space-y-3 flex flex-col justify-between">
                         <div className="space-y-1">
                           <span className="text-xl">📄</span>
                           <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{lang === 'ar' ? 'ملف PDF الدرس' : 'Lesson PDF File'}</p>
@@ -3363,7 +3363,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="button"
                           onClick={() => handleFileUpload('pdfFile', '.pdf')}
                           disabled={uploadingField === 'pdfFile'}
-                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           {uploadingField === 'pdfFile' ? <RefreshCw className="w-4 h-4 animate-spin" /> : uploadSuccess === 'pdfFile' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <FolderOpen className="w-4 h-4" />}
                           {uploadSuccess === 'pdfFile' ? (lang === 'ar' ? 'تم الرفع ✓' : 'Uploaded ✓') : (lang === 'ar' ? 'رفع PDF جديد' : 'Upload PDF')}
@@ -3371,7 +3371,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
 
                       {/* 2. Diagram */}
-                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-card p-4 space-y-3 flex flex-col justify-between">
                         <div className="space-y-1">
                           <span className="text-xl">🖼️</span>
                           <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{lang === 'ar' ? 'رسم الدرس التخطيطي' : 'Lesson Diagram'}</p>
@@ -3381,7 +3381,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="button"
                           onClick={() => handleFileUpload('diagramFile', 'image/*')}
                           disabled={uploadingField === 'diagramFile'}
-                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           {uploadingField === 'diagramFile' ? <RefreshCw className="w-4 h-4 animate-spin" /> : uploadSuccess === 'diagramFile' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <FolderOpen className="w-4 h-4" />}
                           {uploadSuccess === 'diagramFile' ? (lang === 'ar' ? 'تم الرفع ✓' : 'Uploaded ✓') : (lang === 'ar' ? 'رفع صورة جديدة' : 'Upload Image')}
@@ -3389,7 +3389,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
 
                       {/* 3. Summary */}
-                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-card p-4 space-y-3 flex flex-col justify-between">
                         <div className="space-y-1">
                           <span className="text-xl">📊</span>
                           <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{lang === 'ar' ? 'إنفوجرافيك ملخص الدرس' : 'Summary Infographic'}</p>
@@ -3399,7 +3399,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="button"
                           onClick={() => handleFileUpload('summaryFile', 'image/*')}
                           disabled={uploadingField === 'summaryFile'}
-                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           {uploadingField === 'summaryFile' ? <RefreshCw className="w-4 h-4 animate-spin" /> : uploadSuccess === 'summaryFile' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <FolderOpen className="w-4 h-4" />}
                           {uploadSuccess === 'summaryFile' ? (lang === 'ar' ? 'تم الرفع ✓' : 'Uploaded ✓') : (lang === 'ar' ? 'رفع ملخص جديد' : 'Upload Summary')}
@@ -3407,7 +3407,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
 
                       {/* 4. Mindmap HTML */}
-                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-card p-4 space-y-3 flex flex-col justify-between">
                         <div className="space-y-1">
                           <span className="text-xl">🧠</span>
                           <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{lang === 'ar' ? 'ملف خريطة ذهنية HTML' : 'Mindmap HTML File'}</p>
@@ -3417,7 +3417,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="button"
                           onClick={() => handleFileUpload('mindmapFile', '.html,.htm')}
                           disabled={uploadingField === 'mindmapFile'}
-                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           {uploadingField === 'mindmapFile' ? <RefreshCw className="w-4 h-4 animate-spin" /> : uploadSuccess === 'mindmapFile' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <FolderOpen className="w-4 h-4" />}
                           {uploadSuccess === 'mindmapFile' ? (lang === 'ar' ? 'تم الرفع ✓' : 'Uploaded ✓') : (lang === 'ar' ? 'رفع خريطة HTML' : 'Upload Mindmap')}
@@ -3425,7 +3425,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
 
                       {/* 5. Quiz HTML */}
-                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-card p-4 space-y-3 flex flex-col justify-between">
                         <div className="space-y-1">
                           <span className="text-xl">❓</span>
                           <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{lang === 'ar' ? 'ملف اختبار HTML خارجي' : 'External Quiz HTML File'}</p>
@@ -3435,7 +3435,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="button"
                           onClick={() => handleFileUpload('quizFile', '.html,.htm')}
                           disabled={uploadingField === 'quizFile'}
-                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           {uploadingField === 'quizFile' ? <RefreshCw className="w-4 h-4 animate-spin" /> : uploadSuccess === 'quizFile' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <FolderOpen className="w-4 h-4" />}
                           {uploadSuccess === 'quizFile' ? (lang === 'ar' ? 'تم الرفع ✓' : 'Uploaded ✓') : (lang === 'ar' ? 'رفع اختبار HTML' : 'Upload HTML Quiz')}
@@ -3443,7 +3443,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
 
                       {/* 6. Ministry Exam File */}
-                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                      <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-card p-4 space-y-3 flex flex-col justify-between">
                         <div className="space-y-1">
                           <span className="text-xl">🎓</span>
                           <p className="text-[10px] font-black text-slate-700 dark:text-slate-300">{lang === 'ar' ? 'ملف الأسئلة الوزارية للدرس' : 'Lesson Ministry Exam File'}</p>
@@ -3453,7 +3453,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           type="button"
                           onClick={() => handleFileUpload('ministryExamFile', '.pdf,.html,.htm')}
                           disabled={uploadingField === 'ministryExamFile'}
-                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-xl transition-all active:scale-95 shadow-sm"
+                          className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-600 dark:text-slate-300 hover:text-emerald-600 font-black text-xs py-2.5 rounded-app-btn transition-all active:scale-95 shadow-sm"
                         >
                           {uploadingField === 'ministryExamFile' ? <RefreshCw className="w-4 h-4 animate-spin" /> : uploadSuccess === 'ministryExamFile' ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : <FolderOpen className="w-4 h-4" />}
                           {uploadSuccess === 'ministryExamFile' ? (lang === 'ar' ? 'تم الرفع ✓' : 'Uploaded ✓') : (lang === 'ar' ? 'رفع أسئلة وزارية' : 'Upload Ministry File')}
@@ -3476,7 +3476,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
               >
                 {/* Control Guide Panel */}
-                <div className="md:col-span-1 bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
+                <div className="md:col-span-1 bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
                   <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-2">
                     <Eye className="w-5 h-5 text-emerald-500" />
                     <h3 className="font-black text-slate-850 dark:text-slate-100 text-sm">
@@ -3501,7 +3501,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                               setPreviewSelectedAns(null);
                               setPreviewShowExpl(false);
                             }}
-                            className={`w-7 h-7 rounded-lg text-xs font-black font-sans transition-all flex items-center justify-center border ${
+                            className={`w-7 h-7 rounded-app-btn text-xs font-black font-sans transition-all flex items-center justify-center border ${
                               previewQuizIdx === i
                                 ? 'bg-emerald-500 text-white border-transparent shadow-sm'
                                 : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
@@ -3599,7 +3599,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                         if (previewShowExpl) return;
                                         setPreviewSelectedAns(opt.key);
                                       }}
-                                      className={`w-full flex items-center gap-2.5 px-3 py-2 border rounded-xl text-[10px] font-extrabold transition-all text-right ${btnClass}`}
+                                      className={`w-full flex items-center gap-2.5 px-3 py-2 border rounded-app-btn text-[10px] font-extrabold transition-all text-right ${btnClass}`}
                                     >
                                       <span className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black border ${
                                         isSelected 
@@ -3622,7 +3622,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                   type="text"
                                   disabled={previewShowExpl}
                                   placeholder={lang === 'ar' ? 'اكتب إجابتك هنا...' : 'Type response here...'}
-                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl px-3 py-2 text-[10px] font-bold text-center focus:outline-none"
+                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-2 text-[10px] font-bold text-center focus:outline-none"
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                       setPreviewSelectedAns('done');
@@ -3640,7 +3640,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                   setPreviewShowExpl(true);
                                 }}
                                 disabled={!previewSelectedAns}
-                                className={`w-full font-black text-[10px] py-2 rounded-xl active:scale-95 transition-all text-center ${
+                                className={`w-full font-black text-[10px] py-2 rounded-app-btn active:scale-95 transition-all text-center ${
                                   previewSelectedAns
                                     ? 'bg-emerald-500 text-white shadow-md'
                                     : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed'
@@ -3663,7 +3663,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     setPreviewSelectedAns(null);
                                     setPreviewShowExpl(false);
                                   }}
-                                  className="w-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-[9px] py-1.5 rounded-lg text-center"
+                                  className="w-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-[9px] py-1.5 rounded-app-btn text-center"
                                 >
                                   {lang === 'ar' ? 'حاول مجدداً' : 'Try Again'}
                                 </button>
@@ -3694,7 +3694,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6"
+                className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6"
               >
                 <div>
                   <h2 className="text-xl font-black text-slate-900 dark:text-white">
@@ -3708,7 +3708,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Big Action Box */}
-                <div className="bg-emerald-500 text-white p-6 rounded-[32px] shadow-xl shadow-emerald-500/20 relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="bg-emerald-500 text-white p-6 rounded-app-dialog shadow-xl shadow-emerald-500/20 relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="absolute -top-12 -left-12 w-36 h-36 bg-white/10 rounded-full blur-2xl"></div>
                   <div className="relative z-10 space-y-2">
                     <h3 className="font-black text-lg">{lang === 'ar' ? 'تحميل ملف lessons_config.json' : 'Download lessons_config.json'}</h3>
@@ -3720,7 +3720,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   </div>
                   <button
                     onClick={handleTriggerDownload}
-                    className="relative z-10 bg-white hover:bg-slate-50 text-emerald-600 font-black text-xs px-6 py-3.5 rounded-2xl active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 shadow-lg"
+                    className="relative z-10 bg-white hover:bg-slate-50 text-emerald-600 font-black text-xs px-6 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 shadow-lg"
                   >
                     <Download className="w-4 h-4 text-emerald-600" />
                     <span>{lang === 'ar' ? 'تنزيل ملف المنهج المحدث' : 'Download Config File'}</span>
@@ -3728,7 +3728,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Excel Curriculum Manager Card */}
-                <div className="bg-slate-50 dark:bg-slate-955 p-6 rounded-[32px] border border-slate-150 dark:border-slate-850 space-y-6">
+                <div className="bg-slate-50 dark:bg-slate-955 p-6 rounded-app-dialog border border-slate-150 dark:border-slate-850 space-y-6">
                   <div>
                     <h3 className="text-sm font-black text-slate-800 dark:text-white">
                       {lang === 'ar' ? 'إدارة المنهج عبر ملفات إكسل (Excel Manager)' : 'Excel Curriculum Manager'}
@@ -3744,14 +3744,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     {/* Export button */}
                     <button
                       onClick={handleExportExcel}
-                      className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-black text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/15"
+                      className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-black text-xs px-5 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/15"
                     >
                       <Download className="w-4 h-4" />
                       <span>{lang === 'ar' ? 'تصدير المنهج الحالي إلى إكسل 📊' : 'Export Syllabus to Excel 📊'}</span>
                     </button>
 
                     {/* Import button */}
-                    <label className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/15 cursor-pointer text-center">
+                    <label className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/15 cursor-pointer text-center">
                       <PlusCircle className="w-4 h-4" />
                       <span>{lang === 'ar' ? 'استيراد المنهج من إكسل 📥' : 'Import Syllabus from Excel 📥'}</span>
                       <input
@@ -3765,7 +3765,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                   <button
                     onClick={handlePublishUpdate}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>{lang === 'ar' ? 'نشر وإرسال التحديث لجميع الهواتف 📢' : 'Publish & Broadcast Update to All Phones 📢'}</span>
@@ -3773,7 +3773,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                   <button
                     onClick={handleSyncCurriculum}
-                    className="w-full bg-slate-200 hover:bg-slate-350 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-black text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                    className="w-full bg-slate-200 hover:bg-slate-350 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-black text-xs px-5 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <RefreshCw className="w-4 h-4" />
                     <span>{lang === 'ar' ? 'تحديث وتنزيل المنهج الجديد من السيرفر 🔄' : 'Force Sync & Reload Syllabus from Server 🔄'}</span>
@@ -3781,7 +3781,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                   {/* Validation results view */}
                   {excelValidationResult && (
-                    <div className={`p-5 rounded-2xl border text-xs leading-relaxed ${
+                    <div className={`p-5 rounded-app-card border text-xs leading-relaxed ${
                       excelValidationResult.type === 'error'
                         ? 'bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400'
                         : excelValidationResult.type === 'warning'
@@ -3810,22 +3810,22 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Instructions Accordion */}
-                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-[24px] border border-slate-150 dark:border-slate-850 space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-app-card border border-slate-150 dark:border-slate-850 space-y-3">
                   <h4 className="font-black text-xs text-slate-700 dark:text-slate-350 uppercase tracking-wider flex items-center gap-1.5">
                     <Info className="w-4 h-4 text-indigo-500" />
                     <span>{lang === 'ar' ? 'خطوات التحديث البسيطة للموقع' : 'Syllabus Deployment Checklist'}</span>
                   </h4>
                   <div className="text-[11px] text-slate-450 dark:text-slate-400 font-bold space-y-2 leading-relaxed">
                     <div className="flex gap-2">
-                      <span className="w-5 h-5 rounded-lg bg-indigo-500 text-white flex items-center justify-center shrink-0 text-[10px] font-sans">1</span>
+                      <span className="w-5 h-5 rounded-app-btn bg-indigo-500 text-white flex items-center justify-center shrink-0 text-[10px] font-sans">1</span>
                       <p>{lang === 'ar' ? 'انقر على زر "تنزيل ملف المنهج المحدث" لحفظ الملف على جهاز الكمبيوتر الخاص بك.' : 'Click the "Download Config File" button to download lessons_config.json locally.'}</p>
                     </div>
                     <div className="flex gap-2">
-                      <span className="w-5 h-5 rounded-lg bg-indigo-500 text-white flex items-center justify-center shrink-0 text-[10px] font-sans">2</span>
+                      <span className="w-5 h-5 rounded-app-btn bg-indigo-500 text-white flex items-center justify-center shrink-0 text-[10px] font-sans">2</span>
                       <p>{lang === 'ar' ? 'افتح مجلد المشروع الخاص بك وانتقل للمجلد الفرعي public/ واستبدل الملف القديم بالملف الجديد.' : 'Open your project root directory and locate the public/ subdirectory.'}</p>
                     </div>
                     <div className="flex gap-2">
-                      <span className="w-5 h-5 rounded-lg bg-indigo-500 text-white flex items-center justify-center shrink-0 text-[10px] font-sans">3</span>
+                      <span className="w-5 h-5 rounded-app-btn bg-indigo-500 text-white flex items-center justify-center shrink-0 text-[10px] font-sans">3</span>
                       <p>{lang === 'ar' ? 'انتهى! ستنعكس التعديلات على الويب تلقائياً وتفتح الوحدات أو الأسئلة الجديدة لجميع طلابك.' : 'Overwrite the old lessons_config.json with the new file. Re-deploy the code to web.'}</p>
                     </div>
                   </div>
@@ -3853,14 +3853,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     </button>
                   </div>
                   
-                  <div className="bg-slate-900 text-slate-100 p-4 rounded-2xl border border-slate-800 text-[10px] font-mono overflow-auto max-h-80 select-text leading-relaxed">
+                  <div className="bg-slate-900 text-slate-100 p-4 rounded-app-card border border-slate-800 text-[10px] font-mono overflow-auto max-h-80 select-text leading-relaxed">
                     <pre>{JSON.stringify(lessons, null, 2)}</pre>
                   </div>
                 </div>
 
                 {/* Backups List UI */}
                 <div 
-                  className="bg-slate-50 dark:bg-slate-950 p-6 rounded-[32px] border border-slate-150 dark:border-slate-850 space-y-4"
+                  className="bg-slate-50 dark:bg-slate-950 p-6 rounded-app-dialog border border-slate-150 dark:border-slate-850 space-y-4"
                   dir="rtl"
                 >
                   <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
@@ -3876,7 +3876,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       {backups.map(date => (
                         <div
                           key={date}
-                          className="flex justify-between items-center py-2 px-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800/80 text-xs"
+                          className="flex justify-between items-center py-2 px-4 bg-white dark:bg-slate-900 rounded-app-btn border border-slate-100 dark:border-slate-800/80 text-xs"
                         >
                           <span className="text-slate-600 dark:text-slate-350 font-mono font-bold">{date}</span>
                           <span className="text-emerald-500 font-bold flex items-center gap-1">
@@ -3898,7 +3898,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6 lg:col-span-3 text-right"
+                className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6 lg:col-span-3 text-right"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-50 dark:border-slate-800/80 pb-4">
                   <div>
@@ -3916,7 +3916,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   <button
                     onClick={handleExportKeys}
                     disabled={keysList.length === 0}
-                    className="bg-slate-800 hover:bg-slate-750 disabled:opacity-50 text-white font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                    className="bg-slate-800 hover:bg-slate-750 disabled:opacity-50 text-white font-black text-xs px-4 py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <Download className="w-4 h-4" />
                     <span>{t.exportKeysBtn}</span>
@@ -3935,7 +3935,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       max="200"
                       value={keysGenerateCount}
                       onChange={(e) => setKeysGenerateCount(Math.min(200, Math.max(1, Number(e.target.value))))}
-                      className="w-full text-xs font-black px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-sans"
+                      className="w-full text-xs font-black px-3.5 py-2.5 rounded-app-btn border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-sans"
                     />
                   </div>
 
@@ -3943,7 +3943,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     type="button"
                     onClick={handleGenerateKeys}
                     disabled={keysLoading}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-4 py-3 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/15"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-4 py-3 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/15"
                   >
                     {keysLoading ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -3955,7 +3955,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {keysStatusMsg && (
-                  <div className={`text-xs font-black px-4 py-3 rounded-xl flex items-center gap-1.5 ${
+                  <div className={`text-xs font-black px-4 py-3 rounded-app-btn flex items-center gap-1.5 ${
                     keysStatusMsg.type === 'success' 
                       ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900' 
                       : 'bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-450 border border-rose-100 dark:border-rose-900'
@@ -4064,21 +4064,21 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{lang === 'ar' ? 'إجمالي الطلاب' : 'Total Students'}</span>
                       <span className="text-2xl font-black text-emerald-600 dark:text-emerald-450 mt-1 block">{dbStudents.length}</span>
                     </div>
-                    <div className="w-12 h-12 bg-emerald-500/20 text-emerald-500 rounded-2xl flex items-center justify-center font-black">👥</div>
+                    <div className="w-12 h-12 bg-emerald-500/20 text-emerald-500 rounded-app-card flex items-center justify-center font-black">👥</div>
                   </div>
                   <div className="bg-amber-500/10 border border-amber-500/20 p-5 rounded-3xl flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{lang === 'ar' ? 'الطلاب المشتركين (Premium)' : 'Premium Students'}</span>
                       <span className="text-2xl font-black text-amber-600 dark:text-amber-450 mt-1 block">{dbStudents.filter(s => s.is_premium).length}</span>
                     </div>
-                    <div className="w-12 h-12 bg-amber-500/20 text-amber-500 rounded-2xl flex items-center justify-center font-black">🌟</div>
+                    <div className="w-12 h-12 bg-amber-500/20 text-amber-500 rounded-app-card flex items-center justify-center font-black">🌟</div>
                   </div>
                   <div className="bg-blue-500/10 border border-blue-500/20 p-5 rounded-3xl flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{lang === 'ar' ? 'أكواد التفعيل المتاحة' : 'Available Codes'}</span>
                       <span className="text-2xl font-black text-blue-600 dark:text-blue-450 mt-1 block">{activationCodes.filter(c => !c.is_used).length}</span>
                     </div>
-                    <div className="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-2xl flex items-center justify-center font-black">🔑</div>
+                    <div className="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-app-card flex items-center justify-center font-black">🔑</div>
                   </div>
                 </div>
 
@@ -4109,7 +4109,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 {studentsSubTab === 'roster' && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Left Column: Students List (takes 2 cols) */}
-                  <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+                  <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
                     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                       <div>
                         <h2 className="text-lg font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'إدارة الطلاب وتفعيل الاشتراكات' : 'Student Subscriptions'}</h2>
@@ -4117,7 +4117,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
                       <button
                         onClick={fetchStudents}
-                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-xl border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center"
+                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-app-btn border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${dbStudentsLoading ? 'animate-spin' : ''}`} />
                         {lang === 'ar' ? 'تحديث البيانات' : 'Refresh'}
@@ -4130,11 +4130,11 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       placeholder={lang === 'ar' ? 'ابحث باسم الطالب أو رقم الهاتف...' : 'Search by name or phone...'}
                       value={studentSearch}
                       onChange={e => setStudentSearch(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-2xl px-4 py-3 text-sm font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-4 py-3 text-sm font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500"
                     />
 
                     {/* Students List Table */}
-                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-2xl">
+                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-app-card">
                       <table className="w-full text-right border-collapse">
                         <thead>
                           <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-850">
@@ -4199,7 +4199,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                   <td className="p-4">
                                     <button
                                       onClick={() => handleToggleStudentPremium(s.phone, s.is_premium)}
-                                      className={`text-[10px] font-black px-3 py-1.5 rounded-xl transition-all active:scale-95 shadow-sm ${
+                                      className={`text-[10px] font-black px-3 py-1.5 rounded-app-btn transition-all active:scale-95 shadow-sm ${
                                         s.is_premium
                                           ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
                                           : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-350 border border-slate-200/40 dark:border-slate-700'
@@ -4214,7 +4214,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                     <button
                                       onClick={() => handleResetStudentDevice(s.phone)}
                                       title={lang === 'ar' ? 'إعادة ضبط الهاتف' : 'Reset Device ID'}
-                                      className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-450 text-[10px] font-black px-2.5 py-1.5 rounded-lg active:scale-95 transition-all"
+                                      className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-450 text-[10px] font-black px-2.5 py-1.5 rounded-app-btn active:scale-95 transition-all"
                                     >
                                       {lang === 'ar' ? 'نقل الهاتف 🔄' : 'Transfer 🔄'}
                                     </button>
@@ -4230,7 +4230,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   {/* Right Column: Code Generator (takes 1 col) */}
                   <div className="space-y-6">
                     {/* Generator Card */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
                       <div>
                         <h2 className="text-lg font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'توليد أكواد التفعيل' : 'Code Generator'}</h2>
                         <p className="text-xs text-slate-400 font-bold">{lang === 'ar' ? 'أنشئ أكواد فريدة صالحة للتنشيط لمرة واحدة' : 'Generate single-use premium keys'}</p>
@@ -4239,7 +4239,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       <button
                         onClick={handleGenerateCode}
                         disabled={codeLoading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-2xl active:scale-95 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-app-btn active:scale-95 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
                       >
                         {codeLoading ? (
                           <>
@@ -4254,7 +4254,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </button>
 
                       {generatedCode && (
-                        <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 p-4 rounded-2xl space-y-2 text-center">
+                        <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 p-4 rounded-app-card space-y-2 text-center">
                           <span className="text-[10px] text-slate-400 font-black block">{lang === 'ar' ? 'الكود الجديد المنشأ:' : 'NEW KEY GENERATED:'}</span>
                           <span className="text-md font-extrabold text-blue-600 dark:text-blue-450 block tracking-wider select-all">{generatedCode}</span>
                           <button
@@ -4262,7 +4262,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                               navigator.clipboard.writeText(generatedCode);
                               alert(lang === 'ar' ? 'تم نسخ كود التفعيل!' : 'Code copied!');
                             }}
-                            className="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-[10px] font-black px-3 py-1.5 rounded-xl active:scale-95 transition-all inline-flex items-center gap-1"
+                            className="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-[10px] font-black px-3 py-1.5 rounded-app-btn active:scale-95 transition-all inline-flex items-center gap-1"
                           >
                             <Copy className="w-3.5 h-3.5" />
                             {lang === 'ar' ? 'نسخ كود التفعيل' : 'Copy Key'}
@@ -4272,7 +4272,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     </div>
 
                     {/* Codes List Card */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
                       <div className="flex justify-between items-center">
                         <h2 className="text-sm font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'الأكواد المنشأة سابقاً' : 'Recent Keys'}</h2>
                         <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] px-2.5 py-1 rounded-full font-black">
@@ -4280,7 +4280,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         </span>
                       </div>
 
-                      <div className="max-h-[300px] overflow-y-auto space-y-2 border border-slate-100 dark:border-slate-850 rounded-2xl p-2">
+                      <div className="max-h-[300px] overflow-y-auto space-y-2 border border-slate-100 dark:border-slate-850 rounded-app-card p-2">
                         {activationCodes.length === 0 ? (
                           <div className="text-center p-8 text-slate-400 font-bold text-xs">
                             🗝️ {lang === 'ar' ? 'لا يوجد أكواد منشأة بعد.' : 'No codes generated yet.'}
@@ -4289,7 +4289,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           activationCodes.map(c => (
                             <div
                               key={c.code}
-                              className={`p-3 rounded-xl border flex flex-col gap-1 ${
+                              className={`p-3 rounded-app-btn border flex flex-col gap-1 ${
                                 c.is_used
                                   ? 'bg-rose-50/20 border-rose-100 dark:bg-rose-950/10 dark:border-rose-950/20'
                                   : 'bg-emerald-50/20 border-emerald-100 dark:bg-emerald-950/10 dark:border-emerald-950/20'
@@ -4322,7 +4322,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               )}
 
                 {studentsSubTab === 'difficulty' && (
-                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+                  <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
                     <div className="flex justify-between items-center">
                       <div>
                         <h2 className="text-lg font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'الأسئلة الصعبة في الكويزات' : 'Difficult Questions Analytics'}</h2>
@@ -4330,14 +4330,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </div>
                       <button
                         onClick={fetchDiffQuestions}
-                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-xl border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center"
+                        className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-app-btn border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${diffQuestionsLoading ? 'animate-spin' : ''}`} />
                         {lang === 'ar' ? 'تحديث الإحصائيات' : 'Refresh'}
                       </button>
                     </div>
 
-                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-2xl">
+                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-app-card">
                       <table className="w-full text-right border-collapse">
                         <thead>
                           <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-850">
@@ -4797,7 +4797,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
   return (
     <div className="space-y-6">
       {/* 1. Header Configurations Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
+      <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
         <div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white">
             {lang === 'ar' ? 'محرر ومساعد الرسوم التفاعلية' : 'Interactive Diagrams Visual Editor'}
@@ -4817,7 +4817,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
             <select
               value={selectedLessonId}
               onChange={(e) => setSelectedLessonId(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
             >
               {lessons.map(l => (
                 <option key={l.id} value={l.id}>
@@ -4834,7 +4834,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
             <select
               value={selectedImage}
               onChange={(e) => setSelectedImage(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
             >
               <option value="">{lang === 'ar' ? '-- اختر صورة للرسومات --' : '-- Select drawing image --'}</option>
               {allImages.map(img => (
@@ -4851,9 +4851,9 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           
           {/* Column A & B: Image Visual Canvas (takes 2/3 space) */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm flex flex-col items-center gap-6 animate-fadeIn relative">
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm flex flex-col items-center gap-6 animate-fadeIn relative">
             
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 dark:bg-slate-850 p-4 rounded-2xl border border-slate-150 dark:border-slate-800/60 w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 dark:bg-slate-850 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/60 w-full">
               <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
                   {lang === 'ar' ? 'إحداثيات النقطة النشطة:' : 'Selected Coordinates:'}
@@ -4869,12 +4869,12 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
               
               {clickedCoords && (
                 <div className="flex gap-2">
-                  <div className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-700 dark:text-slate-350 flex items-center justify-center">
+                  <div className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-mono font-bold text-slate-700 dark:text-slate-350 flex items-center justify-center">
                     {clickedCoords.x}, {clickedCoords.y}
                   </div>
                   <button
                     onClick={handleCopy}
-                    className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-250 font-black text-xs px-4 py-2 rounded-xl active:scale-95 transition-all flex items-center gap-1.5"
+                    className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-250 font-black text-xs px-4 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5"
                   >
                     {copied ? (lang === 'ar' ? 'تم النسخ! ✓' : 'Copied! ✓') : (lang === 'ar' ? 'نسخ الإحداثيات' : 'Copy Coords')}
                   </button>
@@ -4884,7 +4884,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
 
             {/* Visual Canvas Element */}
             <div
-              className={`relative border border-slate-200 dark:border-slate-800 rounded-[20px] overflow-hidden max-w-full bg-slate-950/5 select-none flex items-center justify-center ${
+              className={`relative border border-slate-200 dark:border-slate-800 rounded-app-card overflow-hidden max-w-full bg-slate-950/5 select-none flex items-center justify-center ${
                 draggingHotspotId ? 'cursor-grabbing' : 'cursor-crosshair'
               }`}
               style={{ maxHeight: '70vh', minHeight: '300px' }}
@@ -5052,7 +5052,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
           <div className="space-y-6">
             
             {/* Save Diagram Changes Card */}
-            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
               <h3 className="text-sm font-black text-slate-850 dark:text-white flex items-center gap-2">
                 <Save className="w-4 h-4 text-emerald-500" />
                 {lang === 'ar' ? 'حفظ تعديلات الرسوم التفاعلية' : 'Save Interactive Diagram Edits'}
@@ -5067,7 +5067,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
               <button
                 onClick={handleSave}
                 disabled={saveLoading}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs py-2.5 rounded-xl active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/10"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-500/10"
               >
                 {saveLoading ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />
@@ -5078,7 +5078,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
               </button>
 
               {localSaveStatus && (
-                <div className={`p-3 rounded-xl text-xs font-bold text-center border leading-relaxed ${
+                <div className={`p-3 rounded-app-btn text-xs font-bold text-center border leading-relaxed ${
                   localSaveStatus.type === 'success'
                     ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-450 border-emerald-150 dark:border-emerald-900'
                     : 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450 border-rose-150 dark:border-rose-900'
@@ -5089,7 +5089,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
             </div>
 
             {/* AI Control Panel */}
-            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
               <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-violet-500" />
                 {lang === 'ar' ? 'التحليل التلقائي بالذكاء البصري' : 'AI Multimodal Vision'}
@@ -5104,7 +5104,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                   </p>
                   <button
                     onClick={handleCreateDiagram}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2.5 rounded-xl shadow-md transition-all active:scale-95"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2.5 rounded-app-btn shadow-md transition-all active:scale-95"
                   >
                     {lang === 'ar' ? 'إنشاء مخطط تفاعلي جديد' : 'Initialize Interactive Diagram'}
                   </button>
@@ -5120,7 +5120,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                   <button
                     onClick={handleAnalyzeDiagram}
                     disabled={aiLoading || !localApiKey}
-                    className={`w-full font-black text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full font-black text-xs py-2.5 rounded-app-btn transition-all flex items-center justify-center gap-2 ${
                       aiLoading 
                         ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
                         : 'bg-violet-650 hover:bg-violet-755 text-white shadow-md shadow-violet-500/10'
@@ -5148,7 +5148,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                   )}
 
                   {aiStatusMsg && (
-                    <div className={`p-3 rounded-xl text-xs font-bold leading-relaxed ${
+                    <div className={`p-3 rounded-app-btn text-xs font-bold leading-relaxed ${
                       aiStatusMsg.type === 'success' 
                         ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-150 dark:border-emerald-800' 
                         : 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-150 dark:border-red-800'
@@ -5162,14 +5162,14 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
 
             {/* Hotspots Edit Panel */}
             {activeDiagram && (
-              <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
+              <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
                 <h3 className="text-sm font-black text-slate-800 dark:text-white">
                   {lang === 'ar' ? 'محرر النقاط التفاعلية' : 'Hotspots Editor'}
                 </h3>
 
                 {/* Case 1: Editing Existing Hotspot */}
                 {activeHotspotId ? (
-                  <div className="space-y-3 bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10">
+                  <div className="space-y-3 bg-amber-500/5 p-4 rounded-app-card border border-amber-500/10">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase">
                         {lang === 'ar' ? `تعديل النقطة النشطة: ${activeHotspotId}` : `Editing Hotspot: ${activeHotspotId}`}
@@ -5192,7 +5192,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         type="text"
                         value={editLabelAr}
                         onChange={(e) => setEditLabelAr(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
+                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
                       />
                     </div>
 
@@ -5202,20 +5202,20 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         rows={3}
                         value={editDescAr}
                         onChange={(e) => setEditDescAr(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 dark:text-white focus:outline-none leading-relaxed"
+                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-medium text-slate-800 dark:text-white focus:outline-none leading-relaxed"
                       />
                     </div>
 
                     <div className="flex gap-2">
                       <button
                         onClick={handleUpdateHotspot}
-                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs py-2 rounded-xl transition-all"
+                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs py-2 rounded-app-btn transition-all"
                       >
                         {lang === 'ar' ? 'تحديث النقطة' : 'Update Hotspot'}
                       </button>
                       <button
                         onClick={() => handleDeleteHotspot(activeHotspotId)}
-                        className="bg-red-500 hover:bg-red-600 text-white font-black text-xs px-3 py-2 rounded-xl transition-all"
+                        className="bg-red-500 hover:bg-red-600 text-white font-black text-xs px-3 py-2 rounded-app-btn transition-all"
                         title="Delete"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -5224,7 +5224,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                   </div>
                 ) : clickedCoords ? (
                   // Case 2: Adding New Hotspot
-                  <div className="space-y-3 bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10">
+                  <div className="space-y-3 bg-emerald-500/5 p-4 rounded-app-card border border-emerald-500/10">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase">
                         {lang === 'ar' ? 'إضافة نقطة جديدة' : 'Add New Hotspot'}
@@ -5248,7 +5248,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         placeholder="مثال: القشرة المخية"
                         value={editLabelAr}
                         onChange={(e) => setEditLabelAr(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
+                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold text-slate-800 dark:text-white focus:outline-none"
                       />
                     </div>
 
@@ -5259,20 +5259,20 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                         placeholder="اكتب وظيفته أو شرح مبسط عنه هنا..."
                         value={editDescAr}
                         onChange={(e) => setEditDescAr(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 dark:text-white focus:outline-none leading-relaxed"
+                        className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-medium text-slate-800 dark:text-white focus:outline-none leading-relaxed"
                       />
                     </div>
 
                     <button
                       onClick={handleAddHotspot}
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2 rounded-xl transition-all"
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-2 rounded-app-btn transition-all"
                     >
                       {lang === 'ar' ? 'إدراج النقطة التفاعلية' : 'Insert Hotspot'}
                     </button>
                   </div>
                 ) : (
                   // Case 3: Prompt instructions
-                  <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-2xl text-center text-xs text-slate-400 font-bold leading-relaxed">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-app-card text-center text-xs text-slate-400 font-bold leading-relaxed">
                     {lang === 'ar'
                       ? 'حدد نقطة بالنقر على الرسم لإضافتها، أو اضغط على أي علامة تفاعلية لتعديلها أو نقلها.'
                       : 'Click the image to insert a new hotspot, or select a marker to edit details or reposition.'}
@@ -5297,7 +5297,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                               setEditLabelAr(h.labelAr);
                               setEditDescAr(h.descAr);
                             }}
-                            className={`p-2.5 rounded-xl border transition-all cursor-pointer text-xs font-bold flex justify-between items-center ${
+                            className={`p-2.5 rounded-app-btn border transition-all cursor-pointer text-xs font-bold flex justify-between items-center ${
                               isSelected
                                 ? 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400'
                                 : 'bg-slate-50 dark:bg-slate-950 border-slate-150 dark:border-slate-800/80 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-850'
@@ -5326,7 +5326,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
 
         </div>
       ) : selectedLesson ? (
-        <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 p-12 shadow-sm text-center text-slate-400 font-bold">
+        <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-12 shadow-sm text-center text-slate-400 font-bold">
           {lang === 'ar' 
             ? 'الرجاء اختيار صورة من القائمة المنسدلة أعلاه لبدء التعديل البصري.' 
             : 'Please select an image from the dropdown above to start visual editing.'}

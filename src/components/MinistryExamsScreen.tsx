@@ -53,11 +53,11 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   if (!imgUrl) return null;
 
   return (
-    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-2.5 rounded-2xl shadow-sm overflow-hidden my-2">
+    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-2.5 rounded-app-card shadow-sm overflow-hidden my-2">
       <img 
         src={imgUrl} 
         alt="Question Diagram" 
-        className="max-h-48 object-contain rounded-xl"
+        className="max-h-48 object-contain rounded-app-btn"
       />
     </div>
   );
@@ -235,7 +235,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
             </p>
             <button
               onClick={() => onNavigate('student-profile', 'push')}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-6 py-3 rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-6 py-3 rounded-app-btn shadow-md transition-all active:scale-95 cursor-pointer"
             >
               تفعيل النسخة الكاملة الآن 🔑
             </button>
@@ -252,7 +252,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('main-dashboard', 'push_back')} 
-            className="active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
+            className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
           </button>
@@ -261,7 +261,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         {!premiumUnlocked && (
           <span 
             onClick={() => onNavigate('student-profile', 'push')}
-            className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[10px] font-black px-2.5 py-1 rounded-xl cursor-pointer active:scale-95 transition-all"
+            className="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 text-amber-500 text-[10px] font-black px-2.5 py-1 rounded-app-btn cursor-pointer active:scale-95 transition-all"
           >
             <Crown className="w-3.5 h-3.5 fill-amber-500 shrink-0" />
             {lang === 'ar' ? 'شراء بريميوم' : 'Unlock Premium'}
@@ -285,9 +285,9 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
 
         {/* Timed Exam Simulation Mode Panel */}
         {!isSimulating ? (
-          <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[28px] shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
+          <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
             <div className="flex items-center gap-3">
-              <span className="p-2.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-500 rounded-xl">
+              <span className="p-2.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-500 rounded-app-btn">
                 <Clock className="w-6 h-6 animate-pulse" />
               </span>
               <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -302,7 +302,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
 
             <button 
               onClick={handleStartExam}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-3.5 rounded-xl active:scale-95 transition-all shadow-md flex items-center justify-center gap-1.5"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-3.5 rounded-app-btn active:scale-95 transition-all shadow-md flex items-center justify-center gap-1.5"
             >
               <Play className="w-4 h-4 fill-white" />
               {t.startMockExam}
@@ -310,7 +310,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
           </section>
         ) : (
           /* Active Exam Simulator Screen */
-          <section className="bg-white dark:bg-slate-900 border-2 border-emerald-500 p-6 rounded-[28px] shadow-xl space-y-6 animate-scaleUp">
+          <section className="bg-white dark:bg-slate-900 border-2 border-emerald-500 p-6 rounded-app-card shadow-xl space-y-6 animate-scaleUp">
             <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-emerald-500 animate-spin-slow" />
@@ -323,14 +323,14 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
               {!examFinished ? (
                 <button 
                   onClick={handleFinishExam}
-                  className="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition-all"
+                  className="bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black px-4 py-2 rounded-app-btn active:scale-95 transition-all"
                 >
                   {t.finishExam}
                 </button>
               ) : (
                 <button 
                   onClick={() => setIsSimulating(false)}
-                  className="bg-slate-500 hover:bg-slate-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition-all"
+                  className="bg-slate-500 hover:bg-slate-600 text-white text-[10px] font-black px-4 py-2 rounded-app-btn active:scale-95 transition-all"
                 >
                   {lang === 'ar' ? 'الخروج للمركز' : 'Exit Simulator'}
                 </button>
@@ -339,12 +339,12 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
 
             {/* Exam Submitted Stats */}
             {examFinished && (
-              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900 p-4 rounded-xl text-center space-y-2">
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900 p-4 rounded-app-btn text-center space-y-2">
                 <span className="block text-2xl font-black text-emerald-600">{calculateScore()} / {activeQuestions.length}</span>
                 <p className="text-xs font-bold text-emerald-700 dark:text-emerald-350">{t.examSubmittedSuccess}</p>
                 <button 
                   onClick={handleStartExam}
-                  className="bg-white dark:bg-slate-800 hover:bg-slate-50 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 font-extrabold text-[10px] px-4 py-1.5 rounded-lg active:scale-95 transition-all inline-flex items-center gap-1.5"
+                  className="bg-white dark:bg-slate-800 hover:bg-slate-50 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 font-extrabold text-[10px] px-4 py-1.5 rounded-app-btn active:scale-95 transition-all inline-flex items-center gap-1.5"
                 >
                   <RotateCw className="w-3.5 h-3.5" />
                   {lang === 'ar' ? 'إعادة المحاكاة' : 'Retake Timed Exam'}
@@ -373,7 +373,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                   {(q.hint || q.definition) && !examFinished && (
                     <div className="flex flex-col items-end pt-1">
                       {hintsUsed.has(q.id) ? (
-                        <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-3 rounded-xl text-right animate-fadeIn mb-2">
+                        <div className="w-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-3 rounded-app-btn text-right animate-fadeIn mb-2">
                           <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 block mb-0.5">
                             💡 {lang === 'ar' ? 'التلميح التعليمي / التعريف:' : 'Study Hint / Definition:'}
                           </span>
@@ -398,7 +398,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                               });
                             }
                           }}
-                          className="flex items-center gap-1 text-[10px] text-amber-500 hover:text-amber-600 font-extrabold bg-amber-500/10 px-2.5 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer mb-2"
+                          className="flex items-center gap-1 text-[10px] text-amber-500 hover:text-amber-600 font-extrabold bg-amber-500/10 px-2.5 py-1.5 rounded-app-btn transition-all active:scale-95 cursor-pointer mb-2"
                         >
                           <span>💡</span>
                           <span>{lang === 'ar' ? 'عرض التلميح (-0.25 د)' : 'Show Hint (-0.25 pts)'}</span>
@@ -430,7 +430,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                         <button
                           key={opt.key}
                           onClick={() => handleAnswerSelect(q.id, opt.key)}
-                          className={`p-3 rounded-xl border text-xs font-bold text-center active:scale-[0.98] transition-all ${btnStyle}`}
+                          className={`p-3 rounded-app-btn border text-xs font-bold text-center active:scale-[0.98] transition-all ${btnStyle}`}
                           disabled={examFinished}
                         >
                           {opt.text}
@@ -441,7 +441,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
 
                   {/* Explanation for Ministry Exam Questions */}
                   {examFinished && q.explanation && (
-                    <div className="bg-slate-50 dark:bg-slate-950/60 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mt-2 text-right">
+                    <div className="bg-slate-50 dark:bg-slate-950/60 p-3 rounded-app-btn border border-slate-100 dark:border-slate-800 mt-2 text-right">
                       <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 block mb-0.5">
                         📝 {lang === 'ar' ? 'التعليل التوضيحي:' : 'Explanation / Reasoning:'}
                       </span>
@@ -467,12 +467,12 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                 return (
                   <div 
                     key={paper.id}
-                    className={`bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-[24px] shadow-sm flex items-center justify-between transition-all ${
+                    className={`bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-app-card shadow-sm flex items-center justify-between transition-all ${
                       isPremiumLockedPaper ? 'opacity-70' : 'hover:border-emerald-500 hover:shadow-md'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-505 text-slate-500 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-app-card bg-slate-50 dark:bg-slate-800 text-slate-505 text-slate-500 flex items-center justify-center shrink-0">
                         <FileText className="w-6 h-6 text-purple-500" />
                       </div>
                       <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
@@ -485,7 +485,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                       {isPremiumLockedPaper ? (
                         <button 
                           onClick={() => onNavigate('student-profile', 'push')}
-                          className="bg-amber-500/10 text-amber-500 p-2.5 rounded-xl border border-amber-500/20 active:scale-90 transition-transform shrink-0"
+                          className="bg-amber-500/10 text-amber-500 p-2.5 rounded-app-btn border border-amber-500/20 active:scale-90 transition-transform shrink-0"
                           title={t.premiumButtonText}
                         >
                           <Crown className="w-4 h-4 fill-amber-500 shrink-0" />
@@ -493,7 +493,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                       ) : (
                         <button 
                           onClick={() => handleSimulateDownload(paper.id)}
-                          className="bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900 hover:bg-emerald-500 hover:text-white active:scale-90 transition-all shrink-0"
+                          className="bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 p-2.5 rounded-app-btn border border-emerald-100 dark:border-emerald-900 hover:bg-emerald-500 hover:text-white active:scale-90 transition-all shrink-0"
                         >
                           <Download className="w-4 h-4" />
                         </button>
@@ -501,7 +501,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                     </div>
 
                     {downloadSuccessId === paper.id && (
-                      <div className="fixed bottom-24 left-6 right-6 z-50 bg-emerald-500 text-white p-4 rounded-xl text-xs font-black shadow-lg text-center animate-slideUp">
+                      <div className="fixed bottom-24 left-6 right-6 z-50 bg-emerald-500 text-white p-4 rounded-app-btn text-xs font-black shadow-lg text-center animate-slideUp">
                         {lang === 'ar' 
                           ? `تم محاكاة تحميل ملف ${paper.title} بنجاح كـ PDF في التنزيلات!` 
                           : `Successfully simulated PDF download of ${paper.title}!`
