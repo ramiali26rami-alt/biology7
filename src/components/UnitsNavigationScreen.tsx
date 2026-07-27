@@ -149,7 +149,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
 
         {/* Locked/Premium Gating Modal Prompt */}
         {showPremiumPrompt && (
-          <div className="bg-gradient-to-br from-slate-900 to-slate-850 text-white p-6 rounded-app-card border border-slate-700 shadow-2xl space-y-4 animate-scaleUp">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-app-card border border-slate-700 shadow-2xl space-y-4 animate-scaleUp">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2">
                 <Crown className="w-5 h-5 text-amber-400 fill-amber-400" />
@@ -168,7 +168,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
             <div className="flex gap-3">
               <button 
                 onClick={() => setShowPremiumPrompt(false)} 
-                className="flex-1 bg-slate-850 text-slate-400 hover:text-white font-bold py-2 rounded-app-btn text-xs border border-slate-700"
+                className="flex-1 bg-slate-800 text-slate-400 hover:text-white font-bold py-2 rounded-app-btn text-xs border border-slate-700"
               >
                 {lang === 'ar' ? 'إغلاق' : 'Close'}
               </button>
@@ -208,7 +208,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
                     {style.icon}
                   </div>
                   <div className="flex-1 min-w-0 text-right">
-                    <h3 className="font-black text-slate-850 dark:text-white transition-colors leading-snug">
+                    <h3 className="font-black text-slate-800 dark:text-white transition-colors leading-snug">
                       <span className={`text-[16px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ms-2' : 'me-2'} ${style.accentText}`}>
                         {getUnitSubtitle(idx)}:
                       </span>

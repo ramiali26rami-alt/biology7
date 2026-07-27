@@ -333,9 +333,9 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
       </div>
 
       {/* Diagram Title & Zoom controls outside the image canvas */}
-      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-850 p-3 rounded-app-card border border-slate-100 dark:border-slate-800">
+      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-3 rounded-app-card border border-slate-100 dark:border-slate-800">
         <div className="text-right flex-1 min-w-0">
-          <h3 className="text-xs md:text-sm font-black text-slate-850 dark:text-slate-100 truncate">
+          <h3 className="text-xs md:text-sm font-black text-slate-800 dark:text-slate-100 truncate">
             {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
           </h3>
           <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">

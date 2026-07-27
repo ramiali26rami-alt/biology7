@@ -2160,7 +2160,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] bg-slate-100 dark:bg-slate-850 px-2 py-0.5 rounded-full font-black text-slate-500 dark:text-slate-400">
+                              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-black text-slate-500 dark:text-slate-400">
                                 {unitName}
                               </span>
                               <button
@@ -2187,7 +2187,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                 )}
                               </button>
                             </div>
-                            <h4 className="font-black text-slate-850 dark:text-slate-100 text-sm mt-1">
+                            <h4 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1">
                               {lessonName}
                             </h4>
                             <p className="text-[10px] text-slate-450 dark:text-slate-500 font-bold mt-0.5 font-sans">
@@ -2255,7 +2255,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     <span className="text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full uppercase">
                       {lang === 'ar' ? 'تحرير نشط' : 'Active Editor'}
                     </span>
-                    <h3 className="font-black text-slate-850 dark:text-slate-100 text-sm mt-1.5">
+                    <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1.5">
                       {editingLesson.titleAr}
                     </h3>
                   </div>
@@ -2343,7 +2343,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       />
                       
                       {detectedFolders.length > 0 && (
-                        <div className="mt-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-btn border border-slate-200/60 dark:border-slate-850 space-y-2">
+                        <div className="mt-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-btn border border-slate-200/60 dark:border-slate-800 space-y-2">
                           <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
                             {lang === 'ar' ? '📂 مجلدات تم اكتشافها على السيرفر (انقر للربط التلقائي والذكي بالملفات):' : '📂 Detected folders on server (click to auto-link and match files):'}
                           </span>
@@ -2630,7 +2630,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     ) : (
                       <div className="space-y-4">
                         {editingLesson.videoChapters.map((chap, idx) => (
-                          <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-100 dark:border-slate-850 space-y-3 relative group">
+                          <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-100 dark:border-slate-800 space-y-3 relative group">
                             
                             {/* Delete chapter button */}
                             <button
@@ -2803,7 +2803,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       ) : (
                         <div className="space-y-4">
                           {editingLesson.flashcards.map((card, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-100 dark:border-slate-850 space-y-3 relative group">
+                            <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-100 dark:border-slate-800 space-y-3 relative group">
                               <button
                                 onClick={() => {
                                   const list = editingLesson.flashcards.filter((_, i) => i !== idx);
@@ -3013,7 +3013,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         {/* Questions sidebar */}
-                        <div className="md:col-span-1 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-850 space-y-3 h-fit">
+                        <div className="md:col-span-1 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-3 h-fit">
                           <div className="flex items-center justify-between border-b border-slate-205 dark:border-slate-800 pb-2">
                             <span className="text-[11px] font-black text-slate-500 dark:text-slate-400">
                               {lang === 'ar' ? 'قائمة الأسئلة' : 'Questions List'}
@@ -3108,13 +3108,13 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         </div>
 
                         {/* Main editor area for selected question */}
-                        <div className="md:col-span-3 bg-slate-50 dark:bg-slate-950/20 p-5 rounded-app-card border border-slate-150 dark:border-slate-850 space-y-4 relative">
+                        <div className="md:col-span-3 bg-slate-50 dark:bg-slate-950/20 p-5 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-4 relative">
                           {editingLesson.quiz[activeQuizIdx] && (() => {
                             const q = editingLesson.quiz[activeQuizIdx];
                             const qIdx = activeQuizIdx;
                             return (
                               <div className="space-y-4">
-                                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-850 pb-2">
+                                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                                   <div className="flex items-center gap-2">
                                     <span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black font-sans">
                                       {qIdx + 1}
@@ -3218,7 +3218,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                               className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border text-[10px] font-black ${
                                                 isCorrect 
                                                   ? 'bg-emerald-500 border-transparent text-white' 
-                                                  : 'bg-slate-100 dark:bg-slate-850 text-slate-450 border-slate-200 dark:border-slate-800'
+                                                  : 'bg-slate-100 dark:bg-slate-800 text-slate-450 border-slate-200 dark:border-slate-800'
                                               }`}
                                               title="Set correct answer"
                                             >
@@ -3278,7 +3278,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                 )}
 
                                 {/* Explanation Section */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-slate-100 dark:border-slate-850 pt-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-slate-100 dark:border-slate-800 pt-3">
                                   <div>
                                     <label className="block text-[9px] font-extrabold text-slate-450 mb-1">{lang === 'ar' ? 'التفسير العلمي بالعربي (يظهر بعد الحل)' : 'Scientific Explanation (AR)'}</label>
                                     <textarea 
@@ -3480,7 +3480,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 <div className="md:col-span-1 bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
                   <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-2">
                     <Eye className="w-5 h-5 text-emerald-500" />
-                    <h3 className="font-black text-slate-850 dark:text-slate-100 text-sm">
+                    <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm">
                       {lang === 'ar' ? 'أداة المعاينة الحية' : 'Live Mockup Preview'}
                     </h3>
                   </div>
@@ -3532,11 +3532,11 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     
                     {/* Phone Notch/Speaker */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-900 rounded-b-2xl z-50 flex items-center justify-center">
-                      <div className="w-10 h-1 bg-slate-850 rounded-full"></div>
+                      <div className="w-10 h-1 bg-slate-800 rounded-full"></div>
                     </div>
 
                     {/* Fake StatusBar */}
-                    <div className="h-6 w-full bg-white dark:bg-slate-900 border-b border-slate-50 dark:border-slate-850 px-6 pt-1 flex items-center justify-between text-[8px] font-black font-sans text-slate-400 z-10 shrink-0">
+                    <div className="h-6 w-full bg-white dark:bg-slate-900 border-b border-slate-50 dark:border-slate-800 px-6 pt-1 flex items-center justify-between text-[8px] font-black font-sans text-slate-400 z-10 shrink-0">
                       <span>06:11 PM</span>
                       <span>5G 📶 100% 🔋</span>
                     </div>
@@ -3545,7 +3545,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 pt-4 pb-12">
                       
                       {/* Topic Card */}
-                      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-4 rounded-3xl shadow-sm space-y-2">
+                      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-4 rounded-3xl shadow-sm space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-[8px] font-black text-white bg-emerald-500 px-2 py-0.5 rounded-full">
                             {editingLesson.folder.split('/')[0] || `الوحدة ${editingLesson.unit}`}
@@ -3563,7 +3563,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       {editingLesson.quiz.length > 0 && editingLesson.quiz[previewQuizIdx] ? (() => {
                         const curQ = editingLesson.quiz[previewQuizIdx];
                         return (
-                          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-4 rounded-3xl shadow-sm space-y-3">
+                          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
                             <div className="flex items-center justify-between text-[8px] font-black text-slate-400">
                               <span>{lang === 'ar' ? `السؤال ${previewQuizIdx + 1} من ${editingLesson.quiz.length}` : `Question ${previewQuizIdx + 1} of ${editingLesson.quiz.length}`}</span>
                               <span className="text-emerald-500 uppercase">{curQ.type}</span>
@@ -3623,7 +3623,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                   type="text"
                                   disabled={previewShowExpl}
                                   placeholder={lang === 'ar' ? 'اكتب إجابتك هنا...' : 'Type response here...'}
-                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-2 text-[10px] font-bold text-center focus:outline-none"
+                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-[10px] font-bold text-center focus:outline-none"
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                       setPreviewSelectedAns('done');
@@ -3650,7 +3650,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                 {lang === 'ar' ? 'التحقق من الإجابة' : 'Submit Answer'}
                               </button>
                             ) : (
-                              <div className="space-y-2 border-t border-slate-100 dark:border-slate-850 pt-2 animate-fadeIn">
+                              <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-2 animate-fadeIn">
                                 <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500">
                                   <Check className="w-3.5 h-3.5" />
                                   <span>{lang === 'ar' ? 'التفسير العلمي:' : 'Scientific Explanation:'}</span>
@@ -3729,7 +3729,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Excel Curriculum Manager Card */}
-                <div className="bg-slate-50 dark:bg-slate-955 p-6 rounded-app-dialog border border-slate-150 dark:border-slate-850 space-y-6">
+                <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-app-dialog border border-slate-150 dark:border-slate-800 space-y-6">
                   <div>
                     <h3 className="text-sm font-black text-slate-800 dark:text-white">
                       {lang === 'ar' ? 'إدارة المنهج عبر ملفات إكسل (Excel Manager)' : 'Excel Curriculum Manager'}
@@ -3811,7 +3811,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Instructions Accordion */}
-                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-app-card border border-slate-150 dark:border-slate-850 space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-3">
                   <h4 className="font-black text-xs text-slate-700 dark:text-slate-350 uppercase tracking-wider flex items-center gap-1.5">
                     <Info className="w-4 h-4 text-indigo-500" />
                     <span>{lang === 'ar' ? 'خطوات التحديث البسيطة للموقع' : 'Syllabus Deployment Checklist'}</span>
@@ -3861,7 +3861,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
                 {/* Backups List UI */}
                 <div 
-                  className="bg-slate-50 dark:bg-slate-950 p-6 rounded-app-dialog border border-slate-150 dark:border-slate-850 space-y-4"
+                  className="bg-slate-50 dark:bg-slate-950 p-6 rounded-app-dialog border border-slate-150 dark:border-slate-800 space-y-4"
                   dir="rtl"
                 >
                   <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
@@ -3925,7 +3925,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 </div>
 
                 {/* Generator Section */}
-                <div className="bg-slate-50 dark:bg-slate-950/60 p-5 rounded-[22px] border border-slate-100 dark:border-slate-850/80 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                <div className="bg-slate-50 dark:bg-slate-950/60 p-5 rounded-[22px] border border-slate-100 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                   <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-[11px] font-black text-slate-500 dark:text-slate-400 block">
                       {t.keysCount}
@@ -3999,7 +3999,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black border uppercase ${
                                   k.status === 'unused'
                                     ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                                    : 'bg-slate-100 border-slate-200 dark:bg-slate-850 dark:border-slate-800 text-slate-400 dark:text-slate-500'
+                                    : 'bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-800 text-slate-400 dark:text-slate-500'
                                 }`}>
                                   {k.status === 'unused' ? t.statusUnused : t.statusUsed}
                                 </span>
@@ -4063,7 +4063,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                   <div className="bg-emerald-500/10 border border-emerald-500/20 p-5 rounded-3xl flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">{lang === 'ar' ? 'إجمالي الطلاب' : 'Total Students'}</span>
-                      <span className="text-2xl font-black text-emerald-600 dark:text-emerald-450 mt-1 block">{dbStudents.length}</span>
+                      <span className="text-2xl font-black text-emerald-600 dark:text-emerald-500 mt-1 block">{dbStudents.length}</span>
                     </div>
                     <div className="w-12 h-12 bg-emerald-500/20 text-emerald-500 rounded-app-card flex items-center justify-center font-black">👥</div>
                   </div>
@@ -4089,7 +4089,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     onClick={() => setStudentsSubTab('roster')}
                     className={`pb-3 text-xs font-black transition-all border-b-2 ${
                       studentsSubTab === 'roster'
-                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-450'
+                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-500'
                         : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650'
                     }`}
                   >
@@ -4099,7 +4099,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                     onClick={() => setStudentsSubTab('difficulty')}
                     className={`pb-3 text-xs font-black transition-all border-b-2 ${
                       studentsSubTab === 'difficulty'
-                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-450'
+                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-500'
                         : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650'
                     }`}
                   >
@@ -4131,14 +4131,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       placeholder={lang === 'ar' ? 'ابحث باسم الطالب أو رقم الهاتف...' : 'Search by name or phone...'}
                       value={studentSearch}
                       onChange={e => setStudentSearch(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-4 py-3 text-sm font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-3 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
                     />
 
                     {/* Students List Table */}
-                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-app-card">
+                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-800 rounded-app-card">
                       <table className="w-full text-right border-collapse">
                         <thead>
-                          <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-850">
+                          <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-800">
                             <th className="p-4">{lang === 'ar' ? 'اسم الطالب' : 'Student Name'}</th>
                             <th className="p-4">{lang === 'ar' ? 'رقم الهاتف' : 'Phone'}</th>
                             <th className="p-4">{lang === 'ar' ? 'المحافظة' : 'Gov'}</th>
@@ -4147,7 +4147,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             <th className="p-4 text-center">{lang === 'ar' ? 'إجراءات' : 'Actions'}</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-850 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
                           {dbStudentsLoading ? (
                             <tr>
                               <td colSpan={6} className="p-8 text-center text-slate-450">
@@ -4255,7 +4255,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </button>
 
                       {generatedCode && (
-                        <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 p-4 rounded-app-card space-y-2 text-center">
+                        <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-4 rounded-app-card space-y-2 text-center">
                           <span className="text-[10px] text-slate-400 font-black block">{lang === 'ar' ? 'الكود الجديد المنشأ:' : 'NEW KEY GENERATED:'}</span>
                           <span className="text-md font-extrabold text-blue-600 dark:text-blue-450 block tracking-wider select-all">{generatedCode}</span>
                           <button
@@ -4281,7 +4281,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         </span>
                       </div>
 
-                      <div className="max-h-[300px] overflow-y-auto space-y-2 border border-slate-100 dark:border-slate-850 rounded-app-card p-2">
+                      <div className="max-h-[300px] overflow-y-auto space-y-2 border border-slate-100 dark:border-slate-800 rounded-app-card p-2">
                         {activationCodes.length === 0 ? (
                           <div className="text-center p-8 text-slate-400 font-bold text-xs">
                             🗝️ {lang === 'ar' ? 'لا يوجد أكواد منشأة بعد.' : 'No codes generated yet.'}
@@ -4338,10 +4338,10 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                       </button>
                     </div>
 
-                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-850 rounded-app-card">
+                    <div className="overflow-x-auto border border-slate-100 dark:border-slate-800 rounded-app-card">
                       <table className="w-full text-right border-collapse">
                         <thead>
-                          <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-850">
+                          <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-800">
                             <th className="p-4">{lang === 'ar' ? 'السؤال' : 'Question'}</th>
                             <th className="p-4">{lang === 'ar' ? 'الدرس' : 'Lesson'}</th>
                             <th className="p-4">{lang === 'ar' ? 'الخطأ' : 'Wrong Ans'}</th>
@@ -4349,7 +4349,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                             <th className="p-4">{lang === 'ar' ? 'نسبة الفشل' : 'Failure Rate'}</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-850 text-xs font-bold text-slate-800 dark:text-slate-200">
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
                           {diffQuestionsLoading ? (
                             <tr>
                               <td colSpan={5} className="p-8 text-center text-slate-450">
@@ -4374,7 +4374,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                                   </td>
                                   <td className="p-4 text-slate-500 dark:text-slate-400">{lessonName}</td>
                                   <td className="p-4 text-rose-500 dark:text-rose-455 font-extrabold">❌ {q.wrong_count}</td>
-                                  <td className="p-4 text-emerald-500 dark:text-emerald-450">🟢 {q.correct_count}</td>
+                                  <td className="p-4 text-emerald-500 dark:text-emerald-500">🟢 {q.correct_count}</td>
                                   <td className="p-4">
                                     <div className="flex items-center gap-2">
                                       <div className="w-16 bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -4854,7 +4854,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
           {/* Column A & B: Image Visual Canvas (takes 2/3 space) */}
           <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm flex flex-col items-center gap-6 animate-fadeIn relative">
             
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 dark:bg-slate-850 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/60 w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 dark:bg-slate-800 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/60 w-full">
               <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
                   {lang === 'ar' ? 'إحداثيات النقطة النشطة:' : 'Selected Coordinates:'}
@@ -5054,7 +5054,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
             
             {/* Save Diagram Changes Card */}
             <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 animate-fadeIn">
-              <h3 className="text-sm font-black text-slate-850 dark:text-white flex items-center gap-2">
+              <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2">
                 <Save className="w-4 h-4 text-emerald-500" />
                 {lang === 'ar' ? 'حفظ تعديلات الرسوم التفاعلية' : 'Save Interactive Diagram Edits'}
               </h3>
@@ -5081,7 +5081,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
               {localSaveStatus && (
                 <div className={`p-3 rounded-app-btn text-xs font-bold text-center border leading-relaxed ${
                   localSaveStatus.type === 'success'
-                    ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-450 border-emerald-150 dark:border-emerald-900'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-500 border-emerald-150 dark:border-emerald-900'
                     : 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-450 border-rose-150 dark:border-rose-900'
                 }`}>
                   {localSaveStatus.text}
@@ -5273,7 +5273,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                   </div>
                 ) : (
                   // Case 3: Prompt instructions
-                  <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-850 rounded-app-card text-center text-xs text-slate-400 font-bold leading-relaxed">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-800 rounded-app-card text-center text-xs text-slate-400 font-bold leading-relaxed">
                     {lang === 'ar'
                       ? 'حدد نقطة بالنقر على الرسم لإضافتها، أو اضغط على أي علامة تفاعلية لتعديلها أو نقلها.'
                       : 'Click the image to insert a new hotspot, or select a marker to edit details or reposition.'}
@@ -5301,7 +5301,7 @@ function CoordsHelperTab({ lessons, setLessons, saveAllToServer, lang }: CoordsH
                             className={`p-2.5 rounded-app-btn border transition-all cursor-pointer text-xs font-bold flex justify-between items-center ${
                               isSelected
                                 ? 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400'
-                                : 'bg-slate-50 dark:bg-slate-950 border-slate-150 dark:border-slate-800/80 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-850'
+                                : 'bg-slate-50 dark:bg-slate-950 border-slate-150 dark:border-slate-800/80 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-800'
                             }`}
                           >
                             <div className="flex items-center gap-2 truncate">

@@ -82,7 +82,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
                   >
                     <div className="relative">
                       {/* Avatar Circle with initials */}
-                      <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-emerald-450 to-teal-500 flex items-center justify-center text-white text-md font-black shadow-lg shadow-emerald-500/10 border-2 ${rank === 1 ? 'border-amber-400' : 'border-slate-200 dark:border-slate-700'}`}>
+                      <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white text-md font-black shadow-lg shadow-emerald-500/10 border-2 ${rank === 1 ? 'border-amber-400' : 'border-slate-200 dark:border-slate-700'}`}>
                         {data.name.split(' ').slice(0, 2).map((n: string) => n[0]).join('')}
                       </div>
                       <span className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md border border-slate-100 dark:border-slate-800">
@@ -91,7 +91,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
                     </div>
 
                     <div className="px-1 min-w-0">
-                      <span className="font-extrabold text-xs block truncate text-slate-850 dark:text-white max-w-[80px]">
+                      <span className="font-extrabold text-xs block truncate text-slate-800 dark:text-white max-w-[80px]">
                         {data.name.split(' ')[0]}
                       </span>
                       {data.governorate && (
@@ -113,12 +113,12 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
 
             {/* Rest of the leaderboard list */}
             <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card shadow-xl shadow-slate-100/20 dark:shadow-none overflow-hidden">
-              <div className="p-5 border-b border-slate-50 dark:border-slate-850 flex justify-between items-center">
-                <span className="text-xs font-black text-slate-850 dark:text-white">{lang === 'ar' ? 'قائمة المتصدرين' : 'Rankings Table'}</span>
+              <div className="p-5 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
+                <span className="text-xs font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'قائمة المتصدرين' : 'Rankings Table'}</span>
                 <span className="text-[10px] font-bold text-slate-400">{standings.length} {lang === 'ar' ? 'طالب نشط' : 'active students'}</span>
               </div>
 
-              <div className="divide-y divide-slate-50 dark:divide-slate-850">
+              <div className="divide-y divide-slate-50 dark:divide-slate-800">
                 {standings.map((student, index) => {
                   const rank = index + 1;
                   const isTopThree = rank <= 3;
@@ -143,7 +143,7 @@ export default function LeaderboardScreen({ onNavigate, lang }: LeaderboardScree
                         </span>
 
                         <div className="min-w-0">
-                          <span className="font-extrabold text-xs text-slate-850 dark:text-white block truncate">
+                          <span className="font-extrabold text-xs text-slate-800 dark:text-white block truncate">
                             {student.name}
                           </span>
                           <div className="flex items-center gap-1.5 mt-0.5">

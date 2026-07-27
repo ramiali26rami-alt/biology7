@@ -365,7 +365,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
               {score} {lang === 'ar' ? 'درجة' : 'pts'}
             </span>
           </div>
-          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
         </section>
@@ -383,7 +383,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
             {/* Question Box */}
             <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-app-card shadow-sm">
-              <p className="text-slate-850 dark:text-slate-100 text-xs font-black leading-relaxed">
+              <p className="text-slate-800 dark:text-slate-100 text-xs font-black leading-relaxed">
                 <strong>{currentQuestionIndex + 1}.</strong> {currentQ.text}
               </p>
             </div>
@@ -483,7 +483,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                   value={fillInput} 
                   onChange={(e) => setFillInput(e.target.value)}
                   disabled={showFeedback}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold text-slate-850 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   placeholder={lang === 'ar' ? 'اكتب كلمتك هنا...' : 'Type your word here...'}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && fillInput.trim()) {
@@ -496,7 +496,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                   <button 
                     onClick={handleFillSubmit}
                     disabled={!fillInput.trim()}
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 dark:disabled:bg-slate-855 disabled:text-slate-400 text-white font-extrabold py-2.5 rounded-app-btn text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
+                    className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white font-extrabold py-2.5 rounded-app-btn text-xs active:scale-95 transition-all shadow-md shadow-emerald-500/10 cursor-pointer"
                   >
                     {lang === 'ar' ? 'إنهاء الإجابة والتحقق' : 'Submit & Verify Answer'}
                   </button>
@@ -573,7 +573,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                 <span className="block text-3xl font-black text-emerald-500">{score}/{questions.length}</span>
                 <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">{t.scoreLabel}</span>
               </div>
-              <div className="w-px h-10 bg-slate-100 dark:bg-slate-850"></div>
+              <div className="w-px h-10 bg-slate-100 dark:bg-slate-800"></div>
               <div>
                 <span className="block text-2xl font-black text-slate-900 dark:text-white">
                   {Math.round((score / questions.length) * 100)}%

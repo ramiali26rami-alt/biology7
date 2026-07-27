@@ -191,7 +191,7 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
               <span className="p-2 bg-emerald-50 dark:bg-emerald-950 rounded-app-btn text-emerald-500 shrink-0">
                 <Edit className="w-5 h-5" />
               </span>
-              <h3 className="font-black text-slate-850 dark:text-white text-[15px]">{t.myNotes}</h3>
+              <h3 className="font-black text-slate-800 dark:text-white text-[15px]">{t.myNotes}</h3>
             </div>
             <button 
               onClick={handleSaveNotes}

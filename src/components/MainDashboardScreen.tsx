@@ -400,7 +400,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               </div>
               
               {isPremiumExpanded && (
-                <div className="text-right border-t border-emerald-450/20 pt-2 animate-slideDown">
+                <div className="text-right border-t border-emerald-500/20 pt-2 animate-slideDown">
                   <p className="text-[11px] text-emerald-50 font-semibold leading-relaxed">
                     {t.upgradeBannerDesc}
                   </p>
@@ -461,7 +461,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             </span>
             <div className="flex-1 min-w-0">
               <span className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-wider block">{t.studyStreak}</span>
-              <span className="text-sm font-black text-slate-855 dark:text-white block mt-0.5">{getStreak()} {lang === 'ar' ? 'يوم' : 'days'}</span>
+              <span className="text-sm font-black text-slate-800 dark:text-white block mt-0.5">{getStreak()} {lang === 'ar' ? 'يوم' : 'days'}</span>
             </div>
           </div>
 
@@ -506,7 +506,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   <BookOpen className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <h4 className="font-black text-slate-850 dark:text-slate-100 text-xs">{t.myLessonsMenu}</h4>
+                  <h4 className="font-black text-slate-800 dark:text-slate-100 text-xs">{t.myLessonsMenu}</h4>
                 </div>
               </div>
               {chevronIcon}
@@ -522,7 +522,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   <Trophy className="w-5 h-5" />
                 </div>
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                  <h4 className="font-black text-slate-855 dark:text-slate-100 text-xs">
+                  <h4 className="font-black text-slate-800 dark:text-slate-100 text-xs">
                     {lang === 'ar' ? 'لوحة صدارة المتفوقين' : 'Students Leaderboard'}
                   </h4>
                 </div>
@@ -674,7 +674,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/20">
-                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-app-btn font-mono text-center shrink-0">
+                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 p-2 rounded-app-btn font-mono text-center shrink-0">
                   Debug - LocalStorage Server URL: "{localStorage.getItem('server_url') || 'none'}" | Env URL: "{import.meta.env.VITE_SERVER_URL || 'none'}"
                 </div>
                 {tutorMessages.map((msg, i) => (
@@ -686,7 +686,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                       className={`max-w-[85%] rounded-app-card p-3 text-xs leading-relaxed shadow-sm font-semibold whitespace-pre-line ${
                         msg.role === 'user'
                           ? 'bg-emerald-500 text-white rounded-br-none'
-                          : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-150 border border-slate-100 dark:border-slate-850 rounded-bl-none'
+                          : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-150 border border-slate-100 dark:border-slate-800 rounded-bl-none'
                       }`}
                     >
                       {msg.content}
@@ -696,7 +696,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 
                 {tutorLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-850 rounded-app-card rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-800 rounded-app-card rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
                       <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
                       <span>المعلم الافتراضي يفكر في الإجابة...</span>
                     </div>

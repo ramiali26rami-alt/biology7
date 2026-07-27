@@ -115,7 +115,7 @@ function SubjectiveQuestionItem({ q, lang, addQuestionToErrors }: SubjectiveQues
         </div>
       )}
 
-      <div className="flex justify-between items-center pt-1 border-t border-slate-50 dark:border-slate-850">
+      <div className="flex justify-between items-center pt-1 border-t border-slate-50 dark:border-slate-800">
         <button
           onClick={() => setExpanded(!expanded)}
           className="text-xs font-extrabold text-emerald-500 hover:text-emerald-600 flex items-center gap-1 active:scale-95 cursor-pointer bg-transparent border-0"
@@ -725,7 +725,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-full mb-2">
               {lang === 'ar' ? 'الوحدة والموضوع المنهجي' : 'Academic Unit Course'}
             </span>
-            <h2 className="text-xl font-black text-slate-850 dark:text-white leading-tight">
+            <h2 className="text-xl font-black text-slate-800 dark:text-white leading-tight">
               {lessonFolderTitle}
             </h2>
           </div>
@@ -794,7 +794,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             {/* Sub-tab content area */}
             <div className="flex-1 min-h-0 relative">
               {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
-                <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-850 rounded-app-card overflow-y-auto p-4 shadow-sm scrollbar-none">
+                <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-800 rounded-app-card overflow-y-auto p-4 shadow-sm scrollbar-none">
                   {lesson.mindmapLocked && !premiumUnlocked && (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
@@ -887,7 +887,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                         PDF
                       </span>
                       <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                        <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-xs">
+                        <h4 className="font-extrabold text-slate-800 dark:text-slate-100 text-xs">
                           {lang === 'ar' ? `مذكرة الدرس الأكاديمية` : `Academic Lecture Notes`}
                         </h4>
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
@@ -930,14 +930,14 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                   <span className="p-2 bg-emerald-50 dark:bg-emerald-950/50 rounded-app-btn text-emerald-600 shrink-0">
                     <Award className="w-5 h-5" />
                   </span>
-                  <h3 className="font-black text-slate-850 dark:text-white text-[15px]">
+                  <h3 className="font-black text-slate-800 dark:text-white text-[15px]">
                     {lang === 'ar' ? 'خلاصة الأفكار والنقاط الأساسية للدرس' : 'Key Lecture Summary Points'}
                   </h3>
                 </div>
                 
                 <ul className="space-y-3">
                   {(lang === 'ar' ? lesson.summaryPointsAr : lesson.summaryPointsEn).map((point, index) => (
-                    <li key={index} className="flex items-start gap-2.5 text-[15px] font-semibold text-slate-850 dark:text-slate-200 leading-relaxed">
+                    <li key={index} className="flex items-start gap-2.5 text-[15px] font-semibold text-slate-800 dark:text-slate-200 leading-relaxed">
                       <CircleDot className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-1" />
                       <span>{point}</span>
                     </li>
@@ -950,7 +950,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             {lesson.flashcards && lesson.flashcards.length > 0 ? (
               <section className="space-y-4">
                 <div className="flex items-center justify-between px-2">
-                  <h3 className="font-black text-slate-850 dark:text-white text-sm">
+                  <h3 className="font-black text-slate-800 dark:text-white text-sm">
                     {lang === 'ar' ? 'بطاقات التذكر التفاعلية ثلاثية الأبعاد' : 'Interactive 3D Flip Cards'}
                   </h3>
                   <span className="text-[10px] text-slate-400 font-black">
@@ -1131,7 +1131,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                               {activeQuestions[currentQuestionIndex].type}
                             </span>
                           </div>
-                          <p className="text-slate-850 dark:text-slate-100 text-sm font-extrabold leading-relaxed">
+                          <p className="text-slate-800 dark:text-slate-100 text-sm font-extrabold leading-relaxed">
                             {lang === 'ar' ? activeQuestions[currentQuestionIndex].textAr : activeQuestions[currentQuestionIndex].textEn}
                           </p>
                         </div>
@@ -1305,7 +1305,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                             <span className="text-[10px] text-slate-400 font-bold">{lang === 'ar' ? 'الدرجة الكلية' : 'Final Score'}</span>
                           </div>
                           <div>
-                            <span className="block text-2xl font-black text-slate-850 dark:text-white">
+                            <span className="block text-2xl font-black text-slate-800 dark:text-white">
                               {Math.round((score / activeQuestions.length) * 100)}%
                             </span>
                             <span className="text-[10px] text-slate-400 font-bold">{lang === 'ar' ? 'معدل النجاح' : 'Success Rate'}</span>
@@ -1464,7 +1464,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/20">
-                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-850 p-2 rounded-app-btn font-mono text-center shrink-0">
+                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 p-2 rounded-app-btn font-mono text-center shrink-0">
                   Debug - LocalStorage Server URL: "{localStorage.getItem('server_url') || 'none'}" | Env URL: "{import.meta.env.VITE_SERVER_URL || 'none'}"
                 </div>
                 {tutorMessages.map((msg, i) => (
@@ -1476,7 +1476,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       className={`max-w-[85%] rounded-app-card p-3 text-xs leading-relaxed shadow-sm font-semibold whitespace-pre-line ${
                         msg.role === 'user'
                           ? 'bg-emerald-500 text-white rounded-br-none'
-                          : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-150 border border-slate-100 dark:border-slate-850 rounded-bl-none'
+                          : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-150 border border-slate-100 dark:border-slate-800 rounded-bl-none'
                       }`}
                     >
                       {msg.content}
@@ -1486,7 +1486,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                 
                 {tutorLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-850 rounded-app-card rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-550 border border-slate-100 dark:border-slate-800 rounded-app-card rounded-bl-none p-3 text-xs flex items-center gap-2 shadow-sm">
                       <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
                       <span>المعلم الافتراضي يفكر في الإجابة...</span>
                     </div>

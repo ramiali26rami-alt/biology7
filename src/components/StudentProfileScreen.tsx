@@ -827,7 +827,7 @@ export default function StudentProfileScreen({
                 <button
                   onClick={() => setShowSettingsModal(false)}
                   aria-label={lang === 'ar' ? 'إغلاق الإعدادات' : 'Close settings'}
-                  className="tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-855 rounded-full text-slate-400 dark:text-slate-500 transition-colors"
+                  className="tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -836,7 +836,7 @@ export default function StudentProfileScreen({
               {/* Body Content */}
               <div className="space-y-4 overflow-y-auto max-h-[60vh] pe-1.5 scrollbar-thin">
                 {/* Font Size Settings */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 rounded-app-card space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm text-emerald-500">
                       <Sliders className="w-4 h-4" />
@@ -870,9 +870,9 @@ export default function StudentProfileScreen({
                   </div>
 
                   {/* Font Size Preview Text */}
-                  <div className="bg-white dark:bg-slate-900/50 p-2.5 rounded-app-btn border border-slate-100 dark:border-slate-850/50 text-center">
+                  <div className="bg-white dark:bg-slate-900/50 p-2.5 rounded-app-btn border border-slate-100 dark:border-slate-800/50 text-center">
                     <p 
-                      className="text-slate-850 dark:text-slate-200 font-bold transition-all"
+                      className="text-slate-800 dark:text-slate-200 font-bold transition-all"
                       style={{ 
                         fontSize: fontSize === 'small' ? '12px' : fontSize === 'normal' ? '14px' : fontSize === 'large' ? '16.5px' : '19px' 
                       }}
@@ -883,7 +883,7 @@ export default function StudentProfileScreen({
                 </div>
 
                 {/* Audio/Sound Settings */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card flex items-center justify-between">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 rounded-app-card flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm">
                       {soundEnabled ? (
@@ -915,7 +915,7 @@ export default function StudentProfileScreen({
                 {showAdminOptions && (
                   <>
                     {/* Demo Control: Unlock All Content */}
-                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card flex items-center justify-between">
+                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 rounded-app-card flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm">
                           <Flame className="w-4 h-4 text-amber-500" />
@@ -938,7 +938,7 @@ export default function StudentProfileScreen({
                     </div>
 
                     {/* Admin Dashboard Entry */}
-                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-3">
+                    <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 rounded-app-card space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 bg-white dark:bg-slate-900 flex items-center justify-center rounded-app-btn shadow-sm text-emerald-500">
@@ -978,7 +978,7 @@ export default function StudentProfileScreen({
                 )}
 
                 {/* Platform Policies & Terms Section */}
-                <div className="bg-slate-50 dark:bg-slate-955 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-4 rounded-app-card space-y-3">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                     <span className="text-xs font-bold">{lang === 'ar' ? 'حول التطبيق والسياسات' : 'About & Policies'}</span>
@@ -1006,7 +1006,7 @@ export default function StudentProfileScreen({
                 </div>
 
                 {/* Developer Info Section */}
-                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-4 rounded-app-card space-y-2.5">
+                <div className="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-4 rounded-app-card space-y-2.5">
                   <div className="flex items-center gap-2">
                     <Info className="w-4 h-4 text-blue-500 shrink-0" />
                     <span className="text-xs font-bold">{lang === 'ar' ? 'معلومات التطبيق' : 'About Application'}</span>
@@ -1018,7 +1018,7 @@ export default function StudentProfileScreen({
                     </div>
                     <div className="flex justify-between cursor-pointer active:scale-98 select-none" onClick={handleVersionClick}>
                       <span>{lang === 'ar' ? 'الإصدار:' : 'Version:'}</span>
-                      <span className="font-bold hover:underline text-emerald-650 dark:text-emerald-450">v1.0.0</span>
+                      <span className="font-bold hover:underline text-emerald-650 dark:text-emerald-500">v1.0.0</span>
                     </div>
                     <div className="flex justify-between">
                       <span>{lang === 'ar' ? 'المنهج الدراسي:' : 'Curriculum:'}</span>

@@ -215,7 +215,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
                       <BookOpen className="w-6 h-6" />
                     </div>
                     <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                      <h5 className={`font-black text-slate-850 dark:text-slate-100 text-[15px] mb-1 ${isLocked ? 'text-slate-500 dark:text-slate-450' : ''}`}>
+                      <h5 className={`font-black text-slate-800 dark:text-slate-100 text-[15px] mb-1 ${isLocked ? 'text-slate-500 dark:text-slate-450' : ''}`}>
                         {lesson.folder.split('/')[1] || (lang === 'ar' ? lesson.titleAr : lesson.titleEn)}
                       </h5>
                       <div className="flex items-center gap-2">

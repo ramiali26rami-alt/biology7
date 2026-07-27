@@ -53,7 +53,7 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   if (!imgUrl) return null;
 
   return (
-    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-2.5 rounded-app-card shadow-sm overflow-hidden my-2">
+    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2.5 rounded-app-card shadow-sm overflow-hidden my-2">
       <img 
         src={imgUrl} 
         alt={lang === 'ar' ? 'مخطط السؤال الوزاري' : 'Ministry Exam Question Diagram'} 
@@ -478,7 +478,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                         <FileText className="w-6 h-6 text-purple-500" />
                       </div>
                       <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-                        <h4 className="font-extrabold text-slate-850 dark:text-slate-100 text-[14px]">{paper.title}</h4>
+                        <h4 className="font-extrabold text-slate-800 dark:text-slate-100 text-[14px]">{paper.title}</h4>
                         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold block mt-1">{paper.duration}</span>
                       </div>
                     </div>
