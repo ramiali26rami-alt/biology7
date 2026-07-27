@@ -256,6 +256,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           {/* WhatsApp Button */}
           <button 
             onClick={handleWhatsappClick}
+            aria-label={lang === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us on WhatsApp'}
             className="tap-target hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-emerald-500 active:scale-95 transition-all cursor-pointer"
             title={lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
           >
@@ -267,6 +268,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           {/* Share Button */}
           <button 
             onClick={handleShareClick}
+            aria-label={lang === 'ar' ? 'مشاركة التطبيق' : 'Share App'}
             className="tap-target hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 active:scale-95 transition-all cursor-pointer"
             title={lang === 'ar' ? 'مشاركة التطبيق' : 'Share App'}
           >
@@ -311,6 +313,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                   <ChevronDown className={`w-4 h-4 text-white transition-transform ${isStreakExpanded ? 'rotate-180' : ''}`} />
                   <button 
                     onClick={(e) => { e.stopPropagation(); dismissStreakBanner(); }} 
+                    aria-label={lang === 'ar' ? 'إغلاق التنبيه' : 'Close alert'}
                     className="text-white/60 hover:text-white active:scale-90 transition-transform ms-1"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -368,6 +371,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                     localStorage.setItem('notif_banner_dismissed', todayStr);
                     setNotifBannerDismissed(true);
                   }}
+                  aria-label={lang === 'ar' ? 'إغلاق التنبيه' : 'Close alert'}
                   className="text-indigo-400 hover:text-indigo-600 active:scale-90 transition-transform"
                 >
                   <X className="w-4 h-4" />
@@ -661,6 +665,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
                 </div>
                 <button
                   onClick={() => setIsTutorOpen(false)}
+                  aria-label={lang === 'ar' ? 'إغلاق المحادثة' : 'Close chat'}
                   className="tap-target hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
                 >
                   <XCircle className="w-5.5 h-5.5" />

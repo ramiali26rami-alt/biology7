@@ -55,13 +55,17 @@ export default function LessonSummaryScreen({ onNavigate, lang, lesson }: Lesson
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('lesson-video', 'push_back')} 
+            aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
             className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
           </button>
           <h1 className="font-black text-lg text-slate-900 dark:text-white">{t.summaryHeading}</h1>
         </div>
-        <button className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-emerald-500">
+        <button 
+          aria-label={lang === 'ar' ? 'مساعد الذكاء الاصطناعي' : 'AI Assistant'}
+          className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-emerald-500"
+        >
           <Sparkles className="w-5 h-5" />
         </button>
       </header>

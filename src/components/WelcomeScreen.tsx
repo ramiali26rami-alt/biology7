@@ -113,7 +113,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           className="flex flex-col items-center mb-10"
         >
           <div className="w-20 h-20 rounded-app-card overflow-hidden bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-900/40 mb-4 border border-slate-800">
-            <img src="/logo.png" className="w-full h-full object-cover" alt="Smart Bio Logo" />
+            <img src="/logo.png" className="w-full h-full object-cover" alt={isAr ? 'شعار سمارت بايو' : 'Smart Bio Logo'} />
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">
             {isAr ? 'سمارت بايو' : 'Smart Bio'}
@@ -491,6 +491,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 </h3>
                 <button
                   onClick={() => setModalType(null)}
+                  aria-label={isAr ? 'إغلاق النافذة' : 'Close modal'}
                   className="tap-target text-slate-400 hover:text-white text-xs font-black p-1 hover:bg-slate-800 rounded-full"
                 >
                   ✕

@@ -186,7 +186,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           <div className="relative inline-block w-full h-auto">
             <img
               src={getAssetUrl(activeDiagram.imageFile)}
-              alt={activeDiagram.titleAr}
+              alt={lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
               className="w-full h-auto object-contain block rounded-app-card"
               draggable={false}
             />
@@ -347,21 +347,24 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         <div className="flex gap-1.5 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 p-1.5 rounded-app-btn shadow-sm shrink-0">
           <button 
             onClick={zoomIn} 
-            className="p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
+            aria-label={lang === 'ar' ? 'تكبير' : 'Zoom In'}
+            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
             title="Zoom In"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button 
             onClick={zoomOut} 
-            className="p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
+            aria-label={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
+            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
             title="Zoom Out"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button 
             onClick={resetZoom} 
-            className="p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
+            aria-label={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
+            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
             title="Reset"
           >
             <RefreshCw className="w-3.5 h-3.5" />

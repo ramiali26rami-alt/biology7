@@ -78,7 +78,8 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
           <div className="flex items-center gap-4">
             <button 
               onClick={() => onNavigate('lesson-details', 'push_back')} 
-              className="active:scale-95 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-full text-slate-800 dark:text-slate-200"
+              aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
+              className="active:scale-95 tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-full text-slate-800 dark:text-slate-200"
             >
               {backIcon}
             </button>
@@ -88,7 +89,8 @@ export default function LessonVideoScreen({ onNavigate, lang, lesson }: LessonVi
           </div>
           <button 
             onClick={() => setBookmarked(!bookmarked)}
-            className="active:scale-95 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-full"
+            aria-label={lang === 'ar' ? 'إضافة للمفضلة' : 'Add to bookmarks'}
+            className="active:scale-95 tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-full"
           >
             <Bookmark className={`w-5 h-5 transition-colors ${bookmarked ? 'text-emerald-500 fill-emerald-500' : 'text-slate-400'}`} />
           </button>

@@ -263,6 +263,7 @@ export default function StudentProfileScreen({
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <button 
           onClick={() => onNavigate('main-dashboard', 'push_back')} 
+          aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
           className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
         >
           {backIcon}
@@ -271,7 +272,7 @@ export default function StudentProfileScreen({
         <button 
           onClick={() => setShowSettingsModal(true)}
           className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 cursor-pointer"
-          aria-label="Open settings"
+          aria-label={lang === 'ar' ? 'الإعدادات' : 'Settings'}
         >
           <Settings className="w-5 h-5" />
         </button>
@@ -287,7 +288,7 @@ export default function StudentProfileScreen({
               <img 
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover" 
-                alt="Student Portrait" 
+                alt={lang === 'ar' ? 'الصورة الشخصية للطالب' : 'Student Portrait'} 
                 src={avatarUrl} 
               />
             </div>
@@ -825,6 +826,7 @@ export default function StudentProfileScreen({
                 </div>
                 <button
                   onClick={() => setShowSettingsModal(false)}
+                  aria-label={lang === 'ar' ? 'إغلاق الإعدادات' : 'Close settings'}
                   className="tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-855 rounded-full text-slate-400 dark:text-slate-500 transition-colors"
                 >
                   <X className="w-5 h-5" />

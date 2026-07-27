@@ -645,6 +645,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('lessons-list', 'push_back')} 
+            aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
             className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
@@ -659,6 +660,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
           {lesson.videoUrl && (
             <button
               onClick={() => onNavigate('lesson-video', 'none')}
+              aria-label={lang === 'ar' ? 'فيديو الشرح' : 'Play video lesson'}
               className="tap-target p-2 rounded-full bg-red-50 dark:bg-red-950/40 text-red-500 active:scale-95 transition-transform"
               title={lang === 'ar' ? 'فيديو الشرح' : 'Lesson Video'}
             >
@@ -672,8 +674,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               isDownloaded 
                 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
                 : downloading 
-                ? 'bg-slate-100 dark:bg-slate-800 text-slate-450 border-slate-200 dark:border-slate-700 animate-pulse'
-                : 'bg-white dark:bg-slate-950 hover:bg-slate-50 text-slate-650 dark:text-slate-350 border-slate-200 dark:border-slate-800'
+                ? 'bg-slate-100 dark:bg-slate-800 text-slate-455 border-slate-200 dark:border-slate-700 animate-pulse'
+                : 'bg-white dark:bg-slate-950 hover:bg-slate-50 text-slate-655 dark:text-slate-350 border-slate-200 dark:border-slate-800'
             }`}
           >
             {downloading ? (
@@ -693,7 +695,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
           
           <button 
             onClick={() => setIsTutorOpen(true)}
-            className="active:scale-95 p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 transition-colors"
+            aria-label={lang === 'ar' ? 'مساعد الدراسة' : 'Study Assistant'}
+            className="tap-target active:scale-95 p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 transition-colors"
             title={lang === 'ar' ? 'مساعد الدراسة' : 'Study Assistant'}
           >
             <Sparkles className="w-5 h-5 animate-pulse" />
@@ -701,6 +704,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
           
           <button 
             onClick={() => setBookmarked(!bookmarked)}
+            aria-label={lang === 'ar' ? 'حفظ الدرس للمفضلة' : 'Bookmark lesson'}
             className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             <Bookmark className={`w-5 h-5 transition-colors ${bookmarked ? 'text-emerald-500 fill-emerald-500' : 'text-slate-450'}`} />
@@ -1451,7 +1455,8 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                 </div>
                 <button
                   onClick={() => setIsTutorOpen(false)}
-                  className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
+                  aria-label={lang === 'ar' ? 'إغلاق المحادثة' : 'Close chat'}
+                  className="tap-target p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 transition-colors border-0 cursor-pointer bg-transparent"
                 >
                   <XCircle className="w-5 h-5" />
                 </button>

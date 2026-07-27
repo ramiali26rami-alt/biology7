@@ -61,8 +61,8 @@
 
 /* Cards & containers default state */
 .dark .bg-white {
-  background-color: #121d33 !important;
-  border-color: #1e2d4a !important;
+  background-color: #121d33;
+  border-color: #1e2d4a;
 }
 
 /* Borders */
@@ -70,20 +70,20 @@
 .dark .border-slate-100,
 .dark .border-slate-150,
 .dark .border-slate-200 {
-  border-color: #1e2d4a !important;
+  border-color: #1e2d4a;
 }
 
 /* Secondary states and badge cards */
 .dark .bg-slate-50,
 .dark .bg-slate-100 {
-  background-color: #18253e !important;
-  border-color: #223455 !important;
+  background-color: #18253e;
+  border-color: #223455;
 }
 
 /* Hover effects */
 .dark .hover\:bg-slate-50:hover,
 .dark .group:hover {
-  background-color: #18253e !important;
+  background-color: #18253e;
 }
 
 /* Text overrides */

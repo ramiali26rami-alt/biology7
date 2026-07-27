@@ -1902,6 +1902,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         <div className="flex items-center gap-3">
           <button 
             onClick={() => onNavigate('student-profile', 'push_back')} 
+            aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
             className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             {backIcon}

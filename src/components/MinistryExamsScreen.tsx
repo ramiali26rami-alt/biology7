@@ -56,7 +56,7 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
     <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 p-2.5 rounded-app-card shadow-sm overflow-hidden my-2">
       <img 
         src={imgUrl} 
-        alt="Question Diagram" 
+        alt={lang === 'ar' ? 'مخطط السؤال الوزاري' : 'Ministry Exam Question Diagram'} 
         className="max-h-48 object-contain rounded-app-btn"
       />
     </div>
@@ -212,7 +212,8 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
           <div className="flex items-center gap-4 w-full">
             <button 
               onClick={() => onNavigate('main-dashboard', 'push_back')}
-              className="active:scale-95 transition-transform text-slate-800 dark:text-slate-200"
+              aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
+              className="active:scale-95 transition-transform tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200"
             >
               {backIcon}
             </button>
@@ -252,6 +253,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('main-dashboard', 'push_back')} 
+            aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
             className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
             {backIcon}
