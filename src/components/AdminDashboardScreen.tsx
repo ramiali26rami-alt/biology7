@@ -62,16 +62,29 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [editingLessonIndex, setEditingLessonIndex] = useState<number | null>(null);
   const [editorSubTab, setEditorSubTab] = useState<EditorSubTab>('basic');
-  const [copied, setCopied] = useState(false);
-  const [exportSearchQuery, setExportSearchQuery] = useState('');
-
-
-  const [detectedFolders, setDetectedFolders] = useState<{ path: string, name: string, files: string[] }[]>([]);
 
 
 
-  // ── Server-save state ──────────────────────────────────────────────────────
+
+
+
+
+
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    const errs: string[] = [];
+    lessons.forEach(l => {
+      if (!l.titleAr) errs.push(lang === 'ar' ? `الدرس (${l.id}) يفتقر للعنوان العربي.` : `Lesson (${l.id}) lacks Arabic title.`);
+      if (!l.titleEn) errs.push(lang === 'ar' ? `الدرس (${l.id}) يفتقر للعنوان الإنجليزي.` : `Lesson (${l.id}) lacks English title.`);
+      if (!l.pdfFile) errs.push(lang === 'ar' ? `الدرس (${l.id}) لا يحتوي على ملف PDF.` : `Lesson (${l.id}) is missing PDF file.`);
+      if (l.quiz && l.quiz.length === 0) {
+        errs.push(lang === 'ar' ? `الدرس (${l.id}) لا يحتوي على أسئلة اختبار.` : `Lesson (${l.id}) has no quiz questions.`);
+      }
+    });
+    setValidationErrors(errs);
+  }, [lessons, lang]);
 
 
 
@@ -86,17 +99,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   // AI Quiz Generator states
 
 
-  useEffect(() => {
-    fetch(getAbsoluteUrl('/detected_assets.json'))
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.folders) {
-          setDetectedFolders(data.folders);
-        }
-      })
-      .catch(err => console.error("Error loading detected assets:", err));
 
-  }, []);
 
   const t = translations[lang];
 
@@ -104,71 +107,6 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const isRtl = lang === 'ar';
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight;
   const backIcon = isRtl ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
-
-  const handleTriggerDownload = () => {
-    validateSyllabus();
-    if (validationErrors.length > 0) {
-      const msg = lang === 'ar' 
-        ? 'تحذير: يحتوي المنهج على بعض الأخطاء التكوينية. هل تريد المتابعة وتنزيل الملف على أي حال؟' 
-        : 'Warning: Syllabus contains configuration errors. Do you want to download anyway?';
-      if (!window.confirm(msg)) return;
-    }
-    
-    const jsonStr = JSON.stringify(lessons, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'lessons_config.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleResetDevice = async (key: string) => {
-    const confirmMsg = lang === 'ar' 
-      ? `هل أنت متأكد من رغبتك في إلغاء قفل الجهاز لهذا الكود (${key})؟ سيمكن هذا الطالب من التفعيل على هاتف آخر.`
-      : `Are you sure you want to reset the device lock for this key (${key})? This allows activation on a different device.`;
-    if (!window.confirm(confirmMsg)) return;
-
-    try {
-      const res = await fetch(getAbsoluteUrl('/api/reset-key-device'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-passcode': '2026'
-        },
-        body: JSON.stringify({ key })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setKeysList(data.keys);
-        setKeysStatusMsg({
-          type: 'success',
-          text: lang === 'ar' ? 'تم إلغاء قفل الجهاز للكود بنجاح!' : 'Successfully reset device lock for key!'
-        });
-      } else {
-        setKeysStatusMsg({
-          type: 'error',
-          text: data.error || (lang === 'ar' ? 'فشل إلغاء القفل.' : 'Failed to reset lock.')
-        });
-      }
-    } catch (err) {
-      setKeysStatusMsg({
-        type: 'error',
-        text: String(err)
-      });
-    }
-  };
-
-  const handleCopyClipboard = () => {
-    const jsonStr = JSON.stringify(lessons, null, 2);
-    navigator.clipboard.writeText(jsonStr).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   // State mutation helpers for editing fields
   // ── Save all lessons directly to server disk ───────────────────────────────
@@ -200,381 +138,6 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 4000);
     }
-  };
-
-  // ── Load an HTML/text file from the server for editing ────────────────────
-  const loadFileForEditing = async (filePath: string) => {
-    setFileEditorPath(filePath);
-    setFileEditorContent('');
-    setFileEditorLoading(true);
-    setFileEditorSaved(false);
-    setFindText('');
-    setReplaceText('');
-    setNodesSearchQuery('');
-    try {
-      const res = await fetch(getAbsoluteUrl(`/api/read-file?path=${encodeURIComponent(filePath)}`));
-      const data = await res.json();
-      const content = data.content ?? '';
-      setFileEditorContent(content);
-      
-      // Parse mindmap nodes
-      try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(content, 'text/html');
-        const elements = doc.querySelectorAll('.root-btn, .branch-btn, .sub-btn, .leaf-item');
-        const nodes = Array.from(elements).map((el: any, idx) => {
-          let type = 'leaf';
-          if (el.classList.contains('root-btn')) type = 'root';
-          else if (el.classList.contains('branch-btn')) type = 'branch';
-          else if (el.classList.contains('sub-btn')) type = 'sub-branch';
-          
-          let text = (el.innerText || el.textContent || "").trim();
-          text = text.replace(/^[›\s\u203a»\s]+/, "").trim();
-          return { index: idx, type, text };
-        });
-        setMindmapNodes(nodes);
-      } catch (err) {
-        console.error("Error parsing mindmap nodes on load:", err);
-        setMindmapNodes([]);
-      }
-    } catch {
-      setFileEditorContent('<!-- خطأ في تحميل الملف -->');
-      setMindmapNodes([]);
-    } finally {
-      setFileEditorLoading(false);
-    }
-  };
-
-  // ── Helper to save updated file content to the server and reload preview ──
-  const saveUpdatedContent = async (contentToSave: string) => {
-    if (!fileEditorPath) return;
-    setFileEditorSaving(true);
-    setFileEditorSaved(false);
-    try {
-      const res = await fetch(getAbsoluteUrl('/api/save-file'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filePath: fileEditorPath, content: contentToSave })
-      });
-      if (res.ok) {
-        setFileEditorSaved(true);
-        setIframeKey(prev => prev + 1);
-        setTimeout(() => setFileEditorSaved(false), 3000);
-      }
-    } catch (err) {
-      console.error("Failed to save content:", err);
-    } finally {
-      setFileEditorSaving(false);
-    }
-  };
-
-  // ── Sync mindmapNodes array from raw HTML content ─────────────────────────
-  const syncNodesFromHtml = (htmlContent: string) => {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlContent, 'text/html');
-      const elements = doc.querySelectorAll('.root-btn, .branch-btn, .sub-btn, .leaf-item');
-      const nodes = Array.from(elements).map((el: any, idx) => {
-        let type = 'leaf';
-        if (el.classList.contains('root-btn')) type = 'root';
-        else if (el.classList.contains('branch-btn')) type = 'branch';
-        else if (el.classList.contains('sub-btn')) type = 'sub-branch';
-        let text = (el.innerText || el.textContent || "").trim();
-        text = text.replace(/^[›\s\u203a»\s]+/, "").trim();
-        return { index: idx, type, text };
-      });
-      setMindmapNodes(nodes);
-    } catch (err) {
-      console.error("Failed to sync nodes from HTML:", err);
-    }
-  };
-
-  // ── Handle text changes in the Easy Editor inputs ─────────────────────────
-  const handleNodeTextChange = (idx: number, newText: string) => {
-    setMindmapNodes(prev => prev.map(node => node.index === idx ? { ...node, text: newText } : node));
-  };
-
-  // ── Handle node deletion in the Easy Editor inputs ────────────────────────
-  const handleNodeDelete = (idx: number) => {
-    setMindmapNodes(prev => prev.filter(node => node.index !== idx));
-  };
-
-  // ── Save all Easy Editor node modifications back to HTML on disk ──────────
-  const saveAllVisualEdits = async (customNodes = mindmapNodes) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(fileEditorContent, 'text/html');
-    const elements = doc.querySelectorAll('.root-btn, .branch-btn, .sub-btn, .leaf-item');
-    
-    Array.from(elements).forEach((el: any, idx) => {
-      const nodeData = customNodes.find(n => n.index === idx);
-      if (!nodeData) {
-        // Node was deleted! Remove it from DOM.
-        el.remove();
-      } else {
-        // Node text was updated!
-        const newText = nodeData.text;
-        const chevron = el.querySelector('.chevron');
-        if (chevron) {
-          el.innerHTML = '';
-          el.appendChild(chevron);
-          el.appendChild(doc.createTextNode(' ' + newText));
-        } else {
-          el.textContent = newText;
-        }
-      }
-    });
-    
-    const updatedHtml = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
-    setFileEditorContent(updatedHtml);
-    await saveUpdatedContent(updatedHtml);
-    syncNodesFromHtml(updatedHtml);
-  };
-
-  // ── Quick Find & Replace inside HTML/text file ────────────────────────────
-  const executeQuickReplace = async () => {
-    if (!findText) return;
-    
-    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = findText.trim().split(/\s+/).map(w => escapeRegExp(w));
-    const flexibleRegexPattern = words.join('[\\s\\n\\r]*(?:<[^>]+>)*[\\s\\n\\r]*');
-    const flexibleRegex = new RegExp(flexibleRegexPattern, 'gi');
-    
-    const updated = fileEditorContent.replace(flexibleRegex, replaceText);
-    
-    if (updated === fileEditorContent) {
-      alert(lang === 'ar' ? '⚠️ النص المطلوب غير موجود في الملف!' : '⚠️ Requested text not found in file!');
-      return;
-    }
-    
-    setFileEditorContent(updated);
-    setReplaceSuccess(true);
-    setTimeout(() => setReplaceSuccess(false), 2000);
-    
-    // Auto-save updated content to disk for instant preview update
-    await saveUpdatedContent(updated);
-    syncNodesFromHtml(updated);
-  };
-
-  // ── Quick Delete inside HTML/text file ────────────────────────────────────
-  const executeQuickDelete = async () => {
-    if (!findText) return;
-    
-    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = findText.trim().split(/\s+/).map(w => escapeRegExp(w));
-    const flexibleRegexPattern = words.join('[\\s\\n\\r]*(?:<[^>]+>)*[\\s\\n\\r]*');
-    
-    // Regex patterns to match element tags completely to avoid leaving empty boxes on screen
-    const leafRegex = new RegExp('<div\\s+class=["\']leaf-item["\'][^>]*>\\s*' + flexibleRegexPattern + '\\s*</div>', 'gi');
-    const subBtnRegex = new RegExp('<(?:button|div)\\s+class=["\']sub-btn["\'][^>]*>\\s*(?:<i[^>]*>[^<]*</i>\\s*)*' + flexibleRegexPattern + '\\s*</(?:button|div)>', 'gi');
-    const branchBtnRegex = new RegExp('<button\\s+class=["\']branch-btn["\'][^>]*>\\s*(?:<i[^>]*>[^<]*</i>\\s*)*' + flexibleRegexPattern + '\\s*</button>', 'gi');
-    const genericRegex = new RegExp(flexibleRegexPattern, 'gi');
-    
-    let updated = fileEditorContent;
-    let matched = false;
-    
-    let temp = updated.replace(leafRegex, '');
-    if (temp.length < updated.length) {
-      updated = temp;
-      matched = true;
-    } else {
-      temp = updated.replace(subBtnRegex, '');
-      if (temp.length < updated.length) {
-        updated = temp;
-        matched = true;
-      } else {
-        temp = updated.replace(branchBtnRegex, '');
-        if (temp.length < updated.length) {
-          updated = temp;
-          matched = true;
-        } else {
-          temp = updated.replace(genericRegex, '');
-          if (temp.length < updated.length) {
-            updated = temp;
-            matched = true;
-          }
-        }
-      }
-    }
-    
-    if (!matched) {
-      alert(lang === 'ar' ? '⚠️ النص المطلوب غير موجود في الملف!' : '⚠️ Requested text not found in file!');
-      return;
-    }
-    
-    setFileEditorContent(updated);
-    setDeleteSuccess(true);
-    setTimeout(() => setDeleteSuccess(false), 2000);
-    
-    // Auto-save updated content to disk for instant preview update
-    await saveUpdatedContent(updated);
-    syncNodesFromHtml(updated);
-  };
-
-  // ── Visual WYSIWYG Replace (Triggered from double click) ──────────────────
-  const executeVisualReplace = async (originalText: string, newText: string) => {
-    const currentContent = fileEditorContentRef.current;
-    if (!originalText) return;
-    
-    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = originalText.trim().split(/\s+/).map(w => escapeRegExp(w));
-    const flexibleRegexPattern = words.join('[\\s\\n\\r]*(?:<[^>]+>)*[\\s\\n\\r]*');
-    const flexibleRegex = new RegExp(flexibleRegexPattern, 'gi');
-    
-    if (!flexibleRegex.test(currentContent)) return;
-    
-    const updated = currentContent.replace(flexibleRegex, newText);
-    setFileEditorContent(updated);
-    
-    // Auto-save updated content to disk for instant preview update
-    await saveUpdatedContent(updated);
-    syncNodesFromHtml(updated);
-  };
-
-  // ── Visual WYSIWYG Delete (Triggered from double click clear) ─────────────
-  const executeVisualDelete = async (originalText: string) => {
-    const currentContent = fileEditorContentRef.current;
-    if (!originalText) return;
-    
-    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = originalText.trim().split(/\s+/).map(w => escapeRegExp(w));
-    const flexibleRegexPattern = words.join('[\\s\\n\\r]*(?:<[^>]+>)*[\\s\\n\\r]*');
-    
-    // Regex patterns to match element tags completely to avoid leaving empty boxes on screen
-    const leafRegex = new RegExp('<div\\s+class=["\']leaf-item["\'][^>]*>\\s*' + flexibleRegexPattern + '\\s*</div>', 'gi');
-    const subBtnRegex = new RegExp('<(?:button|div)\\s+class=["\']sub-btn["\'][^>]*>\\s*(?:<i[^>]*>[^<]*</i>\\s*)*' + flexibleRegexPattern + '\\s*</(?:button|div)>', 'gi');
-    const branchBtnRegex = new RegExp('<button\\s+class=["\']branch-btn["\'][^>]*>\\s*(?:<i[^>]*>[^<]*</i>\\s*)*' + flexibleRegexPattern + '\\s*</button>', 'gi');
-    const rootBtnRegex = new RegExp('<button\\s+class=["\']root-btn["\'][^>]*>\\s*' + flexibleRegexPattern + '\\s*</button>', 'gi');
-    const genericRegex = new RegExp(flexibleRegexPattern, 'gi');
-    
-    let updated = currentContent;
-    let temp = updated.replace(leafRegex, '');
-    if (temp.length < updated.length) {
-      updated = temp;
-    } else {
-      temp = updated.replace(subBtnRegex, '');
-      if (temp.length < updated.length) {
-        updated = temp;
-      } else {
-        temp = updated.replace(branchBtnRegex, '');
-        if (temp.length < updated.length) {
-          updated = temp;
-        } else {
-          temp = updated.replace(rootBtnRegex, '');
-          if (temp.length < updated.length) {
-            updated = temp;
-          } else {
-            temp = updated.replace(genericRegex, '');
-            if (temp.length < updated.length) {
-              updated = temp;
-            }
-          }
-        }
-      }
-    }
-    
-    if (updated !== currentContent) {
-      setFileEditorContent(updated);
-      // Auto-save updated content to disk for instant preview update
-      await saveUpdatedContent(updated);
-      syncNodesFromHtml(updated);
-    }
-  };
-
-  // ── Handle interactive clicks and double-click editing on the mindmap iframe ──
-  const onIframeLoad = () => {
-    if (!iframeRef.current) return;
-    try {
-      const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
-      if (!doc) return;
-      
-      // 1. Single click to copy to search field
-      doc.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const match = target.closest('.leaf-item, .branch-btn, .sub-btn, .root-btn') as HTMLElement;
-        if (match) {
-          let text = (match.innerText || match.textContent || "").trim();
-          text = text.replace(/^[›\s\u203a»\s]+/, "").trim();
-          setFindText(text);
-        }
-      });
-
-      // 2. Double click to start WYSIWYG text edit directly inside mindmap
-      const editables = doc.querySelectorAll('.leaf-item, .branch-btn, .sub-btn, .root-btn');
-      editables.forEach((el: any) => {
-        el.addEventListener('dblclick', (e: MouseEvent) => {
-          e.stopPropagation();
-          
-          let text = (el.innerText || el.textContent || "").trim();
-          text = text.replace(/^[›\s\u203a»\s]+/, "").trim();
-          
-          // Check if element is a button (branch-btn, sub-btn, root-btn) to bypass Chrome contentEditable limitation
-          if (el.tagName.toLowerCase() === 'button') {
-            const promptTitle = lang === 'ar' 
-              ? `تعديل عنوان العقدة:\n(اترك الحقل فارغاً لحذف هذا العنوان ومحتوياته بالكامل)`
-              : `Edit Node Title:\n(Leave empty to delete this node and its contents completely)`;
-            const newText = prompt(promptTitle, text);
-            
-            if (newText === null) return; // Cancelled
-            
-            const trimmedNewText = newText.trim().replace(/^[›\s\u203a»\s]+/, "").trim();
-            if (trimmedNewText === "") {
-              const confirmTitle = lang === 'ar'
-                ? `⚠️ هل أنت متأكد من رغبتك في حذف هذا العنوان بالكامل؟`
-                : `⚠️ Are you sure you want to delete this title completely?`;
-              if (confirm(confirmTitle)) {
-                executeVisualDelete(text);
-              }
-            } else if (trimmedNewText !== text) {
-              executeVisualReplace(text, trimmedNewText);
-            }
-          } else {
-            // For div elements (like leaf-item), keep the premium inline editing experience
-            el.dataset.originalText = text;
-            el.contentEditable = "true";
-            el.focus();
-            el.style.outline = "2px solid #10b981";
-            el.style.borderRadius = "8px";
-            el.style.padding = "4px 8px";
-            el.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
-          }
-        });
-
-        el.addEventListener('keydown', (e: KeyboardEvent) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            el.blur();
-          }
-        });
-
-        el.addEventListener('blur', () => {
-          el.contentEditable = "false";
-          el.style.outline = "";
-          el.style.padding = "";
-          el.style.backgroundColor = "";
-          
-          const originalText = el.dataset.originalText;
-          if (!originalText) return;
-          
-          let newText = (el.innerText || el.textContent || "").trim();
-          newText = newText.replace(/^[›\s\u203a»\s]+/, "").trim();
-          
-          if (newText === "") {
-            // Delete node completely if cleared
-            executeVisualDelete(originalText);
-          } else if (newText !== originalText) {
-            // Replace node text if modified
-            executeVisualReplace(originalText, newText);
-          }
-        });
-      });
-    } catch (err) {
-      console.error("Failed to set up interactive listeners on iframe:", err);
-    }
-  };
-
-  // ── Save edited HTML/text file back to server ─────────────────────────────
-  const saveFileContent = async () => {
-    await saveUpdatedContent(fileEditorContent);
   };
 
   return (
