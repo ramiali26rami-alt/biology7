@@ -1,21 +1,21 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# android/app/proguard-rules.pro
+# ProGuard rules to ensure minification does not break Capacitor, Supabase, and CryptoJS.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# 1. Protect Capacitor framework reflection
+-keep class com.getcapacitor.** { *; }
+-keep class com.biotech.biology.** { *; }
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# 2. Protect Supabase & OkHttp networking
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# 3. Protect CryptoJS and encryption helpers
+-keep class javax.crypto.** { *; }
+-dontwarn javax.crypto.**
+-keep class org.spongycastle.** { *; }
+-dontwarn org.spongycastle.**
+
+# 4. Protect MainActivity entry point name
+-keepnames class com.biotech.biology.MainActivity

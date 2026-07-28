@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { SecureStorage } from './security';
+import { logger } from './logger';
 
 export interface StudentProfile {
   phone: string;
@@ -18,18 +19,23 @@ export interface QuizResult {
   completed_at?: string;
 }
 
-// Get device UUID from local storage
+// Get device UUID from secure storage
 export function getDeviceUuid(): string {
   let uuid = localStorage.getItem('client_device_uuid');
   if (!uuid) {
-    uuid = 'dev-' + Math.random().toString(36).substring(2, 15) + '-' + Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('client_device_uuid', uuid);
+    // Calling SecureStorage will initialize client_device_uuid securely
+    SecureStorage.getItem('client_device_uuid');
+    uuid = localStorage.getItem('client_device_uuid') || '';
   }
   return uuid;
 }
 
-// 1. Register or restore a student
-export async function registerStudent(name: string, phone: string, governorate: string): Promise<{ success: boolean; message: string; isPremium?: boolean }> {
+// Register or restore a student with automatic 60-day device transfer checking
+export async function registerStudent(
+  name: string,
+  phone: string,
+  governorate: string
+): Promise<{ success: boolean; message: string; isPremium?: boolean; needsTransfer?: boolean }> {
   try {
     const deviceId = getDeviceUuid();
     const formattedPhone = phone.trim();
@@ -44,11 +50,9 @@ export async function registerStudent(name: string, phone: string, governorate: 
     if (checkError) throw checkError;
 
     if (existingStudent) {
-      // Reinstall scenario: check if device ID matches
       if (existingStudent.device_id === deviceId) {
         // Device matches! Restore profile locally
         localStorage.setItem('student_name', existingStudent.name);
-        localStorage.setItem('student_email', ''); // clear or empty
         localStorage.setItem('student_phone', formattedPhone);
         localStorage.setItem('student_governorate', existingStudent.governorate || '');
         
@@ -58,15 +62,44 @@ export async function registerStudent(name: string, phone: string, governorate: 
         
         return { 
           success: true, 
-          message: 'تمت استعادة حسابك بنجاح!', 
+          message: localStorage.getItem('lang') === 'en' ? 'Account restored successfully!' : 'تمت استعادة حسابك بنجاح!', 
           isPremium: existingStudent.is_premium 
         };
       } else {
-        // Device mismatch!
-        return { 
-          success: false, 
-          message: 'هذا الرقم مسجل بالفعل على جهاز هاتف آخر! يرجى التواصل مع الأستاذ لإعادة ضبط حسابك ونقله.' 
-        };
+        // Device mismatch! Invoke Edge Function to process device transfer rules (e.g. 60-day check)
+        const { data: transferResult, error: transferError } = await supabase.functions.invoke('handle-device-transfer', {
+          body: { phone: formattedPhone, deviceId }
+        });
+
+        if (transferError || !transferResult) {
+          throw new Error(transferResult?.message || 'Device transfer verification failed');
+        }
+
+        if (transferResult.success) {
+          // Automatic or approved transfer completed! Log student in
+          localStorage.setItem('student_name', existingStudent.name);
+          localStorage.setItem('student_phone', formattedPhone);
+          localStorage.setItem('student_governorate', existingStudent.governorate || '');
+          
+          SecureStorage.setItem('student_name', existingStudent.name);
+          SecureStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
+          localStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
+
+          return {
+            success: true,
+            message: transferResult.message || (localStorage.getItem('lang') === 'en' ? 'Account transferred successfully!' : 'تم نقل حسابك للجهاز الجديد بنجاح!'),
+            isPremium: existingStudent.is_premium
+          };
+        } else {
+          // Transfer blocked (needs manual approval or was requested too early)
+          return {
+            success: false,
+            needsTransfer: true,
+            message: transferResult.message || (localStorage.getItem('lang') === 'en' 
+              ? 'This number is registered on another device. You can request a transfer.'
+              : 'هذا الرقم مسجّل على جهاز آخر. يمكنك تقديم طلب نقل الحساب.')
+          };
+        }
       }
     }
 
@@ -94,14 +127,67 @@ export async function registerStudent(name: string, phone: string, governorate: 
     SecureStorage.setItem('premium_unlocked', 'false');
     localStorage.setItem('premium_unlocked', 'false');
 
-    return { success: true, message: 'تم التسجيل بنجاح!' };
+    return { success: true, message: localStorage.getItem('lang') === 'en' ? 'Registration completed successfully!' : 'تم التسجيل بنجاح!' };
   } catch (error: any) {
-    console.error('Error registering student:', error);
-    return { success: false, message: `فشل التسجيل: ${error.message || 'خطأ في الشبكة'}` };
+    logger.error('Error registering student:', error);
+    return { success: false, message: (localStorage.getItem('lang') === 'en' ? 'Registration failed: ' : 'فشل التسجيل: ') + (error.message || 'Network error') };
   }
 }
 
-// 2. Check and sync active subscription from server
+// Request manual device transfer from admin
+export async function requestDeviceTransfer(
+  phone: string,
+  reason: string = 'تغيير الجهاز'
+): Promise<{ success: boolean; message: string; requestId?: string }> {
+  const newDeviceId = getDeviceUuid();
+  const isEn = localStorage.getItem('lang') === 'en';
+  try {
+    // Check if there is already a pending transfer request for this phone number
+    const { data: pendingReq } = await supabase
+      .from('device_transfer_requests')
+      .select('*')
+      .eq('phone', phone.trim())
+      .eq('status', 'pending')
+      .maybeSingle();
+
+    if (pendingReq) {
+      return {
+        success: false,
+        message: isEn 
+          ? 'You already have a pending transfer request under review.'
+          : 'لديك طلب نقل معلق قيد المراجعة بالفعل.'
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('device_transfer_requests')
+      .insert([{
+        phone: phone.trim(),
+        new_device_id: newDeviceId,
+        reason,
+        status: 'pending',
+        requested_at: new Date().toISOString()
+      }])
+      .select('id')
+      .single();
+
+    if (error) throw error;
+    return {
+      success: true,
+      requestId: data?.id,
+      message: isEn 
+        ? 'Device transfer request submitted successfully! It will be reviewed within 24 hours.'
+        : 'تم إرسال طلب نقل الجهاز بنجاح! سيتم مراجعته من قِبل الأستاذ خلال 24 ساعة.'
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: (isEn ? 'Failed to submit request: ' : 'فشل إرسال الطلب: ') + (error.message || 'Network error')
+    };
+  }
+}
+
+// Check and sync active subscription from server
 export async function checkStudentSubscription(): Promise<boolean> {
   const phone = localStorage.getItem('student_phone');
   if (!phone) return false;
@@ -122,12 +208,12 @@ export async function checkStudentSubscription(): Promise<boolean> {
     }
     return false;
   } catch (error) {
-    console.warn('Error checking subscription from server, using cached status:', error);
+    logger.warn('Error checking subscription from server, using cached status:', error);
     return SecureStorage.getItem('premium_unlocked') === 'true';
   }
 }
 
-// 3. Save quiz results (Offline-first approach)
+// Save quiz results (Offline-first approach)
 export async function saveQuizResult(lessonId: string, score: number, totalQuestions: number): Promise<void> {
   const phone = localStorage.getItem('student_phone');
   if (!phone) return;
@@ -140,13 +226,11 @@ export async function saveQuizResult(lessonId: string, score: number, totalQuest
     completed_at: new Date().toISOString()
   };
 
-  // 3.1 Save to local history list
   const historyKey = `quiz_history_${lessonId}`;
   const history = SecureStorage.getItem(historyKey) || [];
   history.push({ score, totalQuestions, date: newResult.completed_at });
   SecureStorage.setItem(historyKey, history);
 
-  // 3.2 Add to unsynced queue
   const queueKey = 'unsynced_quiz_results';
   let queue: QuizResult[] = [];
   try {
@@ -156,11 +240,10 @@ export async function saveQuizResult(lessonId: string, score: number, totalQuest
   queue.push(newResult);
   localStorage.setItem(queueKey, JSON.stringify(queue));
 
-  // 3.3 Trigger sync in background (silent)
   syncUnsavedQuizResults().catch(() => {});
 }
 
-// 4. Sync local unsaved quiz results to server
+// Sync local unsaved quiz results to server
 export async function syncUnsavedQuizResults(): Promise<void> {
   const queueKey = 'unsynced_quiz_results';
   let queue: QuizResult[] = [];
@@ -175,78 +258,53 @@ export async function syncUnsavedQuizResults(): Promise<void> {
   if (queue.length === 0) return;
 
   try {
-    // Insert all pending results
     const { error } = await supabase
       .from('quiz_results')
       .insert(queue);
 
     if (error) throw error;
 
-    // Success! Clear the queue
     localStorage.removeItem(queueKey);
-    console.log(`Synced ${queue.length} quiz results to Supabase successfully.`);
+    logger.info(`Synced ${queue.length} quiz results to Supabase successfully.`);
   } catch (error) {
-    console.warn('Failed to sync quiz results, keeping in offline queue:', error);
+    logger.warn('Failed to sync quiz results, keeping in offline queue:', error);
   }
 }
 
-// 5. Claim / use activation code
+// Claim / use activation code via secure Edge Function
 export async function claimActivationCode(code: string): Promise<{ success: boolean; message: string }> {
   const phone = localStorage.getItem('student_phone');
   if (!phone) {
-    return { success: false, message: 'يرجى تسجيل الدخول أولاً!' };
+    return { success: false, message: localStorage.getItem('lang') === 'en' ? 'Please log in first!' : 'يرجى تسجيل الدخول أولاً!' };
   }
 
-  const cleanedCode = code.trim().toUpperCase();
-
   try {
-    // 5.1 Check if code exists and is not used
-    const { data: codeData, error: codeError } = await supabase
-      .from('activation_codes')
-      .select('*')
-      .eq('code', cleanedCode)
-      .maybeSingle();
+    const { data, error } = await supabase.functions.invoke('claim-activation-code', {
+      body: {
+        code: code.trim().toUpperCase(),
+        phone
+      }
+    });
 
-    if (codeError) throw codeError;
-    if (!codeData) {
-      return { success: false, message: 'رمز التفعيل هذا غير موجود!' };
+    if (error) throw error;
+    if (data?.success) {
+      SecureStorage.setItem('premium_unlocked', 'true');
+      localStorage.setItem('premium_unlocked', 'true');
     }
-    if (codeData.is_used) {
-      return { success: false, message: 'رمز التفعيل هذا مستخدم مسبقاً!' };
-    }
-
-    // 5.2 Mark code as used
-    const { error: updateCodeError } = await supabase
-      .from('activation_codes')
-      .update({
-        is_used: true,
-        used_by_phone: phone,
-        used_at: new Date().toISOString()
-      })
-      .eq('code', cleanedCode);
-
-    if (updateCodeError) throw updateCodeError;
-
-    // 5.3 Set student as premium
-    const { error: updateStudentError } = await supabase
-      .from('students')
-      .update({ is_premium: true })
-      .eq('phone', phone);
-
-    if (updateStudentError) throw updateStudentError;
-
-    // Update local cache
-    SecureStorage.setItem('premium_unlocked', 'true');
-    localStorage.setItem('premium_unlocked', 'true');
-
-    return { success: true, message: 'تهانينا! تم تفعيل الباقة الكاملة بنجاح! 🌟' };
+    return {
+      success: data?.success ?? false,
+      message: data?.message ?? (localStorage.getItem('lang') === 'en' ? 'Activation failed' : 'فشل التفعيل')
+    };
   } catch (error: any) {
-    console.error('Error claiming code:', error);
-    return { success: false, message: `فشل التفعيل: ${error.message || 'خطأ في الشبكة'}` };
+    logger.error('Error claiming code:', error);
+    return {
+      success: false,
+      message: (localStorage.getItem('lang') === 'en' ? 'Activation failed: ' : 'فشل التفعيل: ') + (error.message || 'Network error')
+    };
   }
 }
 
-// 6. Fetch leaderboard standings
+// Fetch leaderboard standings
 export async function getLeaderboard(): Promise<any[]> {
   try {
     const { data: results, error: resultsError } = await supabase
@@ -306,12 +364,12 @@ export async function getLeaderboard(): Promise<any[]> {
         return b.accuracy - a.accuracy;
       });
   } catch (error) {
-    console.error('Error fetching leaderboard:', error);
+    logger.error('Error fetching leaderboard:', error);
     return [];
   }
 }
 
-// 7. Log a single question's answer correctness for analytics
+// Log a single question's answer correctness for analytics
 export async function logQuestionResult(questionId: string, lessonId: string, questionText: string, isCorrect: boolean): Promise<void> {
   try {
     const { data, error } = await supabase
@@ -342,11 +400,11 @@ export async function logQuestionResult(questionId: string, lessonId: string, qu
         }]);
     }
   } catch (err) {
-    console.error('Error logging question result:', err);
+    logger.error('Error logging question result:', err);
   }
 }
 
-// 8. Fetch ranked list of difficult questions
+// Fetch ranked list of difficult questions
 export async function getDifficultQuestions(): Promise<any[]> {
   try {
     const { data, error } = await supabase
@@ -367,7 +425,7 @@ export async function getDifficultQuestions(): Promise<any[]> {
       .filter(q => q.wrong_count > 0)
       .sort((a, b) => b.failureRate - a.failureRate || b.wrong_count - a.wrong_count);
   } catch (err) {
-    console.error('Error fetching difficult questions:', err);
+    logger.error('Error fetching difficult questions:', err);
     return [];
   }
 }

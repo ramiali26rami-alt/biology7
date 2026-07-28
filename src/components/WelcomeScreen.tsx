@@ -8,7 +8,7 @@ import { Dna, ArrowLeft, ArrowRight, Sparkles, BookOpen, PenTool, Award, Loader2
 import { ScreenId } from '../types';
 import { Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
-import { registerStudent } from '../utils/supabaseHelper';
+import { registerStudent, requestDeviceTransfer } from '../utils/supabaseHelper';
 
 interface WelcomeScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -34,7 +34,25 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
   const [restoreMessage, setRestoreMessage] = useState('');
   const [modalType, setModalType] = useState<'about' | 'privacy' | 'terms' | null>(null);
 
+  const [showTransferButton, setShowTransferButton] = useState(false);
+  const [transferLoading, setTransferLoading] = useState(false);
+  const [transferMessage, setTransferMessage] = useState('');
+
   const isAr = lang === 'ar';
+
+  const handleRequestTransfer = async () => {
+    setTransferLoading(true);
+    setTransferMessage('');
+    setRegErrorMessage('');
+    const res = await requestDeviceTransfer(phone);
+    setTransferLoading(false);
+    if (res.success) {
+      setTransferMessage(res.message);
+      setShowTransferButton(false);
+    } else {
+      setRegErrorMessage(res.message);
+    }
+  };
 
   const handleNameNext = () => {
     if (!name.trim() || name.trim().length < 2) {
@@ -68,6 +86,9 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           setRestoreMessage('');
         }
         setStep('ready');
+      } else if (res.needsTransfer) {
+        setRegErrorMessage(res.message);
+        setShowTransferButton(true);
       } else {
         setRegErrorMessage(res.message);
       }
@@ -342,6 +363,32 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 {regErrorMessage && (
                   <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed">
                     ⚠️ {regErrorMessage}
+                  </div>
+                )}
+
+                {showTransferButton && (
+                  <button
+                    onClick={handleRequestTransfer}
+                    disabled={transferLoading}
+                    className="w-full mt-3 py-4 px-4 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white rounded-app-btn text-xs font-black transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/10 active:scale-95"
+                  >
+                    {transferLoading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        {isAr ? 'جاري إرسال الطلب...' : 'Submitting Request...'}
+                      </>
+                    ) : (
+                      <>
+                        <span>📱</span>
+                        <span>{isAr ? 'تقديم طلب نقل الحساب' : 'Request Account Transfer'}</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {transferMessage && (
+                  <div className="bg-emerald-500/15 border border-emerald-500/25 text-emerald-450 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed">
+                    🎉 {transferMessage}
                   </div>
                 )}
               </div>

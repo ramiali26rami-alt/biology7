@@ -4,11 +4,27 @@
  */
 
 import CryptoJS from 'crypto-js';
+import { logger } from './logger';
+
+// Secure device UUID generator
+function generateSecureUuid(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  // Cryptographic fallback for older browsers
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  array[6] = (array[6] & 0x0f) | 0x40;
+  array[8] = (array[8] & 0x3f) | 0x80;
+  return [...array]
+    .map((b, i) => ([4, 6, 8, 10].includes(i) ? '-' : '') + b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 const getRuntimeKey = (): string => {
   let uuid = localStorage.getItem('client_device_uuid');
   if (!uuid) {
-    uuid = 'dev-' + Math.random().toString(36).substring(2, 15) + '-' + Math.random().toString(36).substring(2, 15);
+    uuid = generateSecureUuid();
     localStorage.setItem('client_device_uuid', uuid);
   }
   return `Biotech_2026_${uuid}`;
@@ -22,7 +38,7 @@ export const SecureStorage = {
       const encrypted = CryptoJS.AES.encrypt(stringValue, secret).toString();
       localStorage.setItem(key, encrypted);
     } catch (e) {
-      console.error(`Error encrypting key ${key}:`, e);
+      logger.error(`SecureStorage.setItem error for key "${key}":`, e);
     }
   },
 
@@ -40,7 +56,7 @@ export const SecureStorage = {
         return decryptedText;
       }
     } catch (e) {
-      console.error(`Error decrypting key ${key}:`, e);
+      logger.error(`SecureStorage.getItem error for key "${key}":`, e);
       return null;
     }
   },
@@ -55,7 +71,7 @@ export function decryptCurriculumData(encryptedText: string): any {
   const bytes = CryptoJS.AES.decrypt(encryptedText, secret);
   const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
   if (!decryptedText) {
-    throw new Error('Decryption failed, result is empty');
+    throw new Error('Decryption failed: empty result');
   }
   return JSON.parse(decryptedText);
 }
