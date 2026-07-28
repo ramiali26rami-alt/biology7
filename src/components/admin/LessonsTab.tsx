@@ -1,0 +1,1016 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  BookOpen, Lock, Unlock, Edit, Eye, Trash2, Plus,
+  Save, FolderOpen, RefreshCw, CheckCircle, PlusCircle, Sparkles,
+  Info, Check, ChevronLeft, ChevronRight
+} from 'lucide-react';
+
+import { translations } from '../../utils/translations';
+import { getAbsoluteUrl } from '../../utils/urlHelper';
+import { Lesson, VideoChapter, Flashcard, ConfigQuestion } from '../../types';
+
+type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'files';
+
+interface LessonsTabProps {
+  activeTab: 'lessons-list' | 'lesson-editor' | 'preview';
+  setActiveTab: (tab: 'lessons-list' | 'lesson-editor' | 'preview' | 'export' | 'keys' | 'helper' | 'students') => void;
+  lang: 'ar' | 'en';
+  lessons: Lesson[];
+  setLessons: React.Dispatch<React.SetStateAction<Lesson[]>>;
+  saveAllToServer: (lessonsToSave: Lesson[]) => Promise<void>;
+  saveStatus: 'idle' | 'saving' | 'saved' | 'error';
+  editingLesson: Lesson | null;
+  setEditingLesson: React.Dispatch<React.SetStateAction<Lesson | null>>;
+  editingLessonIndex: number | null;
+  setEditingLessonIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  editorSubTab: EditorSubTab;
+  setEditorSubTab: React.Dispatch<React.SetStateAction<EditorSubTab>>;
+}
+
+export default function LessonsTab({
+  activeTab,
+  setActiveTab,
+  lang,
+  lessons,
+  setLessons,
+  saveAllToServer,
+  editingLesson,
+  setEditingLesson,
+  editingLessonIndex,
+  setEditingLessonIndex,
+  editorSubTab,
+  setEditorSubTab
+}: LessonsTabProps) {
+  const t = translations[lang];
+
+  // Local state for validation errors
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  // AI Quiz Generator states
+  const [aiCount, setAiCount] = useState<number>(5);
+  const [aiType, setAiType] = useState<'all' | 'mcq' | 'tf' | 'fill'>('all');
+  const [localApiKey, setLocalApiKey] = useState<string>(() => localStorage.getItem('gemini_api_key') || '');
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [aiStatusMsg, setAiStatusMsg] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  // File upload state
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+
+  // Detected server folders for auto-linking
+  const [detectedFolders, setDetectedFolders] = useState<{ path: string, name: string, files: string[] }[]>([]);
+
+  // Preview States
+  const [previewQuizIdx, setPreviewQuizIdx] = useState<number>(0);
+  const [previewSelectedAns, setPreviewSelectedAns] = useState<string | null>(null);
+  const [previewShowExpl, setPreviewShowExpl] = useState<boolean>(false);
+  const [activeQuizIdx, setActiveQuizIdx] = useState<number>(0);
+
+  // Fetch detected assets on mount
+  useEffect(() => {
+    fetch(getAbsoluteUrl('/detected_assets.json'))
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.folders) {
+          setDetectedFolders(data.folders);
+        }
+      })
+      .catch(err => console.error("Error loading detected assets:", err));
+  }, []);
+
+  // Run validation whenever lessons change
+  useEffect(() => {
+    validateSyllabus();
+  }, [lessons, lang]);
+
+  // Reset active quiz index when editing lesson changes
+  useEffect(() => {
+    setActiveQuizIdx(0);
+  }, [editingLesson?.id]);
+
+  const validateSyllabus = () => {
+    const errors: string[] = [];
+    const ids = new Set<string>();
+
+    lessons.forEach((lesson, index) => {
+      // Check duplicate ID
+      if (!lesson.id.trim()) {
+        errors.push(lang === 'ar' ? `الدرس رقم ${index + 1}: معرّف الدرس فارغ!` : `Lesson #${index + 1}: ID is empty!`);
+      } else if (ids.has(lesson.id)) {
+        errors.push(lang === 'ar' ? `معرّف الدرس مكرر: ${lesson.id}` : `Duplicate lesson ID: ${lesson.id}`);
+      } else {
+        ids.add(lesson.id);
+      }
+
+      // Check titles
+      if (!lesson.titleAr.trim()) {
+        errors.push(lang === 'ar' ? `الدرس (${lesson.id}): العنوان بالعربي فارغ!` : `Lesson (${lesson.id}): Arabic title is empty!`);
+      }
+
+      // Check quiz answers validity
+      lesson.quiz.forEach((q, qIdx) => {
+        if (q.type === 'mcq') {
+          if (!q.correctKey) {
+            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: لم يتم تحديد الإجابة الصحيحة الخيار (أ، ب، ج)!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: No correct key selected!`);
+          }
+          if (!q.options || q.options.length < 2) {
+            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: عدد الخيارات أقل من خيارين!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: MCQ requires at least 2 options!`);
+          }
+        } else if (q.type === 'tf') {
+          if (!q.correctKey || (q.correctKey !== 'T' && q.correctKey !== 'F' && q.correctKey !== 'A' && q.correctKey !== 'B')) {
+            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد صح (A) أو خطأ (B)!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: TF requires correct key A or B!`);
+          }
+        } else if (q.type === 'fill') {
+          if (!q.correctAnswers || q.correctAnswers.length === 0) {
+            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد إجابة مقبولة واحدة على الأقل لإكمال الفراغ!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: Fill blank requires at least one correct answer!`);
+          }
+        }
+      });
+    });
+
+    setValidationErrors(errors);
+  };
+
+  const handleApiKeyChange = (val: string) => {
+    setLocalApiKey(val);
+    localStorage.setItem('gemini_api_key', val);
+  };
+
+  const handleGenerateAIQuiz = async () => {
+    if (!editingLesson) return;
+    setAiLoading(true);
+    setAiStatusMsg(null);
+
+    try {
+      const res = await fetch(getAbsoluteUrl('/api/generate-quiz'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-gemini-key': localApiKey
+        },
+        body: JSON.stringify({
+          lessonTitleAr: editingLesson.titleAr,
+          lessonTitleEn: editingLesson.titleEn,
+          lessonSummaryAr: editingLesson.summaryPointsAr,
+          lessonSummaryEn: editingLesson.summaryPointsEn,
+          questionCount: aiCount,
+          questionType: aiType
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && Array.isArray(data.quiz)) {
+        const existingQuiz = editingLesson.quiz || [];
+        const startIndex = existingQuiz.length;
+        const newQuestions = data.quiz.map((q: any, i: number) => ({
+          ...q,
+          id: startIndex + i + 1
+        }));
+
+        const updatedQuiz = [...existingQuiz, ...newQuestions];
+        const updatedLesson = { ...editingLesson, quiz: updatedQuiz };
+        
+        setEditingLesson(updatedLesson);
+        const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? updatedLesson : l);
+        setLessons(updatedLessons);
+        
+        await saveAllToServer(updatedLessons);
+
+        setAiStatusMsg({
+          type: 'success',
+          text: lang === 'ar' ? translations.ar.generateSuccess : translations.en.generateSuccess
+        });
+        
+        setActiveQuizIdx(startIndex);
+      } else {
+        setAiStatusMsg({
+          type: 'error',
+          text: data.error || (lang === 'ar' ? translations.ar.generateError : translations.en.generateError)
+        });
+      }
+    } catch (err) {
+      setAiStatusMsg({
+        type: 'error',
+        text: String(err) || (lang === 'ar' ? translations.ar.generateError : translations.en.generateError)
+      });
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleCreateNewLesson = () => {
+    const newId = `lesson-${Date.now()}`;
+    const newLesson: Lesson = {
+      id: newId,
+      unit: 1,
+      folder: "الوحدة الاولى     التنظيم العصبي في الكائنات الحية/الدرس الجديد",
+      titleAr: "مفهوم بيولوجي جديد",
+      titleEn: "New Biological Concept",
+      pdfFile: "الدرس الجديد.pdf",
+      diagramFile: "الدرس الجديد.png",
+      summaryFile: "",
+      mindmapFile: "",
+      quizFile: "",
+      ministryExamFile: "",
+      locked: false,
+      videoUrl: "https://www.youtube.com/embed/6m6uT0284xI",
+      videoChapters: [
+        { time: "00:00", titleAr: "مقدمة", titleEn: "Introduction", descAr: "بداية الشرح", descEn: "Start of chapter" }
+      ],
+      summaryPointsAr: ["البروتوبلازم هو أساس الحياة وعلينا دراسة تطور الأجهزة."],
+      summaryPointsEn: ["Protoplasm is the base of life, coordination evolves in complexity."],
+      flashcards: [
+        { qAr: "أين تقع الغدة؟", qEn: "Where is the gland located?", aAr: "فوق الأعضاء المستهدفة.", aEn: "Above the target organs." }
+      ],
+      glossary: [
+        { term: "Biotech", descAr: "التكنولوجيا الحيوية وتطبيقاتها.", descEn: "Biotechnological integrations." }
+      ],
+      quiz: [
+        {
+          id: 1,
+          type: "tf",
+          textAr: "الإحساس في الكائنات البسيطة خلوي عام.",
+          textEn: "Irritability in simple organisms is general cellular.",
+          options: [
+            { key: "T", textAr: "✔️ صح", textEn: "True" },
+            { key: "F", textAr: "❌ خطأ", textEn: "False" }
+          ],
+          correctKey: "T",
+          explanationAr: "صح. لعدم وجود خلايا عصبية متخصصة في الأميبا.",
+          explanationEn: "True. Due to lack of specialized neurones in Amoeba."
+        }
+      ]
+    };
+
+    const newIdx = lessons.length;
+    setLessons(prev => [...prev, newLesson]);
+    setEditingLesson(newLesson);
+    setEditingLessonIndex(newIdx);
+    setEditorSubTab('basic');
+    setActiveTab('lesson-editor');
+  };
+
+  const handleSaveLessonEdit = () => {
+    if (!editingLesson || editingLessonIndex === null) return;
+    const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? editingLesson : l);
+    setLessons(updatedLessons);
+    validateSyllabus();
+    saveAllToServer(updatedLessons);
+    setActiveTab('lessons-list');
+  };
+
+  const handleDeleteLesson = (id: string) => {
+    const msg = lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذا الدرس نهائياً؟' : 'Are you sure you want to delete this lesson permanently?';
+    if (window.confirm(msg)) {
+      const updatedLessons = lessons.filter(l => l.id !== id);
+      setLessons(updatedLessons);
+      setEditingLesson(null);
+      setEditingLessonIndex(null);
+      saveAllToServer(updatedLessons);
+    }
+  };
+
+  const updateEditingLessonField = (field: keyof Lesson, value: any) => {
+    if (!editingLesson || editingLessonIndex === null) return;
+    const updated = {
+      ...editingLesson,
+      [field]: value
+    };
+    setEditingLesson(updated);
+    setLessons(prev => prev.map((l, idx) => idx === editingLessonIndex ? updated : l));
+  };
+
+  const handleFileUpload = (fieldName: keyof Lesson, accept: string) => {
+    if (!editingLesson) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = accept;
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (file) {
+        setUploadingField(fieldName as string);
+        setUploadSuccess(null);
+        const filePath = `${editingLesson.folder}/${file.name}`;
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('filePath', filePath);
+
+        try {
+          const res = await fetch(getAbsoluteUrl('/api/upload-binary'), {
+            method: 'POST',
+            body: formData,
+          });
+          if (res.ok) {
+            const newLesson = { ...editingLesson, [fieldName]: file.name };
+            setEditingLesson(newLesson);
+            const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? newLesson : l);
+            setLessons(updatedLessons);
+            await saveAllToServer(updatedLessons);
+            setUploadSuccess(fieldName as string);
+            setTimeout(() => setUploadSuccess(null), 4000);
+          }
+        } catch (err) {
+          console.error("Failed uploading file:", err);
+        } finally {
+          setUploadingField(null);
+        }
+      }
+    };
+    input.click();
+  };
+
+  const isRtl = lang === 'ar';
+  const ChevronIcon = isRtl ? ChevronLeft : ChevronRight;
+
+  return (
+    <AnimatePresence mode="wait">
+      {/* View 1: Lessons List */}
+      {activeTab === 'lessons-list' && (
+        <motion.div
+          key="lessons-list"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="space-y-4"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">
+                {lang === 'ar' ? 'هيكل الوحدات والدروس' : 'Syllabus Structure'}
+              </h2>
+              <p className="text-xs text-slate-400 font-bold">
+                {lang === 'ar' ? 'عرض الدروس المتاحة وقفلها وإدارتها' : 'Manage access status, lock premium lessons'}
+              </p>
+            </div>
+            <button
+              onClick={handleCreateNewLesson}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-4 py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
+            >
+              <Plus className="w-4 h-4" />
+              <span>{lang === 'ar' ? 'درس جديد' : 'New Lesson'}</span>
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {lessons.map((lesson, idx) => {
+              const unitName = lesson.folder.split('/')[0] || `الوحدة ${lesson.unit}`;
+              const lessonName = lesson.folder.split('/')[1] || lesson.titleAr;
+
+              return (
+                <div 
+                  key={lesson.id} 
+                  className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-emerald-500/50 transition-colors"
+                >
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-app-btn bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-black text-slate-500 dark:text-slate-400">
+                          {unitName}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const updated = lessons.map(l => l.id === lesson.id ? { ...l, locked: !l.locked } : l);
+                            setLessons(updated);
+                          }}
+                          className={`text-[10px] px-2.5 py-0.5 rounded-full font-black flex items-center gap-1 border transition-colors ${
+                            lesson.locked 
+                              ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 border-amber-250 dark:border-amber-900' 
+                              : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 border-emerald-250 dark:border-emerald-900'
+                          }`}
+                        >
+                          {lesson.locked ? (
+                            <>
+                              <Lock className="w-2.5 h-2.5" />
+                              <span>{lang === 'ar' ? 'مقفل باقة ذهبية' : 'Premium Locked'}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Unlock className="w-2.5 h-2.5" />
+                              <span>{lang === 'ar' ? 'مجاني للجميع' : 'Free Access'}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <h4 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1">
+                        {lessonName}
+                      </h4>
+                      <p className="text-[10px] text-slate-455 dark:text-slate-500 font-bold mt-0.5 font-sans">
+                        ID: {lesson.id} • {lesson.quiz.length} أسئلة • {lesson.videoChapters.length} فصول فيديو
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 shrink-0">
+                    <button
+                      onClick={() => {
+                        setEditingLesson(lesson);
+                        setEditingLessonIndex(idx);
+                        setEditorSubTab('basic');
+                        setActiveTab('lesson-editor');
+                      }}
+                      className="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 p-2.5 rounded-app-btn transition-colors active:scale-95 flex items-center gap-1.5 text-xs font-black"
+                      title={lang === 'ar' ? 'تعديل المحتوى والأسئلة' : 'Edit content'}
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>{lang === 'ar' ? 'تعديل' : 'Edit'}</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingLesson(lesson);
+                        setEditingLessonIndex(idx);
+                        setPreviewQuizIdx(0);
+                        setPreviewSelectedAns(null);
+                        setPreviewShowExpl(false);
+                        setActiveTab('preview');
+                      }}
+                      className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 p-2.5 rounded-app-btn transition-colors active:scale-95"
+                      title={lang === 'ar' ? 'معاينة الطالب' : 'Preview student view'}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteLesson(lesson.id)}
+                      className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-450 p-2.5 rounded-app-btn transition-colors active:scale-95"
+                      title={lang === 'ar' ? 'حذف الدرس نهائياً' : 'Delete lesson'}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* View 2: Lesson Editor */}
+      {activeTab === 'lesson-editor' && editingLesson && (
+        <motion.div
+          key="lesson-editor"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="space-y-4"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-app-card border border-slate-100 dark:border-slate-800 shadow-sm">
+            <div>
+              <span className="text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full uppercase">
+                {lang === 'ar' ? 'تحرير نشط' : 'Active Editor'}
+              </span>
+              <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1.5">
+                {editingLesson.titleAr}
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab('lessons-list')}
+                className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-app-btn font-bold text-xs active:scale-95 transition-transform"
+              >
+                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              </button>
+              <button
+                onClick={handleSaveLessonEdit}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-app-btn font-black text-xs active:scale-95 transition-transform flex items-center gap-1.5 shadow-md shadow-emerald-550/20"
+              >
+                <Save className="w-4 h-4" />
+                <span>{lang === 'ar' ? 'حفظ المنهج' : 'Save Changes'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-app-card p-2 gap-1 overflow-x-auto shadow-sm">
+            {(['basic', 'chapters', 'summary-flash', 'quiz', 'files'] as EditorSubTab[]).map(sub => {
+              const labels: Record<EditorSubTab, string> = {
+                'basic': lang === 'ar' ? '📖 الأساسيات' : 'Basics',
+                'chapters': lang === 'ar' ? '🎬 فصول الفيديو' : 'Chapters',
+                'summary-flash': lang === 'ar' ? '📝 التلخيص والبطاقات' : 'Summary/Cards',
+                'quiz': lang === 'ar' ? '❓ بنك الاختبار' : 'Quiz Editor',
+                'files': lang === 'ar' ? '📁 تحرير الملفات' : 'File Editor'
+              };
+              return (
+                <button
+                  key={sub}
+                  onClick={() => setEditorSubTab(sub)}
+                  className={`px-4 py-2.5 rounded-app-btn text-xs font-black transition-all shrink-0 ${
+                    editorSubTab === sub
+                      ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-white shadow-sm'
+                      : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {labels[sub]}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Editor Sub-Tab: Basics */}
+          {editorSubTab === 'basic' && (
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+              <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400 border-b border-slate-50 dark:border-slate-800 pb-2">
+                {lang === 'ar' ? 'المعلومات الأساسية والملفات' : 'Basic Specifications & Attachments'}
+              </h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'معرّف الدرس (ID فريد)' : 'Unique Lesson ID'}</label>
+                  <input 
+                    type="text" 
+                    value={editingLesson.id} 
+                    onChange={(e) => updateEditingLessonField('id', e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'رقم الوحدة (Unit)' : 'Unit Number'}</label>
+                  <input 
+                    type="number" 
+                    value={editingLesson.unit} 
+                    onChange={(e) => updateEditingLessonField('unit', parseInt(e.target.value) || 1)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'مسار مجلد الدرس على السيرفر (Folder Path)' : 'Folder Directory Path'}</label>
+                <input 
+                  type="text" 
+                  value={editingLesson.folder} 
+                  onChange={(e) => updateEditingLessonField('folder', e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
+                  required
+                />
+                
+                {detectedFolders.length > 0 && (
+                  <div className="mt-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-app-btn border border-slate-200/60 dark:border-slate-800 space-y-2">
+                    <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
+                      {lang === 'ar' ? '📂 مجلدات تم اكتشافها على السيرفر (انقر للربط التلقائي والذكي بالملفات):' : '📂 Detected folders on server (click to auto-link and match files):'}
+                    </span>
+                    <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto pe-1">
+                      {detectedFolders.map((fd, i) => {
+                        const isLinked = editingLesson.folder === fd.path;
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              const pdf = fd.files.find(f => f.toLowerCase().endsWith('.pdf')) || '';
+                              const diagram = fd.files.find(f => 
+                                (f.toLowerCase().endsWith('.png') || f.toLowerCase().endsWith('.jpg') || f.toLowerCase().endsWith('.jpeg')) &&
+                                !f.includes('ملخص') && !f.includes('summary') && !f.includes('infograph')
+                              ) || '';
+                              const summary = fd.files.find(f => 
+                                (f.toLowerCase().endsWith('.png') || f.toLowerCase().endsWith('.jpg') || f.toLowerCase().endsWith('.jpeg')) &&
+                                (f.includes('ملخص') || f.includes('summary') || f.includes('infograph'))
+                              ) || '';
+                              const mindmap = fd.files.find(f => 
+                                (f.toLowerCase().endsWith('.html') || f.toLowerCase().endsWith('.htm')) &&
+                                (f.includes('خارطة') || f.includes('خريطة') || f.includes('mindmap') || f.includes('الدرس')) &&
+                                !f.includes('اختبار') && !f.includes('quiz')
+                              ) || '';
+                              const quiz = fd.files.find(f => 
+                                (f.toLowerCase().endsWith('.html') || f.toLowerCase().endsWith('.htm')) &&
+                                (f.includes('اختبار') || f.includes('quiz'))
+                              ) || '';
+                              const ministry = fd.files.find(f => 
+                                (f.toLowerCase().endsWith('.pdf') || f.toLowerCase().endsWith('.html') || f.toLowerCase().endsWith('.htm')) &&
+                                (f.includes('وزار') || f.includes('ministry'))
+                              ) || '';
+
+                              const updated = {
+                                ...editingLesson,
+                                folder: fd.path,
+                                pdfFile: pdf,
+                                diagramFile: diagram,
+                                summaryFile: summary,
+                                mindmapFile: mindmap,
+                                quizFile: quiz,
+                                ministryExamFile: ministry
+                              };
+                              setEditingLesson(updated);
+                              setLessons(prev => prev.map((l, idx) => idx === editingLessonIndex ? updated : l));
+                            }}
+                            className={`flex items-center justify-between p-2.5 rounded-app-btn text-xs font-black border transition-all text-right ${
+                              isLinked
+                                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm'
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-350'
+                            }`}
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <span>📁</span>
+                              <span>{fd.name}</span>
+                            </span>
+                            <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full text-slate-500 font-sans">
+                              {fd.files.length} {lang === 'ar' ? 'ملفات' : 'files'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'العنوان باللغة العربية' : 'Arabic Title'}</label>
+                  <input 
+                    type="text" 
+                    value={editingLesson.titleAr} 
+                    onChange={(e) => updateEditingLessonField('titleAr', e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'العنوان باللغة الإنجليزية' : 'English Title'}</label>
+                  <input 
+                    type="text" 
+                    value={editingLesson.titleEn} 
+                    onChange={(e) => updateEditingLessonField('titleEn', e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'رابط فيديو يوتيوب (Embed URL)' : 'YouTube Video Embed URL'}</label>
+                <input 
+                  type="text" 
+                  value={editingLesson.videoUrl} 
+                  onChange={(e) => updateEditingLessonField('videoUrl', e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
+                />
+              </div>
+
+              <h5 className="font-extrabold text-xs text-slate-450 dark:text-slate-400 pt-2">{lang === 'ar' ? 'أسماء ملفات الملحقات (داخل مجلد الدرس)' : 'Attachment Filenames (Inside Lesson Directory)'}</h5>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* PDF */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-400 mb-1">{lang === 'ar' ? 'ملف الـ PDF للدرس' : 'Lesson PDF File'}</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={editingLesson.pdfFile || ''} 
+                      onChange={(e) => updateEditingLessonField('pdfFile', e.target.value)}
+                      className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload('pdfFile', '.pdf')}
+                      disabled={uploadingField === 'pdfFile'}
+                      className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
+                      title={lang === 'ar' ? 'رفع ملف PDF جديد' : 'Upload new PDF'}
+                    >
+                      {uploadingField === 'pdfFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
+                      {uploadSuccess === 'pdfFile' && <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Diagram */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-400 mb-1">{lang === 'ar' ? 'ملف الرسم التخطيطي (PNG)' : 'Diagram Image File'}</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={editingLesson.diagramFile || ''} 
+                      onChange={(e) => updateEditingLessonField('diagramFile', e.target.value)}
+                      className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload('diagramFile', 'image/*')}
+                      disabled={uploadingField === 'diagramFile'}
+                      className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
+                      title={lang === 'ar' ? 'رفع صورة جديدة' : 'Upload new image'}
+                    >
+                      {uploadingField === 'diagramFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
+                      {uploadSuccess === 'diagramFile' && <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mindmap */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-400 mb-1">{lang === 'ar' ? 'ملف خريطة ذهنية (HTML)' : 'Mindmap HTML File'}</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={editingLesson.mindmapFile || ''} 
+                      onChange={(e) => updateEditingLessonField('mindmapFile', e.target.value)}
+                      className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload('mindmapFile', '.html,.htm')}
+                      disabled={uploadingField === 'mindmapFile'}
+                      className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
+                      title={lang === 'ar' ? 'رفع ملف HTML جديد' : 'Upload new HTML'}
+                    >
+                      {uploadingField === 'mindmapFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
+                      {uploadSuccess === 'mindmapFile' && <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-400 mb-1">{lang === 'ar' ? 'ملف إنفوجرافيك ملخص (PNG)' : 'Summary Infographic File'}</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={editingLesson.summaryFile || ''} 
+                      onChange={(e) => updateEditingLessonField('summaryFile', e.target.value)}
+                      className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload('summaryFile', 'image/*')}
+                      disabled={uploadingField === 'summaryFile'}
+                      className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
+                      title={lang === 'ar' ? 'رفع صورة جديدة' : 'Upload new image'}
+                    >
+                      {uploadingField === 'summaryFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
+                      {uploadSuccess === 'summaryFile' && <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quiz */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-400 mb-1">{lang === 'ar' ? 'ملف كود اختبار HTML خارجي' : 'External Quiz HTML File'}</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={editingLesson.quizFile || ''} 
+                      onChange={(e) => updateEditingLessonField('quizFile', e.target.value)}
+                      className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload('quizFile', '.html,.htm')}
+                      disabled={uploadingField === 'quizFile'}
+                      className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
+                      title={lang === 'ar' ? 'رفع ملف HTML جديد' : 'Upload new HTML'}
+                    >
+                      {uploadingField === 'quizFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
+                      {uploadSuccess === 'quizFile' && <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Ministry Exam */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-400 mb-1">{lang === 'ar' ? 'ملف الأسئلة الوزارية (PDF/HTML)' : 'Ministry Questions File'}</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={editingLesson.ministryExamFile || ''} 
+                      onChange={(e) => updateEditingLessonField('ministryExamFile', e.target.value)}
+                      className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono min-w-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload('ministryExamFile', '.pdf,.html,.htm')}
+                      disabled={uploadingField === 'ministryExamFile'}
+                      className="shrink-0 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 px-2.5 py-2 rounded-app-btn transition-colors text-[10px] font-black flex items-center gap-1"
+                      title={lang === 'ar' ? 'رفع ملف جديد' : 'Upload new file'}
+                    >
+                      {uploadingField === 'ministryExamFile' ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FolderOpen className="w-3.5 h-3.5" />}
+                      {uploadSuccess === 'ministryExamFile' && <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* View 3: Interactive Student Preview */}
+      {activeTab === 'preview' && editingLesson && (
+        <motion.div
+          key="preview"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+          {/* Controller */}
+          <div className="md:col-span-1 bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-2">
+              <Eye className="w-5 h-5 text-emerald-500" />
+              <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm">
+                {lang === 'ar' ? 'أداة المعاينة الحية' : 'Live Mockup Preview'}
+              </h3>
+            </div>
+            <p className="text-[11px] text-slate-455 dark:text-slate-400 font-bold leading-relaxed">
+              {lang === 'ar'
+                ? 'هنا تشاهد كيف ستظهر الأسئلة والمعلومات للطالب فوراً على هاتفه. يمكنك تجربة اختيار الأجوبة ورؤية التفسيرات للتأكد من تنسيق النصوص.'
+                : 'Simulate how students interact with the content. Select options and view feedback in real-time.'}
+            </p>
+            
+            {editingLesson.quiz.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <label className="block text-[10px] font-black text-slate-400">{lang === 'ar' ? 'اختر السؤال للمعاينة' : 'Select Question'}</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {editingLesson.quiz.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setPreviewQuizIdx(i);
+                        setPreviewSelectedAns(null);
+                        setPreviewShowExpl(false);
+                      }}
+                      className={`w-7 h-7 rounded-app-btn text-xs font-black font-sans transition-all flex items-center justify-center border ${
+                        previewQuizIdx === i
+                          ? 'bg-emerald-500 text-white border-transparent shadow-sm'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-655 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="pt-4 border-t border-slate-50 dark:border-slate-800 space-y-2">
+              <span className="text-[10px] font-black text-emerald-500 block">💡 {lang === 'ar' ? 'نصيحة التنسيق' : 'Formatting Tip'}</span>
+              <p className="text-[10px] text-slate-455 dark:text-slate-500 font-semibold leading-relaxed">
+                {lang === 'ar'
+                  ? 'استخدم <sub>2</sub> للأسفل و <sup>2</sup> للأعلى في نصوص الأسئلة لتظهر منسقة كيميائياً وبيولوجياً للطالب.'
+                  : 'Use HTML tags like sub and sup in question texts for beautiful molecular and index layouts.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Smartphone mockup */}
+          <div className="md:col-span-2 flex justify-center">
+            <div className="w-full max-w-[340px] border-[10px] border-slate-900 dark:border-slate-800 rounded-[44px] overflow-hidden bg-[#f7f9fb] dark:bg-slate-950 shadow-2xl relative min-h-[580px] flex flex-col font-sans select-none">
+              
+              {/* Speaker notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-900 rounded-b-2xl z-50 flex items-center justify-center">
+                <div className="w-10 h-1 bg-slate-800 rounded-full"></div>
+              </div>
+
+              {/* Statusbar */}
+              <div className="h-6 w-full bg-white dark:bg-slate-900 border-b border-slate-50 dark:border-slate-800 px-6 pt-1 flex items-center justify-between text-[8px] font-black font-sans text-slate-400 z-10 shrink-0">
+                <span>06:11 PM</span>
+                <span>5G 📶 100% 🔋</span>
+              </div>
+
+              {/* simulated phone screen content */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 pt-4 pb-12">
+                {/* Topic card */}
+                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-4 rounded-3xl shadow-sm space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[8px] font-black text-white bg-emerald-500 px-2 py-0.5 rounded-full">
+                      {editingLesson.folder.split('/')[0] || `الوحدة ${editingLesson.unit}`}
+                    </span>
+                    <span className="text-[8px] font-extrabold text-slate-450">
+                      {editingLesson.id}
+                    </span>
+                  </div>
+                  <h3 className="text-xs font-black text-slate-800 dark:text-white leading-snug">
+                    {editingLesson.folder.split('/')[1] || (lang === 'ar' ? editingLesson.titleAr : editingLesson.titleEn)}
+                  </h3>
+                </div>
+
+                {/* Quiz card */}
+                {editingLesson.quiz.length > 0 && editingLesson.quiz[previewQuizIdx] ? (() => {
+                  const curQ = editingLesson.quiz[previewQuizIdx];
+                  return (
+                    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-4 rounded-3xl shadow-sm space-y-3">
+                      <div className="flex items-center justify-between text-[8px] font-black text-slate-400">
+                        <span>{lang === 'ar' ? `السؤال ${previewQuizIdx + 1} من ${editingLesson.quiz.length}` : `Question ${previewQuizIdx + 1} of ${editingLesson.quiz.length}`}</span>
+                        <span className="text-emerald-500 uppercase">{curQ.type}</span>
+                      </div>
+                      
+                      <p 
+                        className="text-[11px] font-black text-slate-800 dark:text-white leading-relaxed text-right"
+                        dangerouslySetInnerHTML={{ __html: lang === 'ar' ? curQ.textAr : curQ.textEn }}
+                      />
+
+                      {/* Options for MCQ / TF */}
+                      {curQ.options && (
+                        <div className="space-y-2 pt-1">
+                          {curQ.options.map((opt) => {
+                            const isSelected = previewSelectedAns === opt.key;
+                            const isCorrectOption = curQ.correctKey === opt.key;
+                            
+                            let btnClass = "border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40";
+                            if (previewShowExpl) {
+                              if (isCorrectOption) {
+                                btnClass = "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-305";
+                              } else if (isSelected) {
+                                btnClass = "border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-305";
+                              }
+                            } else if (isSelected) {
+                              btnClass = "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50";
+                            }
+
+                            return (
+                              <button
+                                key={opt.key}
+                                onClick={() => {
+                                  if (previewShowExpl) return;
+                                  setPreviewSelectedAns(opt.key);
+                                }}
+                                className={`w-full flex items-center gap-2.5 px-3 py-2 border rounded-app-btn text-[10px] font-extrabold transition-all text-right ${btnClass}`}
+                              >
+                                <span className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black border ${
+                                  isSelected 
+                                    ? 'bg-emerald-500 border-transparent text-white' 
+                                    : 'bg-slate-50 dark:bg-slate-800 text-slate-400'
+                                }`}>
+                                  {opt.key}
+                                </span>
+                                <span className="flex-1">{lang === 'ar' ? opt.textAr : opt.textEn}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Input for Fill Blank */}
+                      {curQ.type === 'fill' && (
+                        <div className="space-y-2 pt-1">
+                          <input
+                            type="text"
+                            disabled={previewShowExpl}
+                            placeholder={lang === 'ar' ? 'اكتب إجابتك هنا...' : 'Type response here...'}
+                            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-[10px] font-bold text-center focus:outline-none"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                setPreviewSelectedAns('done');
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {/* check response buttons */}
+                      {!previewShowExpl ? (
+                        <button
+                          onClick={() => {
+                            if (!previewSelectedAns) return;
+                            setPreviewShowExpl(true);
+                          }}
+                          disabled={!previewSelectedAns}
+                          className={`w-full font-black text-[10px] py-2 rounded-app-btn active:scale-95 transition-all text-center ${
+                            previewSelectedAns
+                              ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                              : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed'
+                          }`}
+                        >
+                          {lang === 'ar' ? 'التحقق من الإجابة' : 'Submit Answer'}
+                        </button>
+                      ) : (
+                        <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-2">
+                          <div className="flex items-center gap-1 text-[10px] font-black text-emerald-500">
+                            <Check className="w-3.5 h-3.5" />
+                            <span>{lang === 'ar' ? 'التفسير العلمي:' : 'Scientific Explanation:'}</span>
+                          </div>
+                          <p 
+                            className="text-[9px] text-slate-500 dark:text-slate-450 font-bold leading-relaxed text-right"
+                            dangerouslySetInnerHTML={{ __html: lang === 'ar' ? curQ.explanationAr : curQ.explanationEn }}
+                          />
+                          <button
+                            onClick={() => {
+                              setPreviewSelectedAns(null);
+                              setPreviewShowExpl(false);
+                            }}
+                            className="w-full bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-300 font-black text-[9px] py-1.5 rounded-app-btn text-center"
+                          >
+                            {lang === 'ar' ? 'حاول مجدداً' : 'Try Again'}
+                          </button>
+                        </div>
+                      )}
+
+                    </div>
+                  );
+                })() : (
+                  <div className="text-center py-6 text-slate-400 text-[9px] font-bold">
+                    {lang === 'ar' ? 'لا توجد أسئلة للاختبار' : 'No quiz questions'}
+                  </div>
+                )}
+              </div>
+
+              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-slate-400 dark:bg-slate-850 rounded-full z-50"></div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
