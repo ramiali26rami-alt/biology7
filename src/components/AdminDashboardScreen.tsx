@@ -108,7 +108,16 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight;
   const backIcon = isRtl ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
-  // State mutation helpers for editing fields
+  const handleTriggerDownload = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lessons, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `biology_curriculum_backup_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
   // ── Save all lessons directly to server disk ───────────────────────────────
   const saveAllToServer = async (lessonsToSave: Lesson[]) => {
     setSaveStatus('saving');
