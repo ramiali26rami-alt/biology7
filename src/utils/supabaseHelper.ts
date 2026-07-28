@@ -66,13 +66,14 @@ export async function registerStudent(
           isPremium: existingStudent.is_premium 
         };
       } else {
-        // Device mismatch! Invoke Edge Function to process device transfer rules (e.g. 60-day check)
-        const { data: transferResult, error: transferError } = await supabase.functions.invoke('handle-device-transfer', {
-          body: { phone: formattedPhone, deviceId }
+        // Device mismatch! Call Postgres RPC function to process device transfer rules (e.g. 60-day check)
+        const { data: transferResult, error: transferError } = await supabase.rpc('handle_device_transfer', {
+          student_phone: formattedPhone,
+          new_device_id: deviceId
         });
 
         if (transferError || !transferResult) {
-          throw new Error(transferResult?.message || 'Device transfer verification failed');
+          throw new Error(transferResult?.message || transferError?.message || 'Device transfer verification failed');
         }
 
         if (transferResult.success) {
@@ -271,7 +272,7 @@ export async function syncUnsavedQuizResults(): Promise<void> {
   }
 }
 
-// Claim / use activation code via secure Edge Function
+// Claim / use activation code via secure Postgres RPC function
 export async function claimActivationCode(code: string): Promise<{ success: boolean; message: string }> {
   const phone = localStorage.getItem('student_phone');
   if (!phone) {
@@ -279,11 +280,9 @@ export async function claimActivationCode(code: string): Promise<{ success: bool
   }
 
   try {
-    const { data, error } = await supabase.functions.invoke('claim-activation-code', {
-      body: {
-        code: code.trim().toUpperCase(),
-        phone
-      }
+    const { data, error } = await supabase.rpc('claim_activation_code', {
+      code_to_claim: code.trim().toUpperCase(),
+      student_phone: phone
     });
 
     if (error) throw error;
