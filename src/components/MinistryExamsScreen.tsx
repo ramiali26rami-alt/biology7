@@ -25,6 +25,7 @@ import {
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { getCachedAssetUrl } from '../utils/cacheManager';
+import LazyImage from './common/LazyImage';
 
 interface QuestionImageProps {
   lessonId: string;
@@ -54,7 +55,7 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
 
   return (
     <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2.5 rounded-app-card shadow-sm overflow-hidden my-2">
-      <img 
+      <LazyImage 
         src={imgUrl} 
         alt={lang === 'ar' ? 'مخطط السؤال الوزاري' : 'Ministry Exam Question Diagram'} 
         className="max-h-48 object-contain rounded-app-btn"

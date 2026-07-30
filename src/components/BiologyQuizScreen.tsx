@@ -25,6 +25,7 @@ import { translations, Language } from '../utils/translations';
 import { markQuizDone, getLessonProgress } from '../utils/progress';
 import { SecureStorage } from '../utils/security';
 import { VirtualizedList } from './VirtualizedList';
+import LazyImage from './common/LazyImage';
 import { getCachedAssetUrl } from '../utils/cacheManager';
 import { 
   playClickSound, 
@@ -35,6 +36,22 @@ import {
 } from '../utils/soundEffects';
 import { logQuestionResult } from '../utils/supabaseHelper';
 
+const triggerVibration = (type: 'correct' | 'wrong' | 'tap') => {
+  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+    try {
+      if (type === 'correct') {
+        navigator.vibrate([80, 50, 80]);
+      } else if (type === 'wrong') {
+        navigator.vibrate(200);
+      } else {
+        navigator.vibrate(15);
+      }
+    } catch (e) {
+      // Safe catch for browsers
+    }
+  }
+};
+
 interface QuestionImageProps {
   lessonId: string;
   folder: string;
@@ -43,6 +60,7 @@ interface QuestionImageProps {
 
 function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
+  const lang = typeof localStorage !== 'undefined' ? (localStorage.getItem('lang') || 'ar') : 'ar';
 
   useEffect(() => {
     let active = true;
@@ -63,7 +81,7 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
 
   return (
     <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1.5 rounded-app-btn shadow-sm overflow-hidden my-2">
-      <img 
+      <LazyImage 
         src={imgUrl} 
         alt={lang === 'ar' ? 'رسم توضيحي للسؤال' : 'Question illustration Diagram'} 
         className="max-h-28 object-contain rounded-app-btn"
@@ -105,6 +123,11 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
   const [hintsUsed, setHintsUsed] = useState<Set<number>>(new Set());
   const [showHintMsg, setShowHintMsg] = useState(false);
+
+  const SECONDS_PER_QUESTION = 30;
+  const [timeLeft, setTimeLeft] = useState(SECONDS_PER_QUESTION);
+  const [timerEnabled, setTimerEnabled] = useState(true);
+  const [isTimeUp, setIsTimeUp] = useState(false);
 
   const t = translations[lang];
 
@@ -195,6 +218,34 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     );
   }
 
+  useEffect(() => {
+    if (quizFinished || showFeedback || !timerEnabled) return;
+    
+    if (timeLeft === 0) {
+      setIsTimeUp(true);
+      setIsAnswerCorrect(false);
+      playWrongSound();
+      triggerVibration('wrong');
+      setShowFeedback(true);
+      if (lesson) {
+        const currentQ = questions[currentQuestionIndex];
+        logQuestionResult(String(currentQ.id), lesson.id, currentQ.text, false).catch(() => {});
+      }
+      return;
+    }
+
+    const timerId = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, quizFinished, showFeedback, timerEnabled, currentQuestionIndex]);
+
+  useEffect(() => {
+    setTimeLeft(SECONDS_PER_QUESTION);
+    setIsTimeUp(false);
+  }, [currentQuestionIndex]);
+
   const handleOptionClick = (key: string) => {
     if (showFeedback) return;
     setSelectedOption(key);
@@ -203,11 +254,13 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setIsAnswerCorrect(correct);
     if (correct) {
       playCorrectSound();
+      triggerVibration('correct');
       const isHintUsed = hintsUsed.has(currentQ.id);
       const earnedPoints = isHintUsed ? 0.75 : 1.0;
       setScore((prev) => prev + earnedPoints);
     } else {
       playWrongSound();
+      triggerVibration('wrong');
     }
     setShowFeedback(true);
     
@@ -228,11 +281,13 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setIsAnswerCorrect(correct);
     if (correct) {
       playCorrectSound();
+      triggerVibration('correct');
       const isHintUsed = hintsUsed.has(currentQ.id);
       const earnedPoints = isHintUsed ? 0.75 : 1.0;
       setScore((prev) => prev + earnedPoints);
     } else {
       playWrongSound();
+      triggerVibration('wrong');
     }
     setShowFeedback(true);
     
@@ -272,6 +327,8 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setHintsUsed(new Set()); // Reset hints used
     setScore(0);
     setQuizFinished(false);
+    setTimeLeft(SECONDS_PER_QUESTION);
+    setIsTimeUp(false);
   };
 
   const currentQ = questions[currentQuestionIndex];
@@ -333,15 +390,32 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
       <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
-        <div className="flex items-center gap-4 w-full">
-          <button 
-            onClick={() => onNavigate('lessons-list', 'push_back')}
-            aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
-            className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => onNavigate('lessons-list', 'push_back')}
+              aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
+              className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
+            >
+              {backIcon}
+            </button>
+            <h1 className="font-black text-lg text-slate-900 dark:text-white">{t.quizScreenHeading}</h1>
+          </div>
+          
+          <button
+            onClick={() => {
+              triggerVibration('tap');
+              setTimerEnabled(prev => !prev);
+            }}
+            className={`text-[10px] font-black px-3 py-1.5 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer ${
+              timerEnabled 
+                ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-transparent'
+            }`}
           >
-            {backIcon}
+            <span>⏱️</span>
+            <span>{lang === 'ar' ? (timerEnabled ? 'المؤقت نشط' : 'بدون مؤقت') : (timerEnabled ? 'Timer On' : 'Timer Off')}</span>
           </button>
-          <h1 className="font-black text-lg text-slate-900 dark:text-white">{t.quizScreenHeading}</h1>
         </div>
       </header>
 
@@ -368,6 +442,32 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
           <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
+
+          {/* Timer section */}
+          {timerEnabled && !quizFinished && (
+            <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-slate-500 dark:text-slate-400">
+                  {lang === 'ar' ? '⏱️ الوقت المتبقي:' : '⏱️ Time Left:'}
+                </span>
+                <span className={`text-[10px] font-sans font-black px-2 py-0.5 rounded-full ${
+                  timeLeft <= 5 
+                    ? 'bg-rose-500 text-white animate-pulse' 
+                    : 'bg-amber-500/10 text-amber-500 dark:text-amber-400'
+                }`}>
+                  {timeLeft} {lang === 'ar' ? 'ث' : 's'}
+                </span>
+              </div>
+              <div className="flex-1 max-w-[120px] h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-1000 ${
+                    timeLeft <= 5 ? 'bg-rose-500' : 'bg-amber-500'
+                  }`} 
+                  style={{ width: `${(timeLeft / SECONDS_PER_QUESTION) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
         </section>
 
         {!quizFinished ? (
@@ -524,7 +624,9 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                 )}
                 <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
                   <p className="font-extrabold text-[11px]">
-                    {isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText}
+                    {isTimeUp 
+                      ? (lang === 'ar' ? '⏱️ انتهى وقت الإجابة على هذا السؤال!' : "⏱️ Time's up for this question!")
+                      : (isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText)}
                   </p>
                   <p className="text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold">
                     {currentQ.explanation}

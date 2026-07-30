@@ -6,18 +6,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ScreenId, Lesson } from './types';
-import StudentProfileScreen from './components/StudentProfileScreen';
-import MainDashboardScreen from './components/MainDashboardScreen';
-import UnitsNavigationScreen from './components/UnitsNavigationScreen';
-import LessonsListScreen from './components/LessonsListScreen';
-import LessonDetailsScreen from './components/LessonDetailsScreen';
-import LessonVideoScreen from './components/LessonVideoScreen';
-import LessonSummaryScreen from './components/LessonSummaryScreen';
-import BiologyQuizScreen from './components/BiologyQuizScreen';
-import MinistryExamsScreen from './components/MinistryExamsScreen';
-import WelcomeScreen from './components/WelcomeScreen';
-import AdminDashboardScreen from './components/AdminDashboardScreen';
-import LeaderboardScreen from './components/LeaderboardScreen';
+const StudentProfileScreen = React.lazy(() => import('./components/StudentProfileScreen'));
+const MainDashboardScreen = React.lazy(() => import('./components/MainDashboardScreen'));
+const UnitsNavigationScreen = React.lazy(() => import('./components/UnitsNavigationScreen'));
+const LessonsListScreen = React.lazy(() => import('./components/LessonsListScreen'));
+const LessonDetailsScreen = React.lazy(() => import('./components/LessonDetailsScreen'));
+const LessonVideoScreen = React.lazy(() => import('./components/LessonVideoScreen'));
+const LessonSummaryScreen = React.lazy(() => import('./components/LessonSummaryScreen'));
+const BiologyQuizScreen = React.lazy(() => import('./components/BiologyQuizScreen'));
+const MinistryExamsScreen = React.lazy(() => import('./components/MinistryExamsScreen'));
+const WelcomeScreen = React.lazy(() => import('./components/WelcomeScreen'));
+const AdminDashboardScreen = React.lazy(() => import('./components/AdminDashboardScreen'));
+const LeaderboardScreen = React.lazy(() => import('./components/LeaderboardScreen'));
 import { Language } from './utils/translations';
 import { AppWrapper } from './AppWrapper';
 import { checkAndUpdate } from './utils/autoUpdate';
@@ -221,10 +221,54 @@ export default function App() {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="min-h-screen w-full relative"
           >
-            {renderScreen()}
+            <React.Suspense fallback={<ScreenSkeleton />}>
+              {renderScreen()}
+            </React.Suspense>
           </motion.div>
         </AnimatePresence>
       </div>
     </AppWrapper>
+  );
+}
+
+function ScreenSkeleton() {
+  const isRtl = typeof localStorage !== 'undefined' ? localStorage.getItem('lang') === 'ar' : true;
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 flex flex-col justify-between animate-pulse" dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className="space-y-4">
+        {/* Fake Header */}
+        <div className="flex items-center justify-between h-16 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-805 rounded-app-card px-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full animate-pulse" />
+            <div className="space-y-2">
+              <div className="w-28 h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+              <div className="w-20 h-2 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full animate-pulse" />
+        </div>
+
+        {/* Fake Content Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="h-40 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-805 rounded-app-card p-4 space-y-3">
+              <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-full animate-pulse" />
+              <div className="w-full h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+              <div className="w-2/3 h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+
+        {/* Fake Large Layout */}
+        <div className="h-56 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-805 rounded-app-card p-4 space-y-4">
+          <div className="w-1/3 h-6 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+          <div className="space-y-2">
+            <div className="w-full h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+            <div className="w-full h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+            <div className="w-4/5 h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

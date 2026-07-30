@@ -537,7 +537,7 @@ export default function StudentProfileScreen({
               </section>
 
               {/* Performance Analysis */}
-              {scoredLessons.length > 0 && (
+              {scoredLessons.length > 0 ? (
                 <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-5 shadow-xl shadow-slate-200/20 dark:shadow-none space-y-4">
                   <div className="flex items-center gap-3 border-b border-slate-50 dark:border-slate-800 pb-3">
                     <span className="p-2 bg-indigo-50 dark:bg-indigo-950 rounded-app-btn text-indigo-500">
@@ -589,7 +589,7 @@ export default function StudentProfileScreen({
                             📚 {lang === 'ar' ? 'تحتاج مراجعة' : 'Needs Review'}
                           </p>
                           {weak.map((l, i) => (
-                            <p key={i} className="text-xs font-bold text-rose-700 dark:text-rose-300 truncate">• {l.title}</p>
+                            <p key={i} className="text-xs font-bold text-rose-700 dark:text-rose-350 truncate">• {l.title}</p>
                           ))}
                         </div>
                       )}
@@ -604,6 +604,32 @@ export default function StudentProfileScreen({
                         : `${visitedLessons - completedLessons} lesson(s) started but quiz not completed yet`}
                     </p>
                   )}
+                </section>
+              ) : (
+                <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-200/25 dark:shadow-none text-center space-y-4 animate-fadeIn">
+                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800/40 rounded-full flex items-center justify-center mx-auto text-slate-400 dark:text-slate-500">
+                    <Award className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-black text-slate-800 dark:text-white text-sm">
+                      {lang === 'ar' ? 'لا توجد بيانات اختبارات بعد' : 'No quiz performance data yet'}
+                    </h3>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">
+                      {lang === 'ar' 
+                        ? 'ابدأ بحل أسئلة الدروس التفاعلية وسوف يظهر هنا تحليل ذكي لنقاط قوتك والدروس التي تحتاج لمراجعتها.' 
+                        : 'Start answering interactive quiz questions for lessons, and a smart analysis of your strengths and topics to review will appear here.'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      playClickSound();
+                      onNavigate('main-dashboard', 'push_back');
+                    }}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-5 py-2.5 rounded-app-btn shadow-md active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    <span>🎯</span>
+                    <span>{lang === 'ar' ? 'ابدأ أول اختبار الآن' : 'Start Your First Quiz'}</span>
+                  </button>
                 </section>
               )}
             </>

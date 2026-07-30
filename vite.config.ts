@@ -659,6 +659,36 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
         }
       }
     ],
+    build: {
+      chunkSizeWarningLimit: 800,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('scheduler') || id.includes('prop-types')) {
+                return 'vendor-react';
+              }
+              if (id.includes('lucide-react')) {
+                return 'vendor-lucide';
+              }
+              if (id.includes('xlsx') || id.includes('wmf') || id.includes('word') || id.includes('frac') || id.includes('adler-32') || id.includes('codepage')) {
+                return 'vendor-xlsx';
+              }
+              if (id.includes('motion') || id.includes('framer-motion')) {
+                return 'vendor-motion';
+              }
+              if (id.includes('@supabase') || id.includes('supabase-js')) {
+                return 'vendor-supabase';
+              }
+              if (id.includes('crypto-js')) {
+                return 'vendor-crypto';
+              }
+              return 'vendor-others';
+            }
+          }
+        }
+      }
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
