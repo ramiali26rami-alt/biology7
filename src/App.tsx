@@ -112,6 +112,47 @@ export default function App() {
     localStorage.setItem('font_size', fontSize);
   }, [fontSize]);
 
+  useEffect(() => {
+    // Intercept hardware back button on Android
+    let sub: any = null;
+    const initBackButton = async () => {
+      try {
+        const { App: CapApp } = await import('@capacitor/app');
+        sub = await CapApp.addListener('backButton', () => {
+          if (currentScreen === 'main-dashboard' || currentScreen === 'welcome') {
+            CapApp.exitApp();
+          } else {
+            const screenBackMap: Record<string, ScreenId> = {
+              'leaderboard': 'student-profile',
+              'admin-dashboard': 'student-profile',
+              'biology-quiz': 'lessons-list',
+              'lesson-video': 'lesson-details',
+              'lesson-summary': 'lesson-details',
+              'lesson-details': 'lessons-list',
+              'lessons-list': 'units-navigation',
+              'units-navigation': 'main-dashboard',
+              'student-profile': 'main-dashboard'
+            };
+            const prevScreen = screenBackMap[currentScreen];
+            if (prevScreen) {
+              handleNavigate(prevScreen, 'push_back');
+            } else {
+              CapApp.exitApp();
+            }
+          }
+        });
+      } catch (e) {
+        // Safe fail on Web browsers
+      }
+    };
+    initBackButton();
+    return () => {
+      if (sub && typeof sub.remove === 'function') {
+        sub.remove();
+      }
+    };
+  }, [currentScreen]);
+
   const handleNavigate = (targetScreen: ScreenId, transition?: 'push' | 'push_back' | 'none') => {
     if (transition === 'push') {
       setTransitionDirection('forward');
