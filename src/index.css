@@ -3,7 +3,7 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Tajawal", "Nunito", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Cairo", "Nunito", "Tajawal", ui-sans-serif, system-ui, sans-serif;
   --radius-premium-card: 20px;
   --radius-premium-btn: 12px;
   --radius-premium-dialog: 24px;
