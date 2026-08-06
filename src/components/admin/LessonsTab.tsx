@@ -282,6 +282,7 @@ export default function LessonsTab({
   };
 
   // Video Chapters Mutators
+  // Video Chapters Mutators
   const addVideoChapter = () => {
     if (!editingLesson) return;
     const chapters = [...(editingLesson.videoChapters || [])];
@@ -298,7 +299,13 @@ export default function LessonsTab({
   const updateVideoChapter = (index: number, key: string, value: any) => {
     if (!editingLesson) return;
     const chapters = [...(editingLesson.videoChapters || [])];
-    chapters[index] = { ...chapters[index], [key]: value };
+    if (key === 'titleAr') {
+      chapters[index] = { ...chapters[index], titleAr: value, titleEn: value };
+    } else if (key === 'descAr') {
+      chapters[index] = { ...chapters[index], descAr: value, descEn: value };
+    } else {
+      chapters[index] = { ...chapters[index], [key]: value };
+    }
     updateEditingLessonField('videoChapters', chapters);
   };
 
@@ -325,7 +332,13 @@ export default function LessonsTab({
   const updateFlashcard = (index: number, key: keyof Flashcard, value: any) => {
     if (!editingLesson) return;
     const cards = [...(editingLesson.flashcards || [])];
-    cards[index] = { ...cards[index], [key]: value };
+    if (key === 'questionAr') {
+      cards[index] = { ...cards[index], questionAr: value, questionEn: value };
+    } else if (key === 'answerAr') {
+      cards[index] = { ...cards[index], answerAr: value, answerEn: value };
+    } else {
+      cards[index] = { ...cards[index], [key]: value };
+    }
     updateEditingLessonField('flashcards', cards);
   };
 
@@ -353,7 +366,13 @@ export default function LessonsTab({
   const updateMindmapNode = (index: number, key: string, value: any) => {
     if (!editingLesson) return;
     const nodes = [...(editingLesson.mindmap || [])];
-    nodes[index] = { ...nodes[index], [key]: value };
+    if (key === 'labelAr') {
+      nodes[index] = { ...nodes[index], labelAr: value, labelEn: value };
+    } else if (key === 'descAr') {
+      nodes[index] = { ...nodes[index], descAr: value, descEn: value };
+    } else {
+      nodes[index] = { ...nodes[index], [key]: value };
+    }
     updateEditingLessonField('mindmap', nodes);
   };
 
@@ -382,7 +401,13 @@ export default function LessonsTab({
   const updateQuizQuestion = (index: number, key: string, value: any) => {
     if (!editingLesson) return;
     const quiz = [...(editingLesson.quiz || [])];
-    quiz[index] = { ...quiz[index], [key]: value };
+    if (key === 'questionAr') {
+      quiz[index] = { ...quiz[index], questionAr: value, questionEn: value };
+    } else if (key === 'explanationAr') {
+      quiz[index] = { ...quiz[index], explanationAr: value, explanationEn: value };
+    } else {
+      quiz[index] = { ...quiz[index], [key]: value };
+    }
     updateEditingLessonField('quiz', quiz);
   };
 
@@ -390,15 +415,15 @@ export default function LessonsTab({
     if (!editingLesson) return;
     const quiz = [...(editingLesson.quiz || [])];
     const question = { ...quiz[qIdx] };
-    if (type === 'Ar') {
-      const opts = [...(question.optionsAr || ['', '', '', ''])];
-      opts[optIdx] = value;
-      question.optionsAr = opts;
-    } else {
-      const opts = [...(question.optionsEn || ['', '', '', ''])];
-      opts[optIdx] = value;
-      question.optionsEn = opts;
-    }
+    
+    const optsAr = [...(question.optionsAr || ['', '', '', ''])];
+    optsAr[optIdx] = value;
+    question.optionsAr = optsAr;
+
+    const optsEn = [...(question.optionsEn || ['', '', '', ''])];
+    optsEn[optIdx] = value;
+    question.optionsEn = optsEn;
+
     quiz[qIdx] = question;
     updateEditingLessonField('quiz', quiz);
   };
@@ -745,27 +770,24 @@ export default function LessonsTab({
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'العنوان باللغة العربية' : 'Arabic Title'}</label>
-                  <input 
-                    type="text" 
-                    value={editingLesson.titleAr} 
-                    onChange={(e) => updateEditingLessonField('titleAr', e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'العنوان باللغة الإنجليزية' : 'English Title'}</label>
-                  <input 
-                    type="text" 
-                    value={editingLesson.titleEn} 
-                    onChange={(e) => updateEditingLessonField('titleEn', e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                    required
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'عنوان الدرس:' : 'Lesson Title:'}</label>
+                <input 
+                  type="text" 
+                  value={editingLesson.titleAr} 
+                  onChange={(e) => {
+                    if (!editingLesson || editingLessonIndex === null) return;
+                    const updated = {
+                      ...editingLesson,
+                      titleAr: e.target.value,
+                      titleEn: e.target.value
+                    };
+                    setEditingLesson(updated);
+                    setLessons(prev => prev.map((l, idx) => idx === editingLessonIndex ? updated : l));
+                  }}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                  required
+                />
               </div>
 
               <div>
@@ -969,7 +991,7 @@ export default function LessonsTab({
                         </div>
 
                         <div className="sm:col-span-3">
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'عنوان الفصل (عربي):' : 'Chapter Title (Arabic):'}</label>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'عنوان الفصل:' : 'Chapter Title:'}</label>
                           <input
                             type="text"
                             value={ch.titleAr}
@@ -979,25 +1001,14 @@ export default function LessonsTab({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
-                        <div>
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'شرح ووصف الفصل (عربي):' : 'Description (Arabic):'}</label>
-                          <textarea
-                            value={ch.descAr}
-                            onChange={(e) => updateVideoChapter(idx, 'descAr', e.target.value)}
-                            rows={2}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'شرح ووصف الفصل (إنجليزي):' : 'Description (English):'}</label>
-                          <textarea
-                            value={ch.descEn}
-                            onChange={(e) => updateVideoChapter(idx, 'descEn', e.target.value)}
-                            rows={2}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
+                      <div className="text-right">
+                        <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'شرح ووصف الفصل:' : 'Description:'}</label>
+                        <textarea
+                          value={ch.descAr}
+                          onChange={(e) => updateVideoChapter(idx, 'descAr', e.target.value)}
+                          rows={2}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                        />
                       </div>
                     </div>
                   ))}
@@ -1042,46 +1053,24 @@ export default function LessonsTab({
                           <Trash2 className="w-4 h-4" />
                         </button>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
-                          <div>
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال (عربي):' : 'Question (Arabic):'}</label>
-                            <input
-                              type="text"
-                              value={card.questionAr}
-                              onChange={(e) => updateFlashcard(idx, 'questionAr', e.target.value)}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال (إنجليزي):' : 'Question (English):'}</label>
-                            <input
-                              type="text"
-                              value={card.questionEn}
-                              onChange={(e) => updateFlashcard(idx, 'questionEn', e.target.value)}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
+                        <div className="text-right">
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال:' : 'Question:'}</label>
+                          <input
+                            type="text"
+                            value={card.questionAr}
+                            onChange={(e) => updateFlashcard(idx, 'questionAr', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
-                          <div>
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الإجابة (عربي):' : 'Answer (Arabic):'}</label>
-                            <textarea
-                              value={card.answerAr}
-                              onChange={(e) => updateFlashcard(idx, 'answerAr', e.target.value)}
-                              rows={2}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الإجابة (إنجليزي):' : 'Answer (English):'}</label>
-                            <textarea
-                              value={card.answerEn}
-                              onChange={(e) => updateFlashcard(idx, 'answerEn', e.target.value)}
-                              rows={2}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
+                        <div className="text-right">
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الإجابة:' : 'Answer:'}</label>
+                          <textarea
+                            value={card.answerAr}
+                            onChange={(e) => updateFlashcard(idx, 'answerAr', e.target.value)}
+                            rows={2}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
                         </div>
                       </div>
                     ))}
@@ -1152,8 +1141,8 @@ export default function LessonsTab({
                             </select>
                           </div>
 
-                          <div className="sm:col-span-1">
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنوان (عربي):' : 'Label (Ar):'}</label>
+                          <div className="sm:col-span-2">
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنوان:' : 'Label:'}</label>
                             <input
                               type="text"
                               value={node.labelAr}
@@ -1161,37 +1150,16 @@ export default function LessonsTab({
                               className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
                             />
                           </div>
-
-                          <div className="sm:col-span-1">
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنوان (إنجليزي):' : 'Label (En):'}</label>
-                            <input
-                              type="text"
-                              value={node.labelEn}
-                              onChange={(e) => updateMindmapNode(idx, 'labelEn', e.target.value)}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
-                          <div>
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الوصف والتفسير (عربي):' : 'Description (Ar):'}</label>
-                            <textarea
-                              value={node.descAr || ''}
-                              onChange={(e) => updateMindmapNode(idx, 'descAr', e.target.value)}
-                              rows={2}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الوصف والتفسير (إنجليزي):' : 'Description (En):'}</label>
-                            <textarea
-                              value={node.descEn || ''}
-                              onChange={(e) => updateMindmapNode(idx, 'descEn', e.target.value)}
-                              rows={2}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                            />
-                          </div>
+                        <div className="text-right">
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الوصف والتفسير:' : 'Description:'}</label>
+                          <textarea
+                            value={node.descAr || ''}
+                            onChange={(e) => updateMindmapNode(idx, 'descAr', e.target.value)}
+                            rows={2}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
                         </div>
                       </div>
                     ))}
@@ -1236,29 +1204,16 @@ export default function LessonsTab({
                       </button>
 
                       {/* Question Text */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
-                        <div>
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">
-                            {lang === 'ar' ? `السؤال ${qIdx + 1} (عربي):` : `Question ${qIdx + 1} (Ar):`}
-                          </label>
-                          <input
-                            type="text"
-                            value={q.questionAr}
-                            onChange={(e) => updateQuizQuestion(qIdx, 'questionAr', e.target.value)}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">
-                            {lang === 'ar' ? `السؤال ${qIdx + 1} (إنجليزي):` : `Question ${qIdx + 1} (En):`}
-                          </label>
-                          <input
-                            type="text"
-                            value={q.questionEn}
-                            onChange={(e) => updateQuizQuestion(qIdx, 'questionEn', e.target.value)}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
+                      <div className="text-right">
+                        <label className="block text-[10px] font-black text-slate-400 mb-1">
+                          {lang === 'ar' ? `السؤال ${qIdx + 1}:` : `Question ${qIdx + 1}:`}
+                        </label>
+                        <input
+                          type="text"
+                          value={q.questionAr}
+                          onChange={(e) => updateQuizQuestion(qIdx, 'questionAr', e.target.value)}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                        />
                       </div>
 
                       {/* Options */}
@@ -1284,16 +1239,9 @@ export default function LessonsTab({
                               </div>
                               <input
                                 type="text"
-                                placeholder={lang === 'ar' ? 'الخيار بالعربي' : 'Option in Arabic'}
+                                placeholder={lang === 'ar' ? 'اكتب الخيار هنا' : 'Enter option here'}
                                 value={q.optionsAr?.[optIdx] || ''}
                                 onChange={(e) => updateQuizOption(qIdx, optIdx, 'Ar', e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
-                              />
-                              <input
-                                type="text"
-                                placeholder={lang === 'ar' ? 'الخيار بالإنجليزي' : 'Option in English'}
-                                value={q.optionsEn?.[optIdx] || ''}
-                                onChange={(e) => updateQuizOption(qIdx, optIdx, 'En', e.target.value)}
                                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
                               />
                             </div>
@@ -1302,25 +1250,14 @@ export default function LessonsTab({
                       </div>
 
                       {/* Explanation */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
-                        <div>
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'تفسير وشرح الحل (عربي):' : 'Explanation (Arabic):'}</label>
-                          <textarea
-                            value={q.explanationAr || ''}
-                            onChange={(e) => updateQuizQuestion(qIdx, 'explanationAr', e.target.value)}
-                            rows={2}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'تفسير وشرح الحل (إنجليزي):' : 'Explanation (English):'}</label>
-                          <textarea
-                            value={q.explanationEn || ''}
-                            onChange={(e) => updateQuizQuestion(qIdx, 'explanationEn', e.target.value)}
-                            rows={2}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
+                      <div className="text-right">
+                        <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'تفسير وشرح الحل:' : 'Explanation:'}</label>
+                        <textarea
+                          value={q.explanationAr || ''}
+                          onChange={(e) => updateQuizQuestion(qIdx, 'explanationAr', e.target.value)}
+                          rows={2}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                        />
                       </div>
                     </div>
                   ))}
