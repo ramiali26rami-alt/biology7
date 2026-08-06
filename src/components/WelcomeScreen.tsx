@@ -133,15 +133,11 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           transition={{ duration: 0.6 }}
           className="flex flex-col items-center mb-8"
         >
-          <div className="w-60 h-60 rounded-[28px] bg-white flex items-center justify-center p-5 shadow-[0_20px_50px_rgba(0,0,0,0.3)] mb-4 border border-white/10 relative overflow-hidden">
-            {/* Ambient inner soft glow */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 to-transparent pointer-events-none" />
-            <img 
-              src="/splash.png" 
-              className="w-full h-full object-contain relative z-10" 
-              alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
-            />
-          </div>
+          <img 
+            src="/splash.png" 
+            className="w-64 h-64 object-contain filter drop-shadow-[0_15px_30px_rgba(34,211,238,0.25)] mb-4" 
+            alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
+          />
           <p className="text-emerald-400 text-xs font-bold mt-1">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}
           </p>
