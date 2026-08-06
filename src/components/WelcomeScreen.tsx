@@ -242,9 +242,9 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
             animate={{ 
               y: [0, -8, 0],
               filter: [
-                "drop-shadow(0 15px 30px rgba(16,185,129,0.3)) brightness(1.3) contrast(1.1) saturate(1.3)",
-                "drop-shadow(0 15px 45px rgba(16,185,129,0.65)) brightness(1.35) contrast(1.15) saturate(1.35)",
-                "drop-shadow(0 15px 30px rgba(16,185,129,0.3)) brightness(1.3) contrast(1.1) saturate(1.3)"
+                "drop-shadow(0 15px 30px rgba(16,185,129,0.35)) brightness(1.35) contrast(1.15) saturate(1.4)",
+                "drop-shadow(0 15px 45px rgba(16,185,129,0.7)) brightness(1.4) contrast(1.2) saturate(1.45)",
+                "drop-shadow(0 15px 30px rgba(16,185,129,0.35)) brightness(1.35) contrast(1.15) saturate(1.4)"
               ]
             }}
             transition={{
@@ -252,7 +252,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="w-76 h-76 object-contain mb-3 relative z-10" 
+            className="w-[310px] h-[310px] object-contain mb-3 relative z-10" 
             alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
           />
 
