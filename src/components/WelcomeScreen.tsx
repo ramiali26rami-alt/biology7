@@ -126,20 +126,19 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
       <div className="w-full max-w-md relative z-10">
 
-        {/* Logo */}
+        {/* Logo / Welcome Graphic */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center mb-10"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col items-center mb-8"
         >
-          <div className="w-20 h-20 rounded-app-card overflow-hidden bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-900/40 mb-4 border border-slate-800">
-            <img src="/logo.png" className="w-full h-full object-cover" alt={isAr ? 'شعار الأحياء' : 'Al-Ahya Logo'} />
-          </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">
-            {isAr ? 'الأحياء' : 'Al-Ahya'}
-          </h1>
-          <p className="text-emerald-400 text-xs font-bold mt-1">
+          <img 
+            src="/splash.png" 
+            className="w-64 h-64 object-contain filter drop-shadow-2xl mb-2" 
+            alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
+          />
+          <p className="text-emerald-400 text-xs font-bold">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}
           </p>
         </motion.div>
