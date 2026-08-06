@@ -8,6 +8,7 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 
 import { getAbsoluteUrl } from '../../utils/urlHelper';
 import { Lesson } from '../../types';
+import { supabase } from '../../utils/supabaseClient';
 
 interface SystemSettingsTabProps {
   activeTab: 'keys' | 'helper';
@@ -23,6 +24,9 @@ interface ActivationKey {
   usedBy?: string;
   activatedAt?: string;
   deviceUuid?: string;
+  distributor?: string;
+  location?: string;
+  created_at?: string;
 }
 
 export default function SystemSettingsTab({
@@ -35,6 +39,8 @@ export default function SystemSettingsTab({
   // ── Activation Keys Local States ──────────────────────────────────────────
   const [keysList, setKeysList] = useState<ActivationKey[]>([]);
   const [keysGenerateCount, setKeysGenerateCount] = useState<number>(10);
+  const [distributor, setDistributor] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
   const [keysLoading, setKeysLoading] = useState<boolean>(false);
   const [keysStatusMsg, setKeysStatusMsg] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -66,24 +72,31 @@ export default function SystemSettingsTab({
     setKeysLoading(true);
     setKeysStatusMsg(null);
     try {
-      const res = await fetch(getAbsoluteUrl('/api/activation-keys'), {
-        headers: {
-          'x-admin-passcode': '2026'
-        }
-      });
-      const data = await res.json();
-      if (res.ok && Array.isArray(data.keys)) {
-        setKeysList(data.keys);
-      } else {
-        setKeysStatusMsg({
-          type: 'error',
-          text: data.error || (lang === 'ar' ? 'فشل في تحميل الأكواد.' : 'Failed to load keys.')
-        });
+      const { data, error } = await supabase
+        .from('activation_codes')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (Array.isArray(data)) {
+        const mappedKeys = data.map((row: any) => ({
+          key: row.code,
+          status: row.is_used ? 'used' : 'unused',
+          usedBy: row.used_by_phone || '',
+          activatedAt: row.used_at || '',
+          deviceUuid: row.is_used ? 'bound' : '', // Sets lock indicator if code is used
+          distributor: row.distributor || '',
+          location: row.location || '',
+          created_at: row.created_at || ''
+        }));
+        setKeysList(mappedKeys);
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Error fetching keys:', err);
       setKeysStatusMsg({
         type: 'error',
-        text: String(err)
+        text: err.message || (lang === 'ar' ? 'فشل في تحميل الأكواد.' : 'Failed to load keys.')
       });
     } finally {
       setKeysLoading(false);
@@ -91,34 +104,48 @@ export default function SystemSettingsTab({
   };
 
   const handleGenerateKeys = async () => {
+    if (keysGenerateCount <= 0) return;
     setKeysLoading(true);
     setKeysStatusMsg(null);
     try {
-      const res = await fetch(getAbsoluteUrl('/api/generate-keys'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-passcode': '2026'
-        },
-        body: JSON.stringify({ count: keysGenerateCount })
-      });
-      const data = await res.json();
-      if (res.ok && data.success && Array.isArray(data.keys)) {
-        setKeysList(data.keys);
-        setKeysStatusMsg({
-          type: 'success',
-          text: lang === 'ar' ? `تم توليد ${keysGenerateCount} كود جديد بنجاح!` : `Successfully generated ${keysGenerateCount} new keys!`
-        });
-      } else {
-        setKeysStatusMsg({
-          type: 'error',
-          text: data.error || (lang === 'ar' ? 'فشل في توليد الأكواد.' : 'Failed to generate keys.')
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      const gen = (len: number) => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+
+      const newKeys = [];
+      for (let i = 0; i < keysGenerateCount; i++) {
+        const code = `BIOTECH-${gen(4)}-${gen(4)}`;
+        newKeys.push({
+          code,
+          is_used: false,
+          used_by_phone: null,
+          used_at: null,
+          distributor: distributor.trim() || null,
+          location: location.trim() || null,
+          created_at: new Date().toISOString()
         });
       }
-    } catch (err) {
+
+      const { error } = await supabase
+        .from('activation_codes')
+        .insert(newKeys);
+
+      if (error) throw error;
+
+      setDistributor('');
+      setLocation('');
+      
+      // Refresh list
+      await fetchKeys();
+      
+      setKeysStatusMsg({
+        type: 'success',
+        text: lang === 'ar' ? `تم توليد ${keysGenerateCount} كود جديد بنجاح!` : `Successfully generated ${keysGenerateCount} new keys!`
+      });
+    } catch (err: any) {
+      console.error('Error generating keys:', err);
       setKeysStatusMsg({
         type: 'error',
-        text: String(err)
+        text: err.message || (lang === 'ar' ? 'فشل في توليد الأكواد.' : 'Failed to generate keys.')
       });
     } finally {
       setKeysLoading(false);
@@ -127,7 +154,13 @@ export default function SystemSettingsTab({
 
   const handleExportKeys = () => {
     if (keysList.length === 0) return;
-    const txtContent = keysList.map(k => `${k.key}\t[${k.status === 'unused' ? (lang === 'ar' ? 'غير مستخدم' : 'Unused') : (lang === 'ar' ? 'مستخدم' : 'Used')}]${k.usedBy ? `\tUsed by: ${k.usedBy}` : ''}${k.activatedAt ? `\tAt: ${k.activatedAt}` : ''}`).join('\n');
+    const txtContent = keysList.map(k => 
+      `${k.key}\t[${k.status === 'unused' ? (lang === 'ar' ? 'غير مستخدم' : 'Unused') : (lang === 'ar' ? 'مستخدم' : 'Used')}]` +
+      `\tالموزع: ${k.distributor || '-'}` +
+      `\tالمنطقة: ${k.location || '-'}` +
+      `\tتاريخ التوليد: ${k.created_at || '-'}` +
+      `${k.usedBy ? `\tتاريخ التفعيل: ${k.activatedAt || '-'}\tبواسطة: ${k.usedBy}` : ''}`
+    ).join('\n');
     const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -139,37 +172,45 @@ export default function SystemSettingsTab({
 
   const handleResetDevice = async (key: string) => {
     const confirmMsg = lang === 'ar' 
-      ? `هل أنت متأكد من رغبتك في إلغاء قفل الجهاز لهذا الكود (${key})؟ سيمكن هذا الطالب من التفعيل على هاتف آخر.`
-      : `Are you sure you want to reset the device lock for this key (${key})? This allows activation on a different device.`;
+      ? `هل أنت متأكد من رغبتك في إلغاء تفعيل هذا الكود (${key})؟ سيعود الكود غير مستخدم.`
+      : `Are you sure you want to reset this key (${key})? The key will become unused again.`;
 
     if (!window.confirm(confirmMsg)) return;
 
     try {
-      const res = await fetch(getAbsoluteUrl('/api/reset-device'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-passcode': '2026'
-        },
-        body: JSON.stringify({ key })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setKeysList(prev => prev.map(k => k.key === key ? { ...k, deviceUuid: undefined, status: 'unused', usedBy: undefined, activatedAt: undefined } : k));
-        setKeysStatusMsg({
-          type: 'success',
-          text: lang === 'ar' ? 'تم إلغاء قفل الجهاز للكود بنجاح!' : 'Successfully reset device lock for key!'
-        });
-      } else {
-        setKeysStatusMsg({
-          type: 'error',
-          text: data.error || (lang === 'ar' ? 'فشل إلغاء القفل.' : 'Failed to reset lock.')
-        });
+      const codeIndex = keysList.findIndex(k => k.key === key);
+      if (codeIndex === -1) return;
+      const studentPhone = keysList[codeIndex].usedBy;
+
+      const { error: codeError } = await supabase
+        .from('activation_codes')
+        .update({
+          is_used: false,
+          used_by_phone: null,
+          used_at: null
+        })
+        .eq('code', key);
+
+      if (codeError) throw codeError;
+
+      if (studentPhone) {
+        const { error: studentError } = await supabase
+          .from('students')
+          .update({ is_premium: false })
+          .eq('phone', studentPhone);
+        if (studentError) console.warn("Failed to reset student premium status:", studentError);
       }
-    } catch (err) {
+
+      setKeysList(prev => prev.map(k => k.key === key ? { ...k, deviceUuid: undefined, status: 'unused', usedBy: '', activatedAt: '' } : k));
+      setKeysStatusMsg({
+        type: 'success',
+        text: lang === 'ar' ? 'تم إلغاء التفعيل بنجاح!' : 'Successfully reset key status!'
+      });
+    } catch (err: any) {
+      console.error('Error resetting key:', err);
       setKeysStatusMsg({
         type: 'error',
-        text: String(err)
+        text: err.message || (lang === 'ar' ? 'فشل في إلغاء التفعيل.' : 'Failed to reset key.')
       });
     }
   };
@@ -556,27 +597,59 @@ export default function SystemSettingsTab({
         </div>
 
         {/* Generate Card */}
-        <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-app-card border border-slate-150 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={keysGenerateCount}
-              onChange={(e) => setKeysGenerateCount(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-20 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-center text-xs font-black focus:outline-none"
-            />
-            <span className="text-xs font-bold text-slate-500">{lang === 'ar' ? 'عدد الأكواد المطلوبة:' : 'Number of Keys:'}</span>
+        <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-1.5 text-right">
+              <label className="text-[10px] font-black text-slate-400 block">
+                {lang === 'ar' ? 'عدد الأكواد المطلوبة:' : 'Number of Keys:'}
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={keysGenerateCount}
+                onChange={(e) => setKeysGenerateCount(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-center text-xs font-black focus:outline-none"
+              />
+            </div>
+            
+            <div className="flex flex-col gap-1.5 text-right">
+              <label className="text-[10px] font-black text-slate-400 block">
+                {lang === 'ar' ? 'اسم الموزع (اختياري):' : 'Distributor Name (Optional):'}
+              </label>
+              <input
+                type="text"
+                placeholder={lang === 'ar' ? 'مثل: مكتبة خالد' : 'e.g. Khalid Bookshop'}
+                value={distributor}
+                onChange={(e) => setDistributor(e.target.value)}
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-right text-xs font-bold focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5 text-right">
+              <label className="text-[10px] font-black text-slate-400 block">
+                {lang === 'ar' ? 'المنطقة / المحافظة (اختياري):' : 'Location (Optional):'}
+              </label>
+              <input
+                type="text"
+                placeholder={lang === 'ar' ? 'مثل: صنعاء' : 'e.g. Sanaa'}
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-right text-xs font-bold focus:outline-none focus:border-emerald-500"
+              />
+            </div>
           </div>
 
-          <button
-            onClick={handleGenerateKeys}
-            disabled={keysLoading}
-            className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-6 py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/15"
-          >
-            <KeyRound className="w-4 h-4" />
-            <span>{lang === 'ar' ? 'توليد الأكواد الجديدة' : 'Generate Keys'}</span>
-          </button>
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={handleGenerateKeys}
+              disabled={keysLoading}
+              className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black text-xs px-6 py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/15 cursor-pointer border-0"
+            >
+              <KeyRound className="w-4 h-4" />
+              <span>{lang === 'ar' ? 'توليد الأكواد الجديدة' : 'Generate Keys'}</span>
+            </button>
+          </div>
         </div>
 
         {keysStatusMsg && (
@@ -606,6 +679,9 @@ export default function SystemSettingsTab({
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800 text-slate-400 font-black">
                     <th className="py-3 px-4">{lang === 'ar' ? 'الكود' : 'Key'}</th>
+                    <th className="py-3 px-4">{lang === 'ar' ? 'تاريخ التوليد' : 'Created At'}</th>
+                    <th className="py-3 px-4">{lang === 'ar' ? 'الموزع' : 'Distributor'}</th>
+                    <th className="py-3 px-4">{lang === 'ar' ? 'المنطقة' : 'Location'}</th>
                     <th className="py-3 px-4">{lang === 'ar' ? 'الحالة' : 'Status'}</th>
                     <th className="py-3 px-4">{lang === 'ar' ? 'المستخدم' : 'Used By'}</th>
                     <th className="py-3 px-4">{lang === 'ar' ? 'تاريخ التفعيل' : 'Activated At'}</th>
@@ -616,6 +692,11 @@ export default function SystemSettingsTab({
                   {keysList.map((k) => (
                     <tr key={k.key} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
                       <td className="py-3 px-4 font-mono text-slate-900 dark:text-white select-all">{k.key}</td>
+                      <td className="py-3 px-4 font-mono text-[10px] text-slate-400">
+                        {k.created_at ? new Date(k.created_at).toLocaleDateString(lang === 'ar' ? 'ar-YE' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}
+                      </td>
+                      <td className="py-3 px-4 text-slate-900 dark:text-white">{k.distributor || '-'}</td>
+                      <td className="py-3 px-4 text-slate-900 dark:text-white">{k.location || '-'}</td>
                       <td className="py-3 px-4">
                         {k.status === 'used' ? (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40">
@@ -628,14 +709,16 @@ export default function SystemSettingsTab({
                         )}
                       </td>
                       <td className="py-3 px-4 truncate max-w-[120px]" title={k.usedBy}>{k.usedBy || '-'}</td>
-                      <td className="py-3 px-4 font-mono text-[10px] text-slate-400">{k.activatedAt || '-'}</td>
+                      <td className="py-3 px-4 font-mono text-[10px] text-slate-400">
+                        {k.activatedAt ? new Date(k.activatedAt).toLocaleString(lang === 'ar' ? 'ar-YE' : 'en-US') : '-'}
+                      </td>
                       <td className="py-3 px-4 text-center">
-                        {k.deviceUuid ? (
+                        {k.status === 'used' ? (
                           <button
                             onClick={() => handleResetDevice(k.key)}
                             className="bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-app-btn text-[10px] font-black border border-amber-200 dark:border-amber-900/40 transition-colors active:scale-95"
                           >
-                            {lang === 'ar' ? 'إلغاء قفل الجهاز 🔓' : 'Reset Lock 🔓'}
+                            {lang === 'ar' ? 'إلغاء تفعيل الكود 🔓' : 'Reset Lock 🔓'}
                           </button>
                         ) : (
                           <span className="text-slate-350 dark:text-slate-600">-</span>
