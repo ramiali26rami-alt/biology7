@@ -117,12 +117,12 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 flex flex-col items-center justify-center px-6 font-sans overflow-hidden relative"
+      className="min-h-screen bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/50 dark:from-slate-950 dark:via-emerald-950 dark:to-slate-900 flex flex-col items-center justify-center px-6 font-sans overflow-hidden relative transition-colors duration-300"
       dir={isAr ? 'rtl' : 'ltr'}
     >
       {/* Ambient background blobs */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
 
@@ -135,10 +135,10 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
         >
           <img 
             src="/splash.png" 
-            className="w-64 h-64 object-contain filter drop-shadow-[0_15px_30px_rgba(34,211,238,0.25)] mb-4" 
+            className="w-76 h-76 object-contain filter drop-shadow-[0_15px_35px_rgba(16,185,129,0.35)] brightness-[1.3] contrast-[1.1] saturate-[1.3] mb-3 transition-all duration-300" 
             alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
           />
-          <p className="text-emerald-400 text-xs font-bold mt-1">
+          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-bold mt-1">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}
           </p>
         </motion.div>
@@ -157,10 +157,10 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <h2 className="text-xl font-black text-white">
+                <h2 className="text-xl font-black text-slate-800 dark:text-white">
                   {isAr ? 'اختر لغة التطبيق' : 'Choose App Language'}
                 </h2>
-                <p className="text-slate-400 text-sm font-medium">
+                <p className="text-slate-400 dark:text-slate-500 text-sm font-medium">
                   {isAr ? 'يمكنك تغييرها لاحقاً من الإعدادات' : 'You can change this later in settings'}
                 </p>
               </div>
@@ -170,14 +170,14 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                   onClick={() => { setLang('ar'); localStorage.setItem('lang', 'ar'); }}
                   className={`p-5 rounded-app-card border-2 transition-all active:scale-95 flex flex-col items-center gap-3 ${
                     lang === 'ar'
-                      ? 'border-emerald-500 bg-emerald-500/10'
-                      : 'border-slate-700 bg-slate-800/50 hover:border-slate-500'
+                      ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-500'
                   }`}
                 >
                   <span className="text-3xl">🇾🇪</span>
                   <div className="text-center">
-                    <span className="block text-white font-black text-sm">العربية</span>
-                    <span className="block text-slate-400 text-xs font-medium">Arabic</span>
+                    <span className="block text-slate-800 dark:text-white font-black text-sm">العربية</span>
+                    <span className="block text-slate-500 dark:text-slate-400 text-xs font-medium">Arabic</span>
                   </div>
                   {lang === 'ar' && (
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
@@ -188,14 +188,14 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                   onClick={() => { setLang('en'); localStorage.setItem('lang', 'en'); }}
                   className={`p-5 rounded-app-card border-2 transition-all active:scale-95 flex flex-col items-center gap-3 ${
                     lang === 'en'
-                      ? 'border-emerald-500 bg-emerald-500/10'
-                      : 'border-slate-700 bg-slate-800/50 hover:border-slate-500'
+                      ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-500'
                   }`}
                 >
                   <span className="text-3xl">🇺🇸</span>
                   <div className="text-center">
-                    <span className="block text-white font-black text-sm">English</span>
-                    <span className="block text-slate-400 text-xs font-medium">الإنجليزية</span>
+                    <span className="block text-slate-800 dark:text-white font-black text-sm">English</span>
+                    <span className="block text-slate-500 dark:text-slate-400 text-xs font-medium">الإنجليزية</span>
                   </div>
                   {lang === 'en' && (
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
@@ -214,16 +214,16 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               </button>
 
               {/* Footer Links for About, Terms & Privacy */}
-              <div className="flex flex-wrap justify-center gap-3 text-[10px] text-slate-500 font-bold pt-4 border-t border-slate-800/40">
-                <button type="button" onClick={() => setModalType('about')} className="hover:text-emerald-400 transition-colors">
+              <div className="flex flex-wrap justify-center gap-3 text-[10px] text-slate-450 dark:text-slate-500 font-bold pt-4 border-t border-slate-200 dark:border-slate-800/40">
+                <button type="button" onClick={() => setModalType('about')} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                   {isAr ? 'من نحن' : 'About Us'}
                 </button>
                 <span>•</span>
-                <button type="button" onClick={() => setModalType('terms')} className="hover:text-emerald-400 transition-colors">
+                <button type="button" onClick={() => setModalType('terms')} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                   {isAr ? 'شروط الاستخدام' : 'Terms of Use'}
                 </button>
                 <span>•</span>
-                <button type="button" onClick={() => setModalType('privacy')} className="hover:text-emerald-400 transition-colors">
+                <button type="button" onClick={() => setModalType('privacy')} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                   {isAr ? 'سياسة الخصوصية' : 'Privacy Policy'}
                 </button>
               </div>
@@ -241,10 +241,10 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <h2 className="text-xl font-black text-white">
+                <h2 className="text-xl font-black text-slate-800 dark:text-white">
                   {isAr ? 'ما اسمك؟' : 'What\'s your name?'}
                 </h2>
-                <p className="text-slate-400 text-sm font-medium">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                   {isAr ? 'سيظهر اسمك في ملفك الشخصي' : 'Your name will appear on your profile'}
                 </p>
               </div>
@@ -257,15 +257,15 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                   onChange={e => { setName(e.target.value); setNameError(false); }}
                   onKeyDown={e => { if (e.key === 'Enter') handleNameNext(); }}
                   placeholder={isAr ? 'أدخل اسمك الكامل...' : 'Enter your full name...'}
-                  className={`w-full bg-slate-800/70 border-2 rounded-app-btn px-5 py-4 text-white font-bold text-sm placeholder:text-slate-500 focus:outline-none transition-colors ${
+                  className={`w-full bg-white dark:bg-slate-800/70 border-2 rounded-app-btn px-5 py-4 text-slate-800 dark:text-white font-bold text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-colors ${
                     nameError
                       ? 'border-rose-500 focus:border-rose-400'
-                      : 'border-slate-700 focus:border-emerald-500'
+                      : 'border-slate-200 dark:border-slate-700 focus:border-emerald-500'
                   }`}
                   dir={isAr ? 'rtl' : 'ltr'}
                 />
                 {nameError && (
-                  <p className="text-rose-400 text-xs font-bold px-1">
+                  <p className="text-rose-500 dark:text-rose-400 text-xs font-bold px-1">
                     {isAr ? '⚠️ الرجاء إدخال اسم لا يقل عن حرفين' : '⚠️ Please enter at least 2 characters'}
                   </p>
                 )}
@@ -274,7 +274,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep('lang')}
-                  className="px-5 py-4 rounded-app-btn border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
+                  className="px-5 py-4 rounded-app-btn border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-white hover:border-slate-400 dark:hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
                 >
                   {isAr ? 'رجوع' : 'Back'}
                 </button>
@@ -302,10 +302,10 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <h2 className="text-xl font-black text-white">
+                <h2 className="text-xl font-black text-slate-800 dark:text-white">
                   {isAr ? 'التحقق والتسجيل الرسمي' : 'Official Verification & Registration'}
                 </h2>
-                <p className="text-slate-400 text-sm font-medium">
+                <p className="text-slate-550 dark:text-slate-400 text-sm font-medium">
                   {isAr 
                     ? 'الرجاء إدخال رقم هاتفك المحمول واختيار محافظتك لتنشيط التطبيق' 
                     : 'Please enter your phone number and governorate to activate the app'}
@@ -314,7 +314,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-black text-emerald-400 block px-1">
+                  <label className="text-xs font-black text-emerald-600 dark:text-emerald-400 block px-1">
                     {isAr ? 'رقم الهاتف المحمول:' : 'Mobile Phone Number:'}
                   </label>
                   <input
@@ -322,36 +322,36 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                     value={phone}
                     onChange={e => { setPhone(e.target.value); setPhoneError(false); }}
                     placeholder={isAr ? 'مثال: 777123456' : 'Example: 777123456'}
-                    className={`w-full bg-slate-800/70 border-2 rounded-app-btn px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors ${
+                    className={`w-full bg-white dark:bg-slate-800/70 border-2 rounded-app-btn px-5 py-4 text-slate-800 dark:text-white font-bold text-sm focus:outline-none transition-colors ${
                       phoneError
                         ? 'border-rose-500 focus:border-rose-400'
-                        : 'border-slate-700 focus:border-emerald-500'
+                        : 'border-slate-200 dark:border-slate-700 focus:border-emerald-500'
                     }`}
                     dir="ltr"
                     disabled={regLoading}
                   />
                   {phoneError && (
-                    <p className="text-rose-400 text-xs font-bold px-1">
+                    <p className="text-rose-500 dark:text-rose-400 text-xs font-bold px-1">
                       {isAr ? '⚠️ الرجاء إدخال رقم هاتف محمول صحيح (9 أرقام على الأقل)' : '⚠️ Please enter a valid phone number (at least 9 digits)'}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-black text-emerald-400 block px-1">
+                  <label className="text-xs font-black text-emerald-600 dark:text-emerald-400 block px-1">
                     {isAr ? 'المحافظة:' : 'Governorate:'}
                   </label>
                   <select
                     value={governorate}
                     onChange={e => setGovernorate(e.target.value)}
-                    className="w-full bg-slate-800/70 border-2 border-slate-700 focus:border-emerald-500 rounded-app-btn px-5 py-4 text-white font-bold text-sm focus:outline-none transition-colors"
+                    className="w-full bg-white dark:bg-slate-800/70 border-2 border-slate-200 dark:border-slate-700 focus:border-emerald-500 rounded-app-btn px-5 py-4 text-slate-800 dark:text-white font-bold text-sm focus:outline-none transition-colors"
                     dir={isAr ? 'rtl' : 'ltr'}
                     disabled={regLoading}
                   >
                     {(isAr ? GOVERNORATES_AR : GOVERNORATES_EN).map((g, idx) => {
                       const value = isAr ? g : GOVERNORATES_EN[idx];
                       return (
-                        <option key={value} value={value} className="bg-slate-900 text-white">
+                        <option key={value} value={value} className="bg-white dark:bg-slate-900 text-slate-850 dark:text-white">
                           {g}
                         </option>
                       );
@@ -360,7 +360,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 </div>
 
                 {regErrorMessage && (
-                  <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed">
+                  <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed">
                     ⚠️ {regErrorMessage}
                   </div>
                 )}
@@ -395,7 +395,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep('name')}
-                  className="px-5 py-4 rounded-app-btn border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
+                  className="px-5 py-4 rounded-app-btn border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-white hover:border-slate-400 dark:hover:border-slate-500 font-bold text-sm active:scale-95 transition-all"
                   disabled={regLoading}
                 >
                   {isAr ? 'رجوع' : 'Back'}
@@ -442,16 +442,16 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 >
                   🎉
                 </motion.div>
-                <h2 className="text-2xl font-black text-white">
+                <h2 className="text-2xl font-black text-slate-800 dark:text-white">
                   {isAr ? `أهلاً، ${name}!` : `Welcome, ${name}!`}
                 </h2>
-                <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">
                   {isAr
                     ? 'أنت الآن جاهز لبدء رحلتك في تعلم الأحياء. إليك ما ينتظرك:'
                     : 'You\'re all set to start your Biology journey. Here\'s what awaits:'}
                 </p>
                 {restoreMessage && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed mt-4">
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-app-card text-xs font-bold text-center leading-relaxed mt-4">
                     {restoreMessage}
                   </div>
                 )}
@@ -465,12 +465,12 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                     initial={{ opacity: 0, x: isAr ? 20 : -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15 + i * 0.1 }}
-                    className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-app-btn px-4 py-3"
+                    className="flex items-center gap-4 bg-white/60 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-app-btn px-4 py-3 shadow-sm dark:shadow-none"
                   >
-                    <span className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-app-btn flex items-center justify-center shrink-0">
+                    <span className="w-10 h-10 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-app-btn flex items-center justify-center shrink-0">
                       {f.icon}
                     </span>
-                    <span className="text-sm font-bold text-slate-200">{f.text}</span>
+                    <span className="text-sm font-bold text-slate-750 dark:text-slate-200">{f.text}</span>
                   </motion.div>
                 ))}
               </div>
@@ -499,8 +499,8 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 STEPS.indexOf(step) === i
                   ? 'w-6 h-2 bg-emerald-500'
                   : STEPS.indexOf(step) > i
-                  ? 'w-2 h-2 bg-emerald-700'
-                  : 'w-2 h-2 bg-slate-700'
+                  ? 'w-2 h-2 bg-emerald-700 dark:bg-emerald-800'
+                  : 'w-2 h-2 bg-slate-300 dark:bg-slate-700'
               }`}
             />
           ))}
@@ -526,11 +526,11 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-slate-900 border border-slate-800 rounded-app-card max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card max-w-md w-full max-h-[80vh] overflow-y-auto p-6 shadow-2xl relative z-10 space-y-4 text-right"
               dir={isAr ? 'rtl' : 'ltr'}
             >
-              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 className="text-md font-black text-white">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="text-md font-black text-slate-800 dark:text-white">
                   {modalType === 'about' && (isAr ? 'من نحن' : 'About Us')}
                   {modalType === 'terms' && (isAr ? 'شروط الاستخدام' : 'Terms of Use')}
                   {modalType === 'privacy' && (isAr ? 'سياسة الخصوصية' : 'Privacy Policy')}
@@ -538,13 +538,13 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 <button
                   onClick={() => setModalType(null)}
                   aria-label={isAr ? 'إغلاق النافذة' : 'Close modal'}
-                  className="tap-target text-slate-400 hover:text-white text-xs font-black p-1 hover:bg-slate-800 rounded-full"
+                  className="tap-target text-slate-400 dark:text-slate-400 hover:text-slate-750 hover:dark:text-white text-xs font-black p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="text-xs text-slate-300 leading-relaxed font-bold space-y-3 whitespace-pre-line">
+              <div className="text-xs text-slate-650 dark:text-slate-300 leading-relaxed font-bold space-y-3 whitespace-pre-line">
                 {modalType === 'about' && (
                   isAr 
                     ? "منصة تعليمية متكاملة تقودها نخبة من المعلمين والتربويين ذوي الخبرة والكفاءة في تدريس مادة الأحياء. نسعى لتقديم تجربة تعليمية تفاعلية بصرية حديثة، تعتمد على التكنولوجيا لتبسيط المفاهيم الصعبة وتهيئة الطالب بشكل كامل لاجتياز امتحانات الشهادة الثانوية بتفوق ونيل الدرجات الكاملة."
@@ -585,7 +585,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                        We only collect basic data required to operate your account (Name, Phone number, Governorate, and Device UUID for security).
                        
                        2. Data Security:
-                       We do not sell or share your personal data with any third party outside the scope of app operations.
+                       We do not share your personal data with any third party outside the scope of app operations.
                        
                        3. Cloud Storage:
                        Quiz progress statistics are stored in the cloud to compute leaderboards and analyze difficult questions.`
@@ -595,7 +595,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               <div className="pt-2">
                 <button
                   onClick={() => setModalType(null)}
-                  className="w-full bg-slate-800 hover:bg-slate-750 text-white font-black py-2.5 rounded-app-btn text-xs"
+                  className="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-800 dark:text-white font-black py-2.5 rounded-app-btn text-xs"
                 >
                   {isAr ? 'إغلاق' : 'Close'}
                 </button>
