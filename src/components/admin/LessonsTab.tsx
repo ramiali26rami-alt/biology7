@@ -8,7 +8,7 @@ import {
 
 import { translations } from '../../utils/translations';
 import { getAbsoluteUrl } from '../../utils/urlHelper';
-import { Lesson, VideoChapter, Flashcard, ConfigQuestion } from '../../types';
+import { Lesson, VideoChapter, Flashcard, ConfigQuestion, MindmapNode } from '../../types';
 
 type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'files';
 
@@ -279,6 +279,134 @@ export default function LessonsTab({
     };
     setEditingLesson(updated);
     setLessons(prev => prev.map((l, idx) => idx === editingLessonIndex ? updated : l));
+  };
+
+  // Video Chapters Mutators
+  const addVideoChapter = () => {
+    if (!editingLesson) return;
+    const chapters = [...(editingLesson.videoChapters || [])];
+    chapters.push({
+      time: '00:00',
+      titleAr: '',
+      titleEn: '',
+      descAr: '',
+      descEn: ''
+    });
+    updateEditingLessonField('videoChapters', chapters);
+  };
+
+  const updateVideoChapter = (index: number, key: string, value: any) => {
+    if (!editingLesson) return;
+    const chapters = [...(editingLesson.videoChapters || [])];
+    chapters[index] = { ...chapters[index], [key]: value };
+    updateEditingLessonField('videoChapters', chapters);
+  };
+
+  const deleteVideoChapter = (index: number) => {
+    if (!editingLesson) return;
+    const chapters = (editingLesson.videoChapters || []).filter((_, i) => i !== index);
+    updateEditingLessonField('videoChapters', chapters);
+  };
+
+  // Flashcards Mutators
+  const addFlashcard = () => {
+    if (!editingLesson) return;
+    const cards = [...(editingLesson.flashcards || [])];
+    cards.push({
+      id: `fc-${Date.now()}`,
+      questionAr: '',
+      questionEn: '',
+      answerAr: '',
+      answerEn: ''
+    });
+    updateEditingLessonField('flashcards', cards);
+  };
+
+  const updateFlashcard = (index: number, key: keyof Flashcard, value: any) => {
+    if (!editingLesson) return;
+    const cards = [...(editingLesson.flashcards || [])];
+    cards[index] = { ...cards[index], [key]: value };
+    updateEditingLessonField('flashcards', cards);
+  };
+
+  const deleteFlashcard = (index: number) => {
+    if (!editingLesson) return;
+    const cards = (editingLesson.flashcards || []).filter((_, i) => i !== index);
+    updateEditingLessonField('flashcards', cards);
+  };
+
+  // Mindmap Nodes Mutators
+  const addMindmapNode = () => {
+    if (!editingLesson) return;
+    const nodes = [...(editingLesson.mindmap || [])];
+    nodes.push({
+      id: `node-${Date.now()}`,
+      labelAr: '',
+      labelEn: '',
+      descAr: '',
+      descEn: '',
+      parentId: ''
+    });
+    updateEditingLessonField('mindmap', nodes);
+  };
+
+  const updateMindmapNode = (index: number, key: string, value: any) => {
+    if (!editingLesson) return;
+    const nodes = [...(editingLesson.mindmap || [])];
+    nodes[index] = { ...nodes[index], [key]: value };
+    updateEditingLessonField('mindmap', nodes);
+  };
+
+  const deleteMindmapNode = (index: number) => {
+    if (!editingLesson) return;
+    const nodes = (editingLesson.mindmap || []).filter((_, i) => i !== index);
+    updateEditingLessonField('mindmap', nodes);
+  };
+
+  // Quiz Question Mutators
+  const addQuizQuestion = () => {
+    if (!editingLesson) return;
+    const quiz = [...(editingLesson.quiz || [])];
+    quiz.push({
+      questionAr: '',
+      questionEn: '',
+      optionsAr: ['', '', '', ''],
+      optionsEn: ['', '', '', ''],
+      answerIndex: 1,
+      explanationAr: '',
+      explanationEn: ''
+    });
+    updateEditingLessonField('quiz', quiz);
+  };
+
+  const updateQuizQuestion = (index: number, key: string, value: any) => {
+    if (!editingLesson) return;
+    const quiz = [...(editingLesson.quiz || [])];
+    quiz[index] = { ...quiz[index], [key]: value };
+    updateEditingLessonField('quiz', quiz);
+  };
+
+  const updateQuizOption = (qIdx: number, optIdx: number, type: 'Ar' | 'En', value: string) => {
+    if (!editingLesson) return;
+    const quiz = [...(editingLesson.quiz || [])];
+    const question = { ...quiz[qIdx] };
+    if (type === 'Ar') {
+      const opts = [...(question.optionsAr || ['', '', '', ''])];
+      opts[optIdx] = value;
+      question.optionsAr = opts;
+    } else {
+      const opts = [...(question.optionsEn || ['', '', '', ''])];
+      opts[optIdx] = value;
+      question.optionsEn = opts;
+    }
+    quiz[qIdx] = question;
+    updateEditingLessonField('quiz', quiz);
+  };
+
+  const deleteQuizQuestion = (index: number) => {
+    if (!editingLesson) return;
+    const quiz = (editingLesson.quiz || []).filter((_, i) => i !== index);
+    updateEditingLessonField('quiz', quiz);
   };
 
   const handleFileUpload = (fieldName: keyof Lesson, accept: string) => {
@@ -790,6 +918,460 @@ export default function LessonsTab({
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Editor Sub-Tab: Video Chapters */}
+          {editorSubTab === 'chapters' && (
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
+                <button
+                  type="button"
+                  onClick={addVideoChapter}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{lang === 'ar' ? 'إضافة فصل فيديو' : 'Add Chapter'}</span>
+                </button>
+                <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
+                  {lang === 'ar' ? 'فصول ومحطات الفيديو التعليمي' : 'Video Study Chapters'}
+                </h4>
+              </div>
+
+              {(!editingLesson.videoChapters || editingLesson.videoChapters.length === 0) ? (
+                <div className="py-8 text-center text-slate-400 font-bold text-xs">
+                  {lang === 'ar' ? 'لا توجد فصول فيديو مضافة حالياً لهذا الدرس.' : 'No video chapters added for this lesson.'}
+                </div>
+              ) : (
+                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                  {editingLesson.videoChapters.map((ch, idx) => (
+                    <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
+                      <button
+                        type="button"
+                        onClick={() => deleteVideoChapter(idx)}
+                        className="absolute left-4 top-4 text-slate-400 hover:text-rose-500 transition-colors p-1 cursor-pointer"
+                        title={lang === 'ar' ? 'حذف الفصل' : 'Delete Chapter'}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-right">
+                        <div className="sm:col-span-1">
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'توقيت البدء (مثال: 02:45):' : 'Start Time (e.g. 02:45):'}</label>
+                          <input
+                            type="text"
+                            value={ch.time}
+                            onChange={(e) => updateVideoChapter(idx, 'time', e.target.value)}
+                            placeholder="00:00"
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-center text-xs font-mono font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-3">
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'عنوان الفصل (عربي):' : 'Chapter Title (Arabic):'}</label>
+                          <input
+                            type="text"
+                            value={ch.titleAr}
+                            onChange={(e) => updateVideoChapter(idx, 'titleAr', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'شرح ووصف الفصل (عربي):' : 'Description (Arabic):'}</label>
+                          <textarea
+                            value={ch.descAr}
+                            onChange={(e) => updateVideoChapter(idx, 'descAr', e.target.value)}
+                            rows={2}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'شرح ووصف الفصل (إنجليزي):' : 'Description (English):'}</label>
+                          <textarea
+                            value={ch.descEn}
+                            onChange={(e) => updateVideoChapter(idx, 'descEn', e.target.value)}
+                            rows={2}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Editor Sub-Tab: Summary & Cards & Mindmap */}
+          {editorSubTab === 'summary-flash' && (
+            <div className="space-y-6">
+              {/* Part A: Flashcards */}
+              <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
+                  <button
+                    type="button"
+                    onClick={addFlashcard}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{lang === 'ar' ? 'إضافة بطاقة تعليمية' : 'Add Flashcard'}</span>
+                  </button>
+                  <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
+                    {lang === 'ar' ? 'البطاقات التعليمية والأسئلة السريعة' : 'Flashcards & Q&A'}
+                  </h4>
+                </div>
+
+                {(!editingLesson.flashcards || editingLesson.flashcards.length === 0) ? (
+                  <div className="py-8 text-center text-slate-400 font-bold text-xs">
+                    {lang === 'ar' ? 'لا توجد بطاقات مضافة حالياً.' : 'No flashcards added.'}
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+                    {editingLesson.flashcards.map((card, idx) => (
+                      <div key={card.id || idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
+                        <button
+                          type="button"
+                          onClick={() => deleteFlashcard(idx)}
+                          className="absolute left-4 top-4 text-slate-400 hover:text-rose-500 transition-colors p-1 cursor-pointer"
+                          title={lang === 'ar' ? 'حذف البطاقة' : 'Delete Card'}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال (عربي):' : 'Question (Arabic):'}</label>
+                            <input
+                              type="text"
+                              value={card.questionAr}
+                              onChange={(e) => updateFlashcard(idx, 'questionAr', e.target.value)}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال (إنجليزي):' : 'Question (English):'}</label>
+                            <input
+                              type="text"
+                              value={card.questionEn}
+                              onChange={(e) => updateFlashcard(idx, 'questionEn', e.target.value)}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الإجابة (عربي):' : 'Answer (Arabic):'}</label>
+                            <textarea
+                              value={card.answerAr}
+                              onChange={(e) => updateFlashcard(idx, 'answerAr', e.target.value)}
+                              rows={2}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الإجابة (إنجليزي):' : 'Answer (English):'}</label>
+                            <textarea
+                              value={card.answerEn}
+                              onChange={(e) => updateFlashcard(idx, 'answerEn', e.target.value)}
+                              rows={2}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Part B: Mindmap Node List Editor */}
+              <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
+                  <button
+                    type="button"
+                    onClick={addMindmapNode}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{lang === 'ar' ? 'إضافة عنصر خارطة' : 'Add Mindmap Node'}</span>
+                  </button>
+                  <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
+                    {lang === 'ar' ? 'تحرير نقاط وهيكل الخارطة الذهنية التفاعلية' : 'Mindmap Hierarchical Editor'}
+                  </h4>
+                </div>
+
+                {(!editingLesson.mindmap || editingLesson.mindmap.length === 0) ? (
+                  <div className="py-8 text-center text-slate-400 font-bold text-xs">
+                    {lang === 'ar' ? 'لا توجد نقاط في الخارطة الذهنية حالياً.' : 'No mindmap nodes added.'}
+                  </div>
+                ) : (
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                    {editingLesson.mindmap.map((node, idx) => (
+                      <div key={node.id || idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
+                        <button
+                          type="button"
+                          onClick={() => deleteMindmapNode(idx)}
+                          className="absolute left-4 top-4 text-slate-400 hover:text-rose-500 transition-colors p-1 cursor-pointer"
+                          title={lang === 'ar' ? 'حذف العنصر' : 'Delete Node'}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-right">
+                          <div className="sm:col-span-1">
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'معرّف الفرع (Node ID):' : 'Node ID:'}</label>
+                            <input
+                              type="text"
+                              value={node.id}
+                              onChange={(e) => updateMindmapNode(idx, 'id', e.target.value)}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                          
+                          <div className="sm:col-span-1">
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنصر الأب (Parent):' : 'Parent Node:'}</label>
+                            <select
+                              value={node.parentId || ''}
+                              onChange={(e) => updateMindmapNode(idx, 'parentId', e.target.value || undefined)}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500 font-sans"
+                            >
+                              <option value="">{lang === 'ar' ? '-- العنصر الرئيسي (Root) --' : '-- Root Node --'}</option>
+                              {editingLesson.mindmap
+                                .filter((_, nIdx) => nIdx !== idx)
+                                .map(n => (
+                                  <option key={n.id} value={n.id}>
+                                    {n.id} ({n.labelAr || n.labelEn})
+                                  </option>
+                                ))
+                              }
+                            </select>
+                          </div>
+
+                          <div className="sm:col-span-1">
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنوان (عربي):' : 'Label (Ar):'}</label>
+                            <input
+                              type="text"
+                              value={node.labelAr}
+                              onChange={(e) => updateMindmapNode(idx, 'labelAr', e.target.value)}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-1">
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنوان (إنجليزي):' : 'Label (En):'}</label>
+                            <input
+                              type="text"
+                              value={node.labelEn}
+                              onChange={(e) => updateMindmapNode(idx, 'labelEn', e.target.value)}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الوصف والتفسير (عربي):' : 'Description (Ar):'}</label>
+                            <textarea
+                              value={node.descAr || ''}
+                              onChange={(e) => updateMindmapNode(idx, 'descAr', e.target.value)}
+                              rows={2}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الوصف والتفسير (إنجليزي):' : 'Description (En):'}</label>
+                            <textarea
+                              value={node.descEn || ''}
+                              onChange={(e) => updateMindmapNode(idx, 'descEn', e.target.value)}
+                              rows={2}
+                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Editor Sub-Tab: Quiz Editor */}
+          {editorSubTab === 'quiz' && (
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
+                <button
+                  type="button"
+                  onClick={addQuizQuestion}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{lang === 'ar' ? 'إضافة سؤال كويز' : 'Add Question'}</span>
+                </button>
+                <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
+                  {lang === 'ar' ? 'تحرير أسئلة كويز الدرس التفاعلي' : 'Lesson Quiz Bank Editor'}
+                </h4>
+              </div>
+
+              {(!editingLesson.quiz || editingLesson.quiz.length === 0) ? (
+                <div className="py-8 text-center text-slate-400 font-bold text-xs">
+                  {lang === 'ar' ? 'لا توجد أسئلة اختبار مضافة لهذا الدرس.' : 'No quiz questions added.'}
+                </div>
+              ) : (
+                <div className="space-y-6 max-h-[550px] overflow-y-auto pr-1">
+                  {editingLesson.quiz.map((q, qIdx) => (
+                    <div key={qIdx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-4 relative">
+                      <button
+                        type="button"
+                        onClick={() => deleteQuizQuestion(qIdx)}
+                        className="absolute left-4 top-4 text-slate-400 hover:text-rose-500 transition-colors p-1 cursor-pointer"
+                        title={lang === 'ar' ? 'حذف السؤال' : 'Delete Question'}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+
+                      {/* Question Text */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">
+                            {lang === 'ar' ? `السؤال ${qIdx + 1} (عربي):` : `Question ${qIdx + 1} (Ar):`}
+                          </label>
+                          <input
+                            type="text"
+                            value={q.questionAr}
+                            onChange={(e) => updateQuizQuestion(qIdx, 'questionAr', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">
+                            {lang === 'ar' ? `السؤال ${qIdx + 1} (إنجليزي):` : `Question ${qIdx + 1} (En):`}
+                          </label>
+                          <input
+                            type="text"
+                            value={q.questionEn}
+                            onChange={(e) => updateQuizQuestion(qIdx, 'questionEn', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Options */}
+                      <div className="space-y-2 text-right">
+                        <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'خيارات الإجابة المتعددة:' : 'Multiple Choice Options:'}</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {[0, 1, 2, 3].map((optIdx) => (
+                            <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <label className="flex items-center gap-1.5 cursor-pointer">
+                                  <input
+                                    type="radio"
+                                    name={`correct-${qIdx}`}
+                                    checked={q.answerIndex === (optIdx + 1)}
+                                    onChange={() => updateQuizQuestion(qIdx, 'answerIndex', optIdx + 1)}
+                                    className="w-3.5 h-3.5 text-emerald-500 focus:ring-emerald-500"
+                                  />
+                                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                                    {lang === 'ar' ? `الخيار الصحيح ${optIdx + 1}` : `Correct Option ${optIdx + 1}`}
+                                  </span>
+                                </label>
+                                <span className="text-[10px] font-black text-slate-400 font-sans">#{optIdx + 1}</span>
+                              </div>
+                              <input
+                                type="text"
+                                placeholder={lang === 'ar' ? 'الخيار بالعربي' : 'Option in Arabic'}
+                                value={q.optionsAr?.[optIdx] || ''}
+                                onChange={(e) => updateQuizOption(qIdx, optIdx, 'Ar', e.target.value)}
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
+                              />
+                              <input
+                                type="text"
+                                placeholder={lang === 'ar' ? 'الخيار بالإنجليزي' : 'Option in English'}
+                                value={q.optionsEn?.[optIdx] || ''}
+                                onChange={(e) => updateQuizOption(qIdx, optIdx, 'En', e.target.value)}
+                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Explanation */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'تفسير وشرح الحل (عربي):' : 'Explanation (Arabic):'}</label>
+                          <textarea
+                            value={q.explanationAr || ''}
+                            onChange={(e) => updateQuizQuestion(qIdx, 'explanationAr', e.target.value)}
+                            rows={2}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'تفسير وشرح الحل (إنجليزي):' : 'Explanation (English):'}</label>
+                          <textarea
+                            value={q.explanationEn || ''}
+                            onChange={(e) => updateQuizQuestion(qIdx, 'explanationEn', e.target.value)}
+                            rows={2}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Editor Sub-Tab: Files / Locks */}
+          {editorSubTab === 'files' && (
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4 text-right">
+              <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400 border-b border-slate-50 dark:border-slate-800 pb-2">
+                {lang === 'ar' ? 'حالة وحماية ملفات المنهج' : 'Curriculum Files & Security'}
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { key: 'pdfLocked', labelAr: 'قفل ملف الـ PDF', labelEn: 'Lock PDF file' },
+                  { key: 'mindmapLocked', labelAr: 'قفل الخارطة الذهنية', labelEn: 'Lock Mindmap' },
+                  { key: 'diagramLocked', labelAr: 'قفل الرسم التوضيحي', labelEn: 'Lock Diagram' },
+                  { key: 'quizLocked', labelAr: 'قفل الكويز التفاعلي', labelEn: 'Lock Quiz' },
+                  { key: 'ministryExamLocked', labelAr: 'قفل الامتحانات الوزارية', labelEn: 'Lock Ministry Exam' },
+                ].map((item) => {
+                  const isLocked = !!(editingLesson as any)[item.key];
+                  return (
+                    <div key={item.key} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => updateEditingLessonField(item.key as any, !isLocked)}
+                        className={`p-2 rounded-full transition-all active:scale-95 cursor-pointer border-0 ${
+                          isLocked 
+                            ? 'bg-rose-500/10 text-rose-500' 
+                            : 'bg-emerald-500/10 text-emerald-500'
+                        }`}
+                      >
+                        {isLocked ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
+                      </button>
+                      <div className="text-right">
+                        <span className="text-xs font-black text-slate-800 dark:text-white block">
+                          {lang === 'ar' ? item.labelAr : item.labelEn}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                          {isLocked 
+                            ? (lang === 'ar' ? '🔒 مغلق (للباقة المدفوعة)' : '🔒 Locked (Premium)')
+                            : (lang === 'ar' ? '🔓 مفتوح مجاناً' : '🔓 Open Free')
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
