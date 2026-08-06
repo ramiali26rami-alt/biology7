@@ -158,7 +158,10 @@ export default function StudentProfileScreen({
     }
   };
 
+  const ENABLE_IN_APP_ADMIN = false;
+
   const handleVersionClick = () => {
+    if (!ENABLE_IN_APP_ADMIN) return;
     const nextClicks = adminClicks + 1;
     setAdminClicks(nextClicks);
     if (nextClicks >= 7) {

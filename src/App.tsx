@@ -17,15 +17,20 @@ const BiologyQuizScreen = React.lazy(() => import('./components/BiologyQuizScree
 const MinistryExamsScreen = React.lazy(() => import('./components/MinistryExamsScreen'));
 const WelcomeScreen = React.lazy(() => import('./components/WelcomeScreen'));
 const AdminDashboardScreen = React.lazy(() => import('./components/AdminDashboardScreen'));
+const AdminLoginModal = React.lazy(() => import('./components/admin/AdminLoginModal'));
 const LeaderboardScreen = React.lazy(() => import('./components/LeaderboardScreen'));
 import { Language } from './utils/translations';
 import { AppWrapper } from './AppWrapper';
 import { checkAndUpdate } from './utils/autoUpdate';
 import { loadCurriculum } from './utils/curriculumLoader';
 import { checkStudentSubscription, syncUnsavedQuizResults } from './utils/supabaseHelper';
+import { supabase } from './utils/supabaseClient';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(() => {
+    if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin')) {
+      return 'admin-login';
+    }
     // New users (no name saved) go to welcome screen
     const isRegistered = localStorage.getItem('student_name');
     return isRegistered ? 'main-dashboard' : 'welcome';
@@ -42,9 +47,27 @@ export default function App() {
     return localStorage.getItem('font_size') || 'normal';
   });
 
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
+
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedUnit, setSelectedUnit] = useState<number>(1);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAdminAuthenticated(!!session?.user);
+    };
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAdminAuthenticated(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const [updateInfo, setUpdateInfo] = useState<{
     show: boolean;
@@ -206,7 +229,31 @@ export default function App() {
         return <BiologyQuizScreen onNavigate={handleNavigate} lang={lang} lesson={selectedLesson} lessons={lessons} onSelectLesson={setSelectedLesson} />;
       case 'ministry-exams':
         return <MinistryExamsScreen onNavigate={handleNavigate} lang={lang} lesson={selectedLesson} lessons={lessons} />;
+      case 'admin-login':
+        return (
+          <AdminLoginModal 
+            onLoginSuccess={() => handleNavigate('admin-dashboard', 'none')} 
+            onBack={() => { window.location.href = '/'; }} 
+            lang={lang} 
+          />
+        );
       case 'admin-dashboard':
+        if (isAdminAuthenticated === null) {
+          return (
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+              <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          );
+        }
+        if (!isAdminAuthenticated) {
+          return (
+            <AdminLoginModal 
+              onLoginSuccess={() => handleNavigate('admin-dashboard', 'none')} 
+              onBack={() => { window.location.href = '/'; }} 
+              lang={lang} 
+            />
+          );
+        }
         return <AdminDashboardScreen onNavigate={handleNavigate} lang={lang} lessons={lessons} setLessons={setLessons} />;
       case 'leaderboard':
         return <LeaderboardScreen onNavigate={handleNavigate} lang={lang} />;

@@ -31,12 +31,14 @@ import {
   Key,
   Target,
   Loader2,
-  UserCheck
+  UserCheck,
+  LogOut
 } from 'lucide-react';
 import { ScreenId, Lesson, VideoChapter, Flashcard, GlossaryItem, ConfigQuestion } from '../types';
 import { translations, Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
 import { validateExcelData } from '../utils/excelValidator';
+import { supabase } from '../utils/supabaseClient';
 
 import { SecureStorage } from '../utils/security';
 import { Capacitor } from '@capacitor/core';
@@ -62,6 +64,11 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [editingLessonIndex, setEditingLessonIndex] = useState<number | null>(null);
   const [editorSubTab, setEditorSubTab] = useState<EditorSubTab>('basic');
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
 
 
 
@@ -198,6 +205,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{lang === 'ar' ? 'تصدير المنهج' : 'Download JSON'}</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="bg-rose-500 hover:bg-rose-600 text-white font-black text-xs px-3 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1.5 shadow-md shadow-rose-500/20 cursor-pointer border-0"
+            title={lang === 'ar' ? 'تسجيل الخروج' : 'Log Out'}
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{lang === 'ar' ? 'خروج' : 'Log Out'}</span>
           </button>
         </div>
       </header>
