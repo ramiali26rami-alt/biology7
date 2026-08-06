@@ -128,130 +128,17 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
         {/* Logo / Welcome Graphic */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col items-center mb-6 relative"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="flex flex-col items-center mb-8"
         >
-          {/* Animated Glowing Light Ray behind eyepiece */}
-          <motion.div 
-            animate={{ 
-              opacity: [0.15, 0.35, 0.15],
-              scale: [0.95, 1.05, 0.95]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute top-0 w-40 h-40 bg-gradient-to-b from-emerald-400/20 to-transparent rounded-full blur-2xl pointer-events-none"
-          />
-
-          {/* Interactive Floating Biology Symbols */}
-          {/* Top Left Cell */}
-          <motion.div
-            animate={{ 
-              y: [0, -12, 0],
-              rotate: [0, 360]
-            }}
-            transition={{
-              y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-              rotate: { duration: 25, repeat: Infinity, ease: "linear" }
-            }}
-            className="absolute -top-4 -left-6 z-0"
-          >
-            <svg className="w-10 h-10 text-teal-500/20 dark:text-teal-400/30 filter drop-shadow-[0_4px_10px_rgba(20,184,166,0.15)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="12" cy="12" r="9" strokeDasharray="3 3" />
-              <circle cx="9" cy="9" r="2.5" fill="currentColor" className="opacity-40" />
-              <circle cx="15" cy="13" r="1.5" fill="currentColor" className="opacity-40" />
-              <circle cx="11" cy="15" r="1" fill="currentColor" className="opacity-40" />
-            </svg>
-          </motion.div>
-
-          {/* Top Right DNA */}
-          <motion.div
-            animate={{ 
-              y: [0, -15, 0],
-              rotate: [0, -360]
-            }}
-            transition={{
-              y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 },
-              rotate: { duration: 30, repeat: Infinity, ease: "linear" }
-            }}
-            className="absolute -top-6 -right-6 z-0"
-          >
-            <svg className="w-9 h-9 text-emerald-500/25 dark:text-emerald-400/35 filter drop-shadow-[0_4px_10px_rgba(16,185,129,0.15)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M4.5 10.5C4.5 10.5 7.5 4.5 12 4.5C16.5 4.5 19.5 10.5 19.5 10.5" />
-              <path d="M4.5 13.5C4.5 13.5 7.5 19.5 12 19.5C16.5 19.5 19.5 13.5 19.5 13.5" />
-              <line x1="6" y1="8" x2="6" y2="16" />
-              <line x1="9" y1="6" x2="9" y2="18" />
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="15" y1="6" x2="15" y2="18" />
-              <line x1="18" y1="8" x2="18" y2="16" />
-            </svg>
-          </motion.div>
-
-          {/* Mid Left DNA */}
-          <motion.div
-            animate={{ 
-              y: [0, -10, 0],
-              x: [0, 8, 0]
-            }}
-            transition={{
-              y: { duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 },
-              x: { duration: 3.5, repeat: Infinity, ease: "easeInOut" }
-            }}
-            className="absolute top-24 -left-10 z-0"
-          >
-            <svg className="w-8 h-8 text-emerald-500/20 dark:text-emerald-400/30 filter drop-shadow-[0_4px_10px_rgba(16,185,129,0.15)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M4.5 10.5C4.5 10.5 7.5 4.5 12 4.5C16.5 4.5 19.5 10.5 19.5 10.5" />
-              <path d="M4.5 13.5C4.5 13.5 7.5 19.5 12 19.5C16.5 19.5 19.5 13.5 19.5 13.5" />
-              <line x1="6" y1="8" x2="6" y2="16" />
-              <line x1="9" y1="6" x2="9" y2="18" />
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="15" y1="6" x2="15" y2="18" />
-              <line x1="18" y1="8" x2="18" y2="16" />
-            </svg>
-          </motion.div>
-
-          {/* Mid Right Molecule */}
-          <motion.div
-            animate={{ 
-              y: [0, -14, 0],
-              rotate: [0, 180]
-            }}
-            transition={{
-              y: { duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 },
-              rotate: { duration: 20, repeat: Infinity, ease: "easeInOut" }
-            }}
-            className="absolute top-28 -right-8 z-0"
-          >
-            <svg className="w-9 h-9 text-teal-500/25 dark:text-teal-400/35 filter drop-shadow-[0_4px_10px_rgba(20,184,166,0.15)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="12" cy="5" r="2.5" fill="currentColor" className="opacity-40" />
-              <circle cx="5" cy="15" r="2.5" fill="currentColor" className="opacity-40" />
-              <circle cx="19" cy="15" r="2.5" fill="currentColor" className="opacity-40" />
-              <line x1="12" y1="7.5" x2="6.5" y2="13.5" />
-              <line x1="12" y1="7.5" x2="17.5" y2="13.5" />
-              <line x1="7.5" y1="15" x2="16.5" y2="15" />
-            </svg>
-          </motion.div>
-
-          {/* The Main Logo Image */}
-          <motion.img 
+          <img 
             src="/splash.png" 
-            animate={{ 
-              y: [0, -8, 0]
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="w-[310px] h-[310px] object-contain mb-3 relative z-10 filter drop-shadow-[0_15px_30px_rgba(16,185,129,0.18)] dark:drop-shadow-[0_15px_35px_rgba(34,211,238,0.35)] dark:invert dark:hue-rotate-180 brightness-[1.05] contrast-[1.05] transition-all duration-300" 
+            className="w-[310px] h-[310px] object-contain mb-2 filter drop-shadow-[0_15px_30px_rgba(16,185,129,0.1)] dark:drop-shadow-[0_15px_35px_rgba(34,211,238,0.25)] dark:invert dark:hue-rotate-180 brightness-[1.05] contrast-[1.05] transition-all duration-300" 
             alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
           />
-
-          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-bold mt-1 relative z-10">
+          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-bold mt-1">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}
           </p>
         </motion.div>
