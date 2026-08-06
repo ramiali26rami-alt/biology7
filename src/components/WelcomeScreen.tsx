@@ -240,19 +240,14 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           <motion.img 
             src="/splash.png" 
             animate={{ 
-              y: [0, -8, 0],
-              filter: [
-                "drop-shadow(0 15px 30px rgba(16,185,129,0.35)) brightness(1.35) contrast(1.15) saturate(1.4)",
-                "drop-shadow(0 15px 45px rgba(16,185,129,0.7)) brightness(1.4) contrast(1.2) saturate(1.45)",
-                "drop-shadow(0 15px 30px rgba(16,185,129,0.35)) brightness(1.35) contrast(1.15) saturate(1.4)"
-              ]
+              y: [0, -8, 0]
             }}
             transition={{
               duration: 4,
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="w-[310px] h-[310px] object-contain mb-3 relative z-10" 
+            className="w-[310px] h-[310px] object-contain mb-3 relative z-10 filter drop-shadow-[0_15px_30px_rgba(16,185,129,0.18)] dark:drop-shadow-[0_15px_35px_rgba(34,211,238,0.35)] dark:invert dark:hue-rotate-180 brightness-[1.05] contrast-[1.05] transition-all duration-300" 
             alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
           />
 
