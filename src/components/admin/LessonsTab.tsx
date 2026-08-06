@@ -353,10 +353,9 @@ export default function LessonsTab({
     const nodes = [...(editingLesson.mindmap || [])];
     nodes.push({
       id: `node-${Date.now()}`,
-      labelAr: '',
-      labelEn: '',
-      descAr: '',
-      descEn: '',
+      textAr: '',
+      textEn: '',
+      details: '',
       parentId: ''
     });
     updateEditingLessonField('mindmap', nodes);
@@ -365,10 +364,10 @@ export default function LessonsTab({
   const updateMindmapNode = (index: number, key: string, value: any) => {
     if (!editingLesson) return;
     const nodes = [...(editingLesson.mindmap || [])];
-    if (key === 'labelAr') {
-      nodes[index] = { ...nodes[index], labelAr: value, labelEn: value };
-    } else if (key === 'descAr') {
-      nodes[index] = { ...nodes[index], descAr: value, descEn: value };
+    if (key === 'textAr') {
+      nodes[index] = { ...nodes[index], textAr: value, textEn: value };
+    } else if (key === 'details') {
+      nodes[index] = { ...nodes[index], details: value };
     } else {
       nodes[index] = { ...nodes[index], [key]: value };
     }
@@ -1138,7 +1137,7 @@ export default function LessonsTab({
                                 .filter((_, nIdx) => nIdx !== idx)
                                 .map(n => (
                                   <option key={n.id} value={n.id}>
-                                    {n.id} ({n.labelAr || n.labelEn})
+                                    {n.id} ({n.textAr || n.textEn})
                                   </option>
                                 ))
                               }
@@ -1149,8 +1148,8 @@ export default function LessonsTab({
                             <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'العنوان:' : 'Label:'}</label>
                             <input
                               type="text"
-                              value={node.labelAr}
-                              onChange={(e) => updateMindmapNode(idx, 'labelAr', e.target.value)}
+                              value={node.textAr || ''}
+                              onChange={(e) => updateMindmapNode(idx, 'textAr', e.target.value)}
                               className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
                             />
                           </div>
@@ -1159,8 +1158,8 @@ export default function LessonsTab({
                         <div className="text-right">
                           <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الوصف والتفسير:' : 'Description:'}</label>
                           <textarea
-                            value={node.descAr || ''}
-                            onChange={(e) => updateMindmapNode(idx, 'descAr', e.target.value)}
+                            value={node.details || ''}
+                            onChange={(e) => updateMindmapNode(idx, 'details', e.target.value)}
                             rows={2}
                             className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           />
