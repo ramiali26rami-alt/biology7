@@ -320,11 +320,10 @@ export default function LessonsTab({
     if (!editingLesson) return;
     const cards = [...(editingLesson.flashcards || [])];
     cards.push({
-      id: `fc-${Date.now()}`,
-      questionAr: '',
-      questionEn: '',
-      answerAr: '',
-      answerEn: ''
+      qAr: '',
+      qEn: '',
+      aAr: '',
+      aEn: ''
     });
     updateEditingLessonField('flashcards', cards);
   };
@@ -332,10 +331,10 @@ export default function LessonsTab({
   const updateFlashcard = (index: number, key: keyof Flashcard, value: any) => {
     if (!editingLesson) return;
     const cards = [...(editingLesson.flashcards || [])];
-    if (key === 'questionAr') {
-      cards[index] = { ...cards[index], questionAr: value, questionEn: value };
-    } else if (key === 'answerAr') {
-      cards[index] = { ...cards[index], answerAr: value, answerEn: value };
+    if (key === 'qAr') {
+      cards[index] = { ...cards[index], qAr: value, qEn: value };
+    } else if (key === 'aAr') {
+      cards[index] = { ...cards[index], aAr: value, aEn: value };
     } else {
       cards[index] = { ...cards[index], [key]: value };
     }
@@ -387,11 +386,17 @@ export default function LessonsTab({
     if (!editingLesson) return;
     const quiz = [...(editingLesson.quiz || [])];
     quiz.push({
-      questionAr: '',
-      questionEn: '',
-      optionsAr: ['', '', '', ''],
-      optionsEn: ['', '', '', ''],
-      answerIndex: 1,
+      id: quiz.length + 1,
+      type: 'tf',
+      textAr: '',
+      textEn: '',
+      options: [
+        { key: 'A', textAr: '', textEn: '' },
+        { key: 'B', textAr: '', textEn: '' },
+        { key: 'C', textAr: '', textEn: '' },
+        { key: 'D', textAr: '', textEn: '' }
+      ],
+      correctKey: 'A',
       explanationAr: '',
       explanationEn: ''
     });
@@ -401,8 +406,8 @@ export default function LessonsTab({
   const updateQuizQuestion = (index: number, key: string, value: any) => {
     if (!editingLesson) return;
     const quiz = [...(editingLesson.quiz || [])];
-    if (key === 'questionAr') {
-      quiz[index] = { ...quiz[index], questionAr: value, questionEn: value };
+    if (key === 'textAr') {
+      quiz[index] = { ...quiz[index], textAr: value, textEn: value };
     } else if (key === 'explanationAr') {
       quiz[index] = { ...quiz[index], explanationAr: value, explanationEn: value };
     } else {
@@ -411,19 +416,18 @@ export default function LessonsTab({
     updateEditingLessonField('quiz', quiz);
   };
 
-  const updateQuizOption = (qIdx: number, optIdx: number, type: 'Ar' | 'En', value: string) => {
+  const updateQuizOption = (qIdx: number, optIdx: number, value: string) => {
     if (!editingLesson) return;
     const quiz = [...(editingLesson.quiz || [])];
     const question = { ...quiz[qIdx] };
-    
-    const optsAr = [...(question.optionsAr || ['', '', '', ''])];
-    optsAr[optIdx] = value;
-    question.optionsAr = optsAr;
-
-    const optsEn = [...(question.optionsEn || ['', '', '', ''])];
-    optsEn[optIdx] = value;
-    question.optionsEn = optsEn;
-
+    const opts = [...(question.options || [])];
+    const keys = ['A', 'B', 'C', 'D'];
+    if (opts[optIdx]) {
+      opts[optIdx] = { ...opts[optIdx], textAr: value, textEn: value };
+    } else {
+      opts[optIdx] = { key: keys[optIdx], textAr: value, textEn: value };
+    }
+    question.options = opts;
     quiz[qIdx] = question;
     updateEditingLessonField('quiz', quiz);
   };
@@ -1057,8 +1061,8 @@ export default function LessonsTab({
                           <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال:' : 'Question:'}</label>
                           <input
                             type="text"
-                            value={card.questionAr}
-                            onChange={(e) => updateFlashcard(idx, 'questionAr', e.target.value)}
+                            value={card.qAr || ''}
+                            onChange={(e) => updateFlashcard(idx, 'qAr', e.target.value)}
                             className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           />
                         </div>
@@ -1066,8 +1070,8 @@ export default function LessonsTab({
                         <div className="text-right">
                           <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'الإجابة:' : 'Answer:'}</label>
                           <textarea
-                            value={card.answerAr}
-                            onChange={(e) => updateFlashcard(idx, 'answerAr', e.target.value)}
+                            value={card.aAr || ''}
+                            onChange={(e) => updateFlashcard(idx, 'aAr', e.target.value)}
                             rows={2}
                             className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           />
@@ -1210,8 +1214,8 @@ export default function LessonsTab({
                         </label>
                         <input
                           type="text"
-                          value={q.questionAr}
-                          onChange={(e) => updateQuizQuestion(qIdx, 'questionAr', e.target.value)}
+                          value={q.textAr || ''}
+                          onChange={(e) => updateQuizQuestion(qIdx, 'textAr', e.target.value)}
                           className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                         />
                       </div>
@@ -1220,32 +1224,36 @@ export default function LessonsTab({
                       <div className="space-y-2 text-right">
                         <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'خيارات الإجابة المتعددة:' : 'Multiple Choice Options:'}</span>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {[0, 1, 2, 3].map((optIdx) => (
-                            <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-2">
-                              <div className="flex items-center justify-between">
-                                <label className="flex items-center gap-1.5 cursor-pointer">
-                                  <input
-                                    type="radio"
-                                    name={`correct-${qIdx}`}
-                                    checked={q.answerIndex === (optIdx + 1)}
-                                    onChange={() => updateQuizQuestion(qIdx, 'answerIndex', optIdx + 1)}
-                                    className="w-3.5 h-3.5 text-emerald-500 focus:ring-emerald-500"
-                                  />
-                                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
-                                    {lang === 'ar' ? `الخيار الصحيح ${optIdx + 1}` : `Correct Option ${optIdx + 1}`}
-                                  </span>
-                                </label>
-                                <span className="text-[10px] font-black text-slate-400 font-sans">#{optIdx + 1}</span>
+                          {[0, 1, 2, 3].map((optIdx) => {
+                            const keys = ['A', 'B', 'C', 'D'];
+                            const keyChar = keys[optIdx];
+                            return (
+                              <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="flex items-center gap-1.5 cursor-pointer">
+                                    <input
+                                      type="radio"
+                                      name={`correct-${qIdx}`}
+                                      checked={q.correctKey === keyChar}
+                                      onChange={() => updateQuizQuestion(qIdx, 'correctKey', keyChar)}
+                                      className="w-3.5 h-3.5 text-emerald-500 focus:ring-emerald-500"
+                                    />
+                                    <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                                      {lang === 'ar' ? `الخيار الصحيح ${keyChar}` : `Correct Option ${keyChar}`}
+                                    </span>
+                                  </label>
+                                  <span className="text-[10px] font-black text-slate-400 font-sans">#{optIdx + 1}</span>
+                                </div>
+                                <input
+                                  type="text"
+                                  placeholder={lang === 'ar' ? 'اكتب الخيار هنا' : 'Enter option here'}
+                                  value={q.options?.[optIdx]?.textAr || ''}
+                                  onChange={(e) => updateQuizOption(qIdx, optIdx, e.target.value)}
+                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
+                                />
                               </div>
-                              <input
-                                type="text"
-                                placeholder={lang === 'ar' ? 'اكتب الخيار هنا' : 'Enter option here'}
-                                value={q.optionsAr?.[optIdx] || ''}
-                                onChange={(e) => updateQuizOption(qIdx, optIdx, 'Ar', e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
-                              />
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
 
