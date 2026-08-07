@@ -57,7 +57,7 @@ interface AdminDashboardScreenProps {
 }
 
 type TabType = 'lessons-list' | 'lesson-editor' | 'preview' | 'export' | 'keys' | 'helper' | 'students';
-type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'files';
+type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'ministry-quiz' | 'files';
 
 export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLessons }: AdminDashboardScreenProps) {
   const [activeTab, setActiveTab] = useState<TabType>('lessons-list');

@@ -10,7 +10,7 @@ import { translations } from '../../utils/translations';
 import { getAbsoluteUrl } from '../../utils/urlHelper';
 import { Lesson, VideoChapter, Flashcard, ConfigQuestion, MindmapNode } from '../../types';
 
-type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'files';
+type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'ministry-quiz' | 'files';
 
 interface LessonsTabProps {
   activeTab: 'lessons-list' | 'lesson-editor' | 'preview';
@@ -119,9 +119,9 @@ export default function LessonsTab({
           }
         } else if (q.type === 'tf') {
           if (!q.correctKey || (q.correctKey !== 'T' && q.correctKey !== 'F' && q.correctKey !== 'A' && q.correctKey !== 'B')) {
-            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد صح (A) أو خطأ (B)!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: TF requires correct key A or B!`);
+            errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد صح (T) أو خطأ (F)!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: TF requires correct key T or F!`);
           }
-        } else if (q.type === 'fill') {
+        } else if (q.type === 'fill' || q.type === 'fill_blank') {
           if (!q.correctAnswers || q.correctAnswers.length === 0) {
             errors.push(lang === 'ar' ? `الدرس (${lesson.id}) - السؤال #${qIdx + 1}: يجب تحديد إجابة مقبولة واحدة على الأقل لإكمال الفراغ!` : `Lesson (${lesson.id}) - Question #${qIdx + 1}: Fill blank requires at least one correct answer!`);
           }
@@ -390,16 +390,69 @@ export default function LessonsTab({
       textAr: '',
       textEn: '',
       options: [
-        { key: 'A', textAr: '', textEn: '' },
-        { key: 'B', textAr: '', textEn: '' },
-        { key: 'C', textAr: '', textEn: '' },
-        { key: 'D', textAr: '', textEn: '' }
+        { key: 'T', textAr: '✔️ صح', textEn: '✔️ صح' },
+        { key: 'F', textAr: '❌ خطأ', textEn: '❌ خطأ' }
       ],
-      correctKey: 'A',
+      correctKey: 'T',
       explanationAr: '',
       explanationEn: ''
     });
     updateEditingLessonField('quiz', quiz);
+  };
+
+  // Ministry Question Mutators
+  const addMinistryQuestion = () => {
+    if (!editingLesson) return;
+    const ministryExams = [...(editingLesson.ministryExams || [])];
+    ministryExams.push({
+      id: ministryExams.length + 1,
+      type: 'tf',
+      textAr: '',
+      textEn: '',
+      options: [
+        { key: 'T', textAr: '✔️ صح', textEn: '✔️ صح' },
+        { key: 'F', textAr: '❌ خطأ', textEn: '❌ خطأ' }
+      ],
+      correctKey: 'T',
+      explanationAr: '',
+      explanationEn: ''
+    });
+    updateEditingLessonField('ministryExams', ministryExams);
+  };
+
+  const updateMinistryQuestion = (index: number, key: string, value: any) => {
+    if (!editingLesson) return;
+    const ministryExams = [...(editingLesson.ministryExams || [])];
+    if (key === 'textAr') {
+      ministryExams[index] = { ...ministryExams[index], textAr: value, textEn: value };
+    } else if (key === 'explanationAr') {
+      ministryExams[index] = { ...ministryExams[index], explanationAr: value, explanationEn: value };
+    } else {
+      ministryExams[index] = { ...ministryExams[index], [key]: value };
+    }
+    updateEditingLessonField('ministryExams', ministryExams);
+  };
+
+  const updateMinistryOption = (qIdx: number, optIdx: number, value: string) => {
+    if (!editingLesson) return;
+    const ministryExams = [...(editingLesson.ministryExams || [])];
+    const question = { ...ministryExams[qIdx] };
+    const opts = [...(question.options || [])];
+    const keys = ['A', 'B', 'C', 'D'];
+    if (opts[optIdx]) {
+      opts[optIdx] = { ...opts[optIdx], textAr: value, textEn: value };
+    } else {
+      opts[optIdx] = { key: keys[optIdx], textAr: value, textEn: value };
+    }
+    question.options = opts;
+    ministryExams[qIdx] = question;
+    updateEditingLessonField('ministryExams', ministryExams);
+  };
+
+  const deleteMinistryQuestion = (index: number) => {
+    if (!editingLesson) return;
+    const ministryExams = (editingLesson.ministryExams || []).filter((_, i) => i !== index);
+    updateEditingLessonField('ministryExams', ministryExams);
   };
 
   const updateQuizQuestion = (index: number, key: string, value: any) => {
@@ -646,12 +699,13 @@ export default function LessonsTab({
           </div>
 
           <div className="flex border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-app-card p-2 gap-1 overflow-x-auto shadow-sm">
-            {(['basic', 'chapters', 'summary-flash', 'quiz', 'files'] as EditorSubTab[]).map(sub => {
+            {(['basic', 'chapters', 'summary-flash', 'quiz', 'ministry-quiz', 'files'] as EditorSubTab[]).map(sub => {
               const labels: Record<EditorSubTab, string> = {
                 'basic': lang === 'ar' ? '📖 الأساسيات' : 'Basics',
                 'chapters': lang === 'ar' ? '🎬 فصول الفيديو' : 'Chapters',
                 'summary-flash': lang === 'ar' ? '📝 التلخيص والبطاقات' : 'Summary/Cards',
                 'quiz': lang === 'ar' ? '❓ بنك الاختبار' : 'Quiz Editor',
+                'ministry-quiz': lang === 'ar' ? '🏛️ الأسئلة الوزارية' : 'Ministry Exams',
                 'files': lang === 'ar' ? '📁 تحرير الملفات' : 'File Editor'
               };
               return (
@@ -1230,8 +1284,8 @@ export default function LessonsTab({
                               let updatedOpts = q.options;
                               if (newType === 'tf') {
                                 updatedOpts = [
-                                  { key: 'A', textAr: '✔️ صح', textEn: '✔️ صح' },
-                                  { key: 'B', textAr: '❌ خطأ', textEn: '❌ خطأ' }
+                                  { key: 'T', textAr: '✔️ صح', textEn: '✔️ صح' },
+                                  { key: 'F', textAr: '❌ خطأ', textEn: '❌ خطأ' }
                                 ];
                               } else if (newType === 'mcq') {
                                 updatedOpts = [
@@ -1247,7 +1301,7 @@ export default function LessonsTab({
                                 ...quiz[qIdx], 
                                 type: newType as any,
                                 options: updatedOpts,
-                                correctKey: newType === 'tf' && (q.correctKey !== 'A' && q.correctKey !== 'B') ? 'A' : q.correctKey
+                                correctKey: newType === 'tf' && (q.correctKey !== 'T' && q.correctKey !== 'F') ? 'T' : q.correctKey
                               };
                               updateEditingLessonField('quiz', quiz);
                             }}
@@ -1255,7 +1309,7 @@ export default function LessonsTab({
                           >
                             <option value="tf">{lang === 'ar' ? 'صح أم خطأ (T/F)' : 'True / False (T/F)'}</option>
                             <option value="mcq">{lang === 'ar' ? 'اختيار من متعدد (MCQ)' : 'Multiple Choice (MCQ)'}</option>
-                            <option value="fill">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
+                            <option value="fill_blank">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
                           </select>
                         </div>
                       </div>
@@ -1278,7 +1332,7 @@ export default function LessonsTab({
                         <div className="space-y-2 text-right">
                           <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'التحقق من صحة العبارة:' : 'True/False Verification:'}</span>
                           <div className="grid grid-cols-2 gap-3">
-                            {['A', 'B'].map((keyChar, optIdx) => {
+                            {['T', 'F'].map((keyChar, optIdx) => {
                               const labelText = optIdx === 0 ? (lang === 'ar' ? '✔️ صح' : '✔️ True') : (lang === 'ar' ? '❌ خطأ' : '❌ False');
                               return (
                                 <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 flex items-center justify-between">
@@ -1286,7 +1340,7 @@ export default function LessonsTab({
                                     <input
                                       type="radio"
                                       name={`correct-${qIdx}`}
-                                      checked={q.correctKey === keyChar}
+                                      checked={q.correctKey === keyChar || (keyChar === 'T' && q.correctKey === 'A') || (keyChar === 'F' && q.correctKey === 'B')}
                                       onChange={() => updateQuizQuestion(qIdx, 'correctKey', keyChar)}
                                       className="w-4 h-4 text-emerald-500 focus:ring-emerald-500"
                                     />
@@ -1299,7 +1353,7 @@ export default function LessonsTab({
                             })}
                           </div>
                         </div>
-                      ) : q.type === 'fill' ? (
+                      ) : (q.type === 'fill' || q.type === 'fill_blank') ? (
                         <div className="text-right space-y-1">
                           <label className="block text-[10px] font-black text-slate-400">
                             {lang === 'ar' ? 'الإجابات الصحيحة المقبولة (افصل بينها بفاصلة لعدة خيارات مرادفة):' : 'Acceptable Correct Answers (comma-separated for multiple synonyms):'}
@@ -1367,6 +1421,205 @@ export default function LessonsTab({
                         <textarea
                           value={q.explanationAr || ''}
                           onChange={(e) => updateQuizQuestion(qIdx, 'explanationAr', e.target.value)}
+                          rows={2}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Editor Sub-Tab: Ministry Quiz Editor */}
+          {editorSubTab === 'ministry-quiz' && (
+            <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
+                <button
+                  type="button"
+                  onClick={addMinistryQuestion}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{lang === 'ar' ? 'إضافة سؤال وزاري' : 'Add Ministry Question'}</span>
+                </button>
+                <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
+                  {lang === 'ar' ? 'تحرير الأسئلة والامتحانات الوزارية' : 'Lesson Ministry Exams Editor'}
+                </h4>
+              </div>
+
+              {(!editingLesson.ministryExams || editingLesson.ministryExams.length === 0) ? (
+                <div className="py-8 text-center text-slate-400 font-bold text-xs">
+                  {lang === 'ar' ? 'لا توجد أسئلة وزارية مضافة لهذا الدرس.' : 'No ministry questions added.'}
+                </div>
+              ) : (
+                <div className="space-y-6 max-h-[550px] overflow-y-auto pr-1">
+                  {editingLesson.ministryExams.map((q, qIdx) => (
+                    <div key={qIdx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-4 relative">
+                      <button
+                        type="button"
+                        onClick={() => deleteMinistryQuestion(qIdx)}
+                        className="absolute left-4 top-4 text-slate-400 hover:text-rose-500 transition-colors p-1 cursor-pointer"
+                        title={lang === 'ar' ? 'حذف السؤال' : 'Delete Question'}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+
+                      {/* Question Type Selection & Question Index */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                          {lang === 'ar' ? `السؤال الوزاري رقم ${qIdx + 1}` : `Ministry Question #${qIdx + 1}`}
+                        </span>
+                        
+                        <div className="flex items-center gap-2">
+                          <label className="text-[10px] font-black text-slate-400">
+                            {lang === 'ar' ? 'نوع السؤال:' : 'Question Type:'}
+                          </label>
+                          <select
+                            value={q.type || 'mcq'}
+                            onChange={(e) => {
+                              const newType = e.target.value;
+                              let updatedOpts = q.options;
+                              if (newType === 'tf') {
+                                updatedOpts = [
+                                  { key: 'T', textAr: '✔️ صح', textEn: '✔️ صح' },
+                                  { key: 'F', textAr: '❌ خطأ', textEn: '❌ خطأ' }
+                                ];
+                              } else if (newType === 'mcq') {
+                                updatedOpts = [
+                                  { key: 'A', textAr: q.options?.[0]?.textAr || '', textEn: q.options?.[0]?.textEn || '' },
+                                  { key: 'B', textAr: q.options?.[1]?.textAr || '', textEn: q.options?.[1]?.textEn || '' },
+                                  { key: 'C', textAr: q.options?.[2]?.textAr || '', textEn: q.options?.[2]?.textEn || '' },
+                                  { key: 'D', textAr: q.options?.[3]?.textAr || '', textEn: q.options?.[3]?.textEn || '' }
+                                ];
+                              }
+                              
+                              const ministryExams = [...(editingLesson.ministryExams || [])];
+                              ministryExams[qIdx] = { 
+                                ...ministryExams[qIdx], 
+                                type: newType as any,
+                                options: updatedOpts,
+                                correctKey: newType === 'tf' && (q.correctKey !== 'T' && q.correctKey !== 'F') ? 'T' : q.correctKey
+                              };
+                              updateEditingLessonField('ministryExams', ministryExams);
+                            }}
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-2 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-250 focus:outline-none"
+                          >
+                            <option value="tf">{lang === 'ar' ? 'صح أم خطأ (T/F)' : 'True / False (T/F)'}</option>
+                            <option value="mcq">{lang === 'ar' ? 'اختيار من متعدد (MCQ)' : 'Multiple Choice (MCQ)'}</option>
+                            <option value="fill_blank">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Question Text */}
+                      <div className="text-right">
+                        <label className="block text-[10px] font-black text-slate-400 mb-1">
+                          {lang === 'ar' ? 'نص السؤال الوزاري:' : 'Question Text:'}
+                        </label>
+                        <input
+                          type="text"
+                          value={q.textAr || ''}
+                          onChange={(e) => updateMinistryQuestion(qIdx, 'textAr', e.target.value)}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+
+                      {/* Options / Answer Input based on Type */}
+                      {q.type === 'tf' ? (
+                        <div className="space-y-2 text-right">
+                          <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'التحقق من صحة العبارة:' : 'True/False Verification:'}</span>
+                          <div className="grid grid-cols-2 gap-3">
+                            {['T', 'F'].map((keyChar, optIdx) => {
+                              const labelText = optIdx === 0 ? (lang === 'ar' ? '✔️ صح' : '✔️ True') : (lang === 'ar' ? '❌ خطأ' : '❌ False');
+                              return (
+                                <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 flex items-center justify-between">
+                                  <label className="flex items-center gap-2 cursor-pointer w-full">
+                                    <input
+                                      type="radio"
+                                      name={`correct-ministry-${qIdx}`}
+                                      checked={q.correctKey === keyChar || (keyChar === 'T' && q.correctKey === 'A') || (keyChar === 'F' && q.correctKey === 'B')}
+                                      onChange={() => updateMinistryQuestion(qIdx, 'correctKey', keyChar)}
+                                      className="w-4 h-4 text-emerald-500 focus:ring-emerald-500"
+                                    />
+                                    <span className="text-xs font-black text-slate-800 dark:text-white">
+                                      {labelText}
+                                    </span>
+                                  </label>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : (q.type === 'fill' || q.type === 'fill_blank') ? (
+                        <div className="text-right space-y-1">
+                          <label className="block text-[10px] font-black text-slate-400">
+                            {lang === 'ar' ? 'الإجابات الصحيحة المقبولة (افصل بينها بفاصلة لعدة خيارات مرادفة):' : 'Acceptable Correct Answers (comma-separated for multiple synonyms):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={lang === 'ar' ? 'مثال: الأميبا، اميبا' : 'e.g. Amoeba, amoeba'}
+                            value={q.correctAnswers?.join(', ') || q.correctKey || ''}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+                              const ministryExams = [...(editingLesson.ministryExams || [])];
+                              ministryExams[qIdx] = {
+                                ...ministryExams[qIdx],
+                                correctAnswers: arr,
+                                correctKey: arr[0] || ''
+                              };
+                              updateEditingLessonField('ministryExams', ministryExams);
+                            }}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      ) : (
+                        // Default Multiple Choice (MCQ) - 4 Options
+                        <div className="space-y-2 text-right">
+                          <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'خيارات الإجابة المتعددة:' : 'Multiple Choice Options:'}</span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {[0, 1, 2, 3].map((optIdx) => {
+                              const keys = ['A', 'B', 'C', 'D'];
+                              const keyChar = keys[optIdx];
+                              return (
+                                <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <label className="flex items-center gap-1.5 cursor-pointer">
+                                      <input
+                                        type="radio"
+                                        name={`correct-ministry-${qIdx}`}
+                                        checked={q.correctKey === keyChar}
+                                        onChange={() => updateMinistryQuestion(qIdx, 'correctKey', keyChar)}
+                                        className="w-3.5 h-3.5 text-emerald-500 focus:ring-emerald-500"
+                                      />
+                                      <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                                        {lang === 'ar' ? `الخيار الصحيح ${keyChar}` : `Correct Option ${keyChar}`}
+                                      </span>
+                                    </label>
+                                    <span className="text-[10px] font-black text-slate-400 font-sans">#{optIdx + 1}</span>
+                                  </div>
+                                  <input
+                                    type="text"
+                                    placeholder={lang === 'ar' ? 'اكتب الخيار هنا' : 'Enter option here'}
+                                    value={q.options?.[optIdx]?.textAr || ''}
+                                    onChange={(e) => updateMinistryOption(qIdx, optIdx, e.target.value)}
+                                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Explanation */}
+                      <div className="text-right">
+                        <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'تفسير وشرح الحل الوزاري:' : 'Explanation:'}</label>
+                        <textarea
+                          value={q.explanationAr || ''}
+                          onChange={(e) => updateMinistryQuestion(qIdx, 'explanationAr', e.target.value)}
                           rows={2}
                           className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500"
                         />
@@ -1574,7 +1827,7 @@ export default function LessonsTab({
                       )}
 
                       {/* Input for Fill Blank */}
-                      {curQ.type === 'fill' && (
+                      {(curQ.type === 'fill' || curQ.type === 'fill_blank') && (
                         <div className="space-y-2 pt-1">
                           <input
                             type="text"
