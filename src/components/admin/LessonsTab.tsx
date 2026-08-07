@@ -1206,10 +1206,57 @@ export default function LessonsTab({
                         <Trash2 className="w-4 h-4" />
                       </button>
 
+                      {/* Question Type Selection & Question Index */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                          {lang === 'ar' ? `السؤال رقم ${qIdx + 1}` : `Question #${qIdx + 1}`}
+                        </span>
+                        
+                        <div className="flex items-center gap-2">
+                          <label className="text-[10px] font-black text-slate-400">
+                            {lang === 'ar' ? 'نوع السؤال:' : 'Question Type:'}
+                          </label>
+                          <select
+                            value={q.type || 'mcq'}
+                            onChange={(e) => {
+                              const newType = e.target.value;
+                              let updatedOpts = q.options;
+                              if (newType === 'tf') {
+                                updatedOpts = [
+                                  { key: 'A', textAr: '✔️ صح', textEn: '✔️ صح' },
+                                  { key: 'B', textAr: '❌ خطأ', textEn: '❌ خطأ' }
+                                ];
+                              } else if (newType === 'mcq') {
+                                updatedOpts = [
+                                  { key: 'A', textAr: q.options?.[0]?.textAr || '', textEn: q.options?.[0]?.textEn || '' },
+                                  { key: 'B', textAr: q.options?.[1]?.textAr || '', textEn: q.options?.[1]?.textEn || '' },
+                                  { key: 'C', textAr: q.options?.[2]?.textAr || '', textEn: q.options?.[2]?.textEn || '' },
+                                  { key: 'D', textAr: q.options?.[3]?.textAr || '', textEn: q.options?.[3]?.textEn || '' }
+                                ];
+                              }
+                              
+                              const quiz = [...(editingLesson.quiz || [])];
+                              quiz[qIdx] = { 
+                                ...quiz[qIdx], 
+                                type: newType as any,
+                                options: updatedOpts,
+                                correctKey: newType === 'tf' && (q.correctKey !== 'A' && q.correctKey !== 'B') ? 'A' : q.correctKey
+                              };
+                              updateEditingLessonField('quiz', quiz);
+                            }}
+                            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-2 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-250 focus:outline-none"
+                          >
+                            <option value="tf">{lang === 'ar' ? 'صح أم خطأ (T/F)' : 'True / False (T/F)'}</option>
+                            <option value="mcq">{lang === 'ar' ? 'اختيار من متعدد (MCQ)' : 'Multiple Choice (MCQ)'}</option>
+                            <option value="fill">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
+                          </select>
+                        </div>
+                      </div>
+
                       {/* Question Text */}
                       <div className="text-right">
                         <label className="block text-[10px] font-black text-slate-400 mb-1">
-                          {lang === 'ar' ? `السؤال ${qIdx + 1}:` : `Question ${qIdx + 1}:`}
+                          {lang === 'ar' ? 'نص السؤال:' : 'Question Text:'}
                         </label>
                         <input
                           type="text"
@@ -1219,42 +1266,93 @@ export default function LessonsTab({
                         />
                       </div>
 
-                      {/* Options */}
-                      <div className="space-y-2 text-right">
-                        <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'خيارات الإجابة المتعددة:' : 'Multiple Choice Options:'}</span>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {[0, 1, 2, 3].map((optIdx) => {
-                            const keys = ['A', 'B', 'C', 'D'];
-                            const keyChar = keys[optIdx];
-                            return (
-                              <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <label className="flex items-center gap-1.5 cursor-pointer">
+                      {/* Options / Answer Input based on Type */}
+                      {q.type === 'tf' ? (
+                        <div className="space-y-2 text-right">
+                          <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'التحقق من صحة العبارة:' : 'True/False Verification:'}</span>
+                          <div className="grid grid-cols-2 gap-3">
+                            {['A', 'B'].map((keyChar, optIdx) => {
+                              const labelText = optIdx === 0 ? (lang === 'ar' ? '✔️ صح' : '✔️ True') : (lang === 'ar' ? '❌ خطأ' : '❌ False');
+                              return (
+                                <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 flex items-center justify-between">
+                                  <label className="flex items-center gap-2 cursor-pointer w-full">
                                     <input
                                       type="radio"
                                       name={`correct-${qIdx}`}
                                       checked={q.correctKey === keyChar}
                                       onChange={() => updateQuizQuestion(qIdx, 'correctKey', keyChar)}
-                                      className="w-3.5 h-3.5 text-emerald-500 focus:ring-emerald-500"
+                                      className="w-4 h-4 text-emerald-500 focus:ring-emerald-500"
                                     />
-                                    <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
-                                      {lang === 'ar' ? `الخيار الصحيح ${keyChar}` : `Correct Option ${keyChar}`}
+                                    <span className="text-xs font-black text-slate-800 dark:text-white">
+                                      {labelText}
                                     </span>
                                   </label>
-                                  <span className="text-[10px] font-black text-slate-400 font-sans">#{optIdx + 1}</span>
                                 </div>
-                                <input
-                                  type="text"
-                                  placeholder={lang === 'ar' ? 'اكتب الخيار هنا' : 'Enter option here'}
-                                  value={q.options?.[optIdx]?.textAr || ''}
-                                  onChange={(e) => updateQuizOption(qIdx, optIdx, e.target.value)}
-                                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
-                                />
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
+                      ) : q.type === 'fill' ? (
+                        <div className="text-right space-y-1">
+                          <label className="block text-[10px] font-black text-slate-400">
+                            {lang === 'ar' ? 'الإجابات الصحيحة المقبولة (افصل بينها بفاصلة لعدة خيارات مرادفة):' : 'Acceptable Correct Answers (comma-separated for multiple synonyms):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={lang === 'ar' ? 'مثال: الأميبا، اميبا' : 'e.g. Amoeba, amoeba'}
+                            value={q.correctAnswers?.join(', ') || q.correctKey || ''}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+                              const quiz = [...(editingLesson.quiz || [])];
+                              quiz[qIdx] = {
+                                ...quiz[qIdx],
+                                correctAnswers: arr,
+                                correctKey: arr[0] || ''
+                              };
+                              updateEditingLessonField('quiz', quiz);
+                            }}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      ) : (
+                        // Default Multiple Choice (MCQ) - 4 Options
+                        <div className="space-y-2 text-right">
+                          <span className="text-[10px] font-black text-slate-400 block">{lang === 'ar' ? 'خيارات الإجابة المتعددة:' : 'Multiple Choice Options:'}</span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {[0, 1, 2, 3].map((optIdx) => {
+                              const keys = ['A', 'B', 'C', 'D'];
+                              const keyChar = keys[optIdx];
+                              return (
+                                <div key={optIdx} className="bg-white dark:bg-slate-900 p-3 rounded-app-card border border-slate-150 dark:border-slate-800 space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <label className="flex items-center gap-1.5 cursor-pointer">
+                                      <input
+                                        type="radio"
+                                        name={`correct-${qIdx}`}
+                                        checked={q.correctKey === keyChar}
+                                        onChange={() => updateQuizQuestion(qIdx, 'correctKey', keyChar)}
+                                        className="w-3.5 h-3.5 text-emerald-500 focus:ring-emerald-500"
+                                      />
+                                      <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                                        {lang === 'ar' ? `الخيار الصحيح ${keyChar}` : `Correct Option ${keyChar}`}
+                                      </span>
+                                    </label>
+                                    <span className="text-[10px] font-black text-slate-400 font-sans">#{optIdx + 1}</span>
+                                  </div>
+                                  <input
+                                    type="text"
+                                    placeholder={lang === 'ar' ? 'اكتب الخيار هنا' : 'Enter option here'}
+                                    value={q.options?.[optIdx]?.textAr || ''}
+                                    onChange={(e) => updateQuizOption(qIdx, optIdx, e.target.value)}
+                                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-app-btn px-3 py-1.5 text-xs font-bold focus:outline-none"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Explanation */}
                       <div className="text-right">

@@ -131,14 +131,14 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex flex-col items-center mb-8"
+          className="flex flex-col items-center mb-4"
         >
           <img 
             src="/splash.png" 
-            className="w-[310px] h-[310px] object-contain mb-2 filter drop-shadow-[0_15px_30px_rgba(16,185,129,0.1)] dark:drop-shadow-[0_15px_35px_rgba(34,211,238,0.25)] dark:invert dark:hue-rotate-180 brightness-[1.05] contrast-[1.05] transition-all duration-300" 
+            className="w-32 h-32 xs:w-40 xs:h-40 sm:w-52 sm:h-52 object-contain mb-1 filter drop-shadow-[0_10px_20px_rgba(16,185,129,0.15)] dark:drop-shadow-[0_10px_25px_rgba(16,185,129,0.3)] transition-all duration-300" 
             alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
           />
-          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-bold mt-1">
+          <p className="text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-xs font-bold mt-1">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}
           </p>
         </motion.div>

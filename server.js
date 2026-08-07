@@ -254,6 +254,21 @@ app.post('/api/save-config', async (req, res) => {
   }
 });
 
+// ─── POST /api/reset-curriculum-to-default ───
+app.post('/api/reset-curriculum-to-default', async (req, res) => {
+  try {
+    let deleted = false;
+    if (KV.isConfigured()) {
+      await KV.del('curriculum_data');
+      deleted = true;
+    }
+    res.json({ success: true, deletedFromKv: deleted });
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});
+
+
 // ─── POST /api/generate-quiz ───
 app.post('/api/generate-quiz', async (req, res) => {
   try {
