@@ -1288,9 +1288,10 @@ export default function LessonsTab({
                                   { key: 'F', textAr: '❌ خطأ', textEn: '❌ خطأ' }
                                 ];
                               } else if (newType === 'mcq') {
+                                const isComingFromTF = q.type === 'tf';
                                 updatedOpts = [
-                                  { key: 'A', textAr: q.options?.[0]?.textAr || '', textEn: q.options?.[0]?.textEn || '' },
-                                  { key: 'B', textAr: q.options?.[1]?.textAr || '', textEn: q.options?.[1]?.textEn || '' },
+                                  { key: 'A', textAr: isComingFromTF ? '' : (q.options?.[0]?.textAr || ''), textEn: isComingFromTF ? '' : (q.options?.[0]?.textEn || '') },
+                                  { key: 'B', textAr: isComingFromTF ? '' : (q.options?.[1]?.textAr || ''), textEn: isComingFromTF ? '' : (q.options?.[1]?.textEn || '') },
                                   { key: 'C', textAr: q.options?.[2]?.textAr || '', textEn: q.options?.[2]?.textEn || '' },
                                   { key: 'D', textAr: q.options?.[3]?.textAr || '', textEn: q.options?.[3]?.textEn || '' }
                                 ];
@@ -1486,9 +1487,10 @@ export default function LessonsTab({
                                   { key: 'F', textAr: '❌ خطأ', textEn: '❌ خطأ' }
                                 ];
                               } else if (newType === 'mcq') {
+                                const isComingFromTF = q.type === 'tf';
                                 updatedOpts = [
-                                  { key: 'A', textAr: q.options?.[0]?.textAr || '', textEn: q.options?.[0]?.textEn || '' },
-                                  { key: 'B', textAr: q.options?.[1]?.textAr || '', textEn: q.options?.[1]?.textEn || '' },
+                                  { key: 'A', textAr: isComingFromTF ? '' : (q.options?.[0]?.textAr || ''), textEn: isComingFromTF ? '' : (q.options?.[0]?.textEn || '') },
+                                  { key: 'B', textAr: isComingFromTF ? '' : (q.options?.[1]?.textAr || ''), textEn: isComingFromTF ? '' : (q.options?.[1]?.textEn || '') },
                                   { key: 'C', textAr: q.options?.[2]?.textAr || '', textEn: q.options?.[2]?.textEn || '' },
                                   { key: 'D', textAr: q.options?.[3]?.textAr || '', textEn: q.options?.[3]?.textEn || '' }
                                 ];
