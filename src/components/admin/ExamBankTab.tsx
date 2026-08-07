@@ -178,7 +178,7 @@ export default function ExamBankTab({
             questionText: q.textAr,
             questionImage: q.questionImage || '',
             options: optionsStr,
-            correctAnswer: q.type === 'fill_blank' ? correctAnswersStr : (q.correctKey || ''),
+            correctAnswer: (q.type === 'fill' || q.type === 'fill_blank') ? correctAnswersStr : (q.correctKey || ''),
             hint: q.hintAr || '',
             explanation: q.explanationAr || ''
           });
@@ -210,7 +210,7 @@ export default function ExamBankTab({
             questionText: q.textAr,
             questionImage: q.questionImage || '',
             options: optionsStr,
-            correctAnswer: q.type === 'fill_blank' ? correctAnswersStr : (q.correctKey || ''),
+            correctAnswer: (q.type === 'fill' || q.type === 'fill_blank') ? correctAnswersStr : (q.correctKey || ''),
             hint: q.hintAr || '',
             explanation: q.explanationAr || ''
           });
