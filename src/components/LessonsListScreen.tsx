@@ -180,7 +180,14 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
               {lang === 'ar' ? 'لا توجد دروس متاحة في هذه الوحدة حالياً.' : 'No lessons available in this unit yet.'}
             </div>
           ) : (
-            unitLessons
+            [...unitLessons]
+              .sort((a, b) => {
+                const getL = (id: string) => {
+                  const match = id.match(/-l(\d+)/i);
+                  return match ? parseInt(match[1], 10) : 999;
+                };
+                return getL(a.id) - getL(b.id);
+              })
               .filter(lesson => {
                 if (!searchQuery.trim()) return true;
                 const q = searchQuery.toLowerCase();

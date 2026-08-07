@@ -187,13 +187,10 @@ export default function App() {
     setCurrentScreen(targetScreen);
   };
 
-  // Guard: only go to quiz if a lesson is already selected
+  // Open Training / Progressive Test mode: resets lesson selection to load all quiz questions
   const handleQuizNavigate = () => {
-    if (selectedLesson) {
-      handleNavigate('biology-quiz', 'none');
-    } else {
-      handleNavigate('units-navigation', 'none');
-    }
+    setSelectedLesson(null);
+    handleNavigate('biology-quiz', 'none');
   };
 
   const renderScreen = () => {

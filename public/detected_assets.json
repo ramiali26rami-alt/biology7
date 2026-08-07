@@ -11,33 +11,15 @@
       "path": "U1",
       "name": "U1",
       "files": [
+        "cns_brain.pdf",
+        "cns_brain_diagram.webp",
         "u1-l1.pdf",
-        "u1-l1.webp"
-      ]
-    },
-    {
-      "path": "U1/الدرس 2 في دودة الارض",
-      "name": "الدرس 2 في دودة الارض",
-      "files": [
-        "الدرس 2 الجهاز_العصبي_لدودة_الأرض.png",
-        "الدرس 2.pdf"
-      ]
-    },
-    {
-      "path": "U1/الدرس 3  النسيج العصبي",
-      "name": "الدرس 3  النسيج العصبي",
-      "files": [
+        "u1-l1.webp",
+        "u1-l2.pdf",
+        "u1-l2.png",
         "الدرس 3.pdf",
         "الدرس 3.png",
         "بنية_ووظيفة_النسيج_العصبي.png"
-      ]
-    },
-    {
-      "path": "U1/الدرس 4",
-      "name": "الدرس 4",
-      "files": [
-        "cns_brain.pdf",
-        "cns_brain_diagram.webp"
       ]
     }
   ]

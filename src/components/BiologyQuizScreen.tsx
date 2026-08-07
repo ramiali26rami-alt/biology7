@@ -151,7 +151,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" />
     : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
-  if (!lesson) {
+  if (!lesson && (!lessons || lessons.length === 0)) {
     return (
       <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex items-center justify-center font-bold text-slate-400" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         {lang === 'ar' ? 'جاري تحميل الاختبار...' : 'Loading quiz...'}
@@ -160,29 +160,35 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
   }
 
   // Dynamic mapping of lesson.quiz to local Question structure
-  const questions: Question[] = (lesson.quiz || [])
+  const rawQuizQuestions = !lesson 
+    ? (lessons || []).flatMap(l => (l.quiz || []).map(q => ({ ...q, lessonFolder: l.folder, lessonId: l.id })))
+    : (lesson.quiz || []);
+
+  const questions: Question[] = (rawQuizQuestions || [])
     .filter(q => q.type === 'mcq' || q.type === 'tf' || q.type === 'fill' || q.type === 'fill_blank')
     .map((q) => {
-    let mappedType: 'mcq' | 'tf' | 'fill' = 'mcq';
-    if (q.type === 'tf') mappedType = 'tf';
-    else if (q.type === 'fill_blank' || q.type === 'fill') mappedType = 'fill';
-    
-    return {
-      id: q.id,
-      type: mappedType,
-      text: lang === 'ar' ? q.textAr : q.textEn,
-      options: q.options?.map((opt) => ({
-        key: opt.key,
-        text: lang === 'ar' ? opt.textAr : opt.textEn
-      })),
-      correctKey: q.correctKey,
-      correctAnswers: q.correctAnswers,
-      explanation: lang === 'ar' ? q.explanationAr : q.explanationEn,
-      hint: lang === 'ar' ? q.hintAr : q.hintEn,
-      definition: lang === 'ar' ? q.definitionAr : q.definitionEn,
-      questionImage: q.questionImage
-    };
-  });
+      let mappedType: 'mcq' | 'tf' | 'fill' = 'mcq';
+      if (q.type === 'tf') mappedType = 'tf';
+      else if (q.type === 'fill_blank' || q.type === 'fill') mappedType = 'fill';
+      
+      return {
+        id: q.id,
+        type: mappedType,
+        text: lang === 'ar' ? q.textAr : q.textEn,
+        options: q.options?.map((opt) => ({
+          key: opt.key,
+          text: lang === 'ar' ? opt.textAr : opt.textEn
+        })),
+        correctKey: q.correctKey,
+        correctAnswers: q.correctAnswers,
+        explanation: lang === 'ar' ? q.explanationAr : q.explanationEn,
+        hint: lang === 'ar' ? q.hintAr : q.hintEn,
+        definition: lang === 'ar' ? q.definitionAr : q.definitionEn,
+        questionImage: q.questionImage,
+        lessonFolder: (q as any).lessonFolder || lesson?.folder || '',
+        lessonId: (q as any).lessonId || lesson?.id || ''
+      };
+    });
 
   if (questions.length === 0) {
     return (
@@ -190,7 +196,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
           <div className="flex items-center gap-4 w-full">
             <button 
-              onClick={() => onNavigate('lessons-list', 'push_back')}
+              onClick={() => onNavigate(lesson ? 'lessons-list' : 'main-dashboard', 'push_back')}
               aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
               className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
             >
@@ -352,7 +358,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     }
   };
 
-  if (lesson.quizLocked) {
+  if (lesson && lesson.quizLocked) {
     return (
       <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
@@ -400,7 +406,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => onNavigate('lessons-list', 'push_back')}
+              onClick={() => onNavigate(lesson ? 'lessons-list' : 'main-dashboard', 'push_back')}
               aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
               className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200 cursor-pointer"
             >
@@ -480,10 +486,10 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
         {!quizFinished ? (
           <div className="space-y-3 animate-fadeIn">
             {/* Question Image (if present) - Hidden when feedback is shown to save space for next button */}
-            {!showFeedback && currentQ.questionImage && lesson && (
+            {!showFeedback && currentQ.questionImage && (
               <QuestionImage 
-                lessonId={lesson.id} 
-                folder={lesson.folder} 
+                lessonId={(currentQ as any).lessonId || lesson?.id || ''} 
+                folder={(currentQ as any).lessonFolder || lesson?.folder || ''} 
                 fileName={currentQ.questionImage} 
               />
             )}
@@ -716,16 +722,16 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                 {t.retakeQuiz}
               </button>
               <button 
-                onClick={() => onNavigate('lessons-list', 'push_back')}
+                onClick={() => onNavigate(lesson ? 'lessons-list' : 'main-dashboard', 'push_back')}
                 className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-app-btn active:scale-95 transition-all text-xs cursor-pointer"
               >
-                {lang === 'ar' ? 'قائمة الدروس' : 'Lessons List'}
+                {lang === 'ar' ? (lesson ? 'قائمة الدروس' : 'الرئيسية') : (lesson ? 'Lessons List' : 'Home')}
               </button>
             </div>
           </section>
 
           {/* Next Lesson Card */}
-          {(() => {
+          {lesson && (() => {
             const currentIdx = lessons.findIndex(l => l.id === lesson.id);
             const nextLesson = currentIdx >= 0 && currentIdx < lessons.length - 1
               ? lessons[currentIdx + 1]
