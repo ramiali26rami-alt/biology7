@@ -1608,6 +1608,19 @@ export default function LessonsTab({
                             className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           />
                         </div>
+                      ) : q.type === 'unspecified' ? (
+                        <div className="text-right space-y-1">
+                          <label className="block text-[10px] font-black text-slate-400">
+                            {lang === 'ar' ? 'الإجابة النموذجية الصحيحة (ستظهر للطالب بعد تسليم الاختبار):' : 'Model Correct Answer (will appear to student after exam submission):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={lang === 'ar' ? 'اكتب الإجابة النموذجية هنا...' : 'Enter model correct answer here...'}
+                            value={q.correctKey || ''}
+                            onChange={(e) => updateMinistryQuestion(qIdx, 'correctKey', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
                       ) : (
                         // Default Multiple Choice (MCQ) - 4 Options
                         <div className="space-y-2 text-right">
