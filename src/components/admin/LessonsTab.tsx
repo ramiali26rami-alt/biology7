@@ -447,30 +447,37 @@ export default function LessonsTab({
       if (file) {
         setUploadingField(fieldName as string);
         setUploadSuccess(null);
-        const filePath = `${editingLesson.folder}/${file.name}`;
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('filePath', filePath);
-
-        try {
-          const res = await fetch(getAbsoluteUrl('/api/upload-binary'), {
-            method: 'POST',
-            body: formData,
-          });
-          if (res.ok) {
-            const newLesson = { ...editingLesson, [fieldName]: file.name };
-            setEditingLesson(newLesson);
-            const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? newLesson : l);
-            setLessons(updatedLessons);
-            await saveAllToServer(updatedLessons);
-            setUploadSuccess(fieldName as string);
-            setTimeout(() => setUploadSuccess(null), 4000);
+        
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+          try {
+            const contentBase64 = (reader.result as string).split(',')[1];
+            const filePath = `${editingLesson.folder}/${file.name}`;
+            
+            const res = await fetch(getAbsoluteUrl('/api/upload-binary'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ filePath, contentBase64 }),
+            });
+            if (res.ok) {
+              const newLesson = { ...editingLesson, [fieldName]: file.name };
+              setEditingLesson(newLesson);
+              const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? newLesson : l);
+              setLessons(updatedLessons);
+              await saveAllToServer(updatedLessons);
+              setUploadSuccess(fieldName as string);
+              setTimeout(() => setUploadSuccess(null), 4000);
+            } else {
+              alert(lang === 'ar' ? 'فشل تحميل الملف على السيرفر.' : 'Failed to upload file to server.');
+            }
+          } catch (err) {
+            console.error("Failed uploading file:", err);
+            alert(lang === 'ar' ? 'حدث خطأ أثناء رفع الملف.' : 'Error uploading file.');
+          } finally {
+            setUploadingField(null);
           }
-        } catch (err) {
-          console.error("Failed uploading file:", err);
-        } finally {
-          setUploadingField(null);
-        }
+        };
       }
     };
     input.click();
