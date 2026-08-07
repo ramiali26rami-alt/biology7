@@ -55,11 +55,22 @@ export default function SystemSettingsTab({
     setDbResetLoading(true);
     setDbResetMsg(null);
     try {
-      const res = await fetch(getAbsoluteUrl('/api/reset-curriculum-to-default'), {
-        method: 'POST'
+      // 1. Fetch default static curriculum configuration from browser path
+      const defaultRes = await fetch('/lessons_config.json');
+      if (!defaultRes.ok) {
+        throw new Error('Failed to fetch default config file from static files');
+      }
+      const defaultData = await defaultRes.json();
+
+      // 2. Post the default data directly to server save-config to overwrite the KV store
+      const saveRes = await fetch(getAbsoluteUrl('/api/save-config'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(defaultData)
       });
-      if (res.ok) {
-        // Clear client caches
+
+      if (saveRes.ok) {
+        // Clear local browser cache storage
         try {
           localStorage.removeItem('curriculum_data');
           sessionStorage.clear();
@@ -73,7 +84,7 @@ export default function SystemSettingsTab({
           window.location.reload();
         }, 2000);
       } else {
-        throw new Error('Server returned an error');
+        throw new Error('Server save returned an error');
       }
     } catch (err: any) {
       console.error(err);
