@@ -203,6 +203,13 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         const isSelectedTrue = key === 'T' || key === 'A' || key === 'صح';
         const isCorrectTrue = q.correctKey === 'T' || q.correctKey === 'A' || q.correctKey === 'صح' || String(q.correctKey).toLowerCase() === 'true';
         correct = isSelectedTrue === isCorrectTrue;
+      } else if (q.type === 'fill' || q.type === 'unspecified') {
+        const userAns = String(key || '').trim().toLowerCase();
+        if (q.correctAnswers && q.correctAnswers.length > 0) {
+          correct = q.correctAnswers.some(ans => ans.trim().toLowerCase() === userAns);
+        } else {
+          correct = userAns === String(q.correctKey || '').trim().toLowerCase();
+        }
       } else {
         correct = key === q.correctKey;
       }
@@ -370,9 +377,9 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pe-2 scrollbar-thin">
               {activeQuestions.map((q, idx) => (
                 <div key={q.id} className="space-y-3 border-b border-slate-50 dark:border-slate-800 pb-4 last:border-0 last:pb-0">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 text-right w-full">
                     <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
-                      {idx + 1}. {q.text}
+                      {idx + 1}. {q.text || '................................................................................................................................'}
                     </span>
                     {q.examYear && (
                       <span className="bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 text-[9px] font-black px-2 py-0.5 rounded-full select-none">
@@ -428,42 +435,62 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                     </div>
                   )}
                   
-                  <div className="grid grid-cols-2 gap-3">
-                    {q.options.map((opt) => {
-                      const isSelected = selectedAnswers[q.id] === opt.key;
-                      let isCorrect = opt.key === q.correctKey;
-                      if (q.type === 'tf') {
-                        const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
-                        const isCorrectTrue = q.correctKey === 'T' || q.correctKey === 'A' || q.correctKey === 'صح' || String(q.correctKey).toLowerCase() === 'true';
-                        isCorrect = isOptTrue === isCorrectTrue;
-                      }
-                      
-                      let btnStyle = 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300';
-                      
-                      if (isSelected) {
-                        btnStyle = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-black';
-                      }
- 
-                      if (examFinished) {
-                        if (isCorrect) {
-                          btnStyle = 'border-emerald-500 bg-emerald-100 dark:bg-emerald-950 text-emerald-750 font-black';
-                        } else if (isSelected) {
-                          btnStyle = 'border-rose-450 bg-rose-50 border-rose-400 text-rose-800 font-bold';
+                   {(q.type === 'mcq' || q.type === 'tf') && q.options && q.options.length > 0 && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {q.options.map((opt) => {
+                        const isSelected = selectedAnswers[q.id] === opt.key;
+                        let isCorrect = opt.key === q.correctKey;
+                        if (q.type === 'tf') {
+                          const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
+                          const isCorrectTrue = q.correctKey === 'T' || q.correctKey === 'A' || q.correctKey === 'صح' || String(q.correctKey).toLowerCase() === 'true';
+                          isCorrect = isOptTrue === isCorrectTrue;
                         }
-                      }
- 
-                      return (
-                        <button
-                          key={opt.key}
-                          onClick={() => handleAnswerSelect(q.id, opt.key)}
-                          className={`p-3 rounded-app-btn border text-xs font-bold text-center active:scale-[0.98] transition-all ${btnStyle}`}
-                          disabled={examFinished}
-                        >
-                          {opt.text}
-                        </button>
-                      );
-                    })}
-                  </div>
+                        
+                        let btnStyle = 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300';
+                        
+                        if (isSelected) {
+                          btnStyle = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-black';
+                        }
+   
+                        if (examFinished) {
+                          if (isCorrect) {
+                            btnStyle = 'border-emerald-500 bg-emerald-100 dark:bg-emerald-950 text-emerald-750 font-black';
+                          } else if (isSelected) {
+                            btnStyle = 'border-rose-450 bg-rose-50 border-rose-400 text-rose-800 font-bold';
+                          }
+                        }
+   
+                        return (
+                          <button
+                            key={opt.key}
+                            onClick={() => handleAnswerSelect(q.id, opt.key)}
+                            className={`p-3 rounded-app-btn border text-xs font-bold text-center active:scale-[0.98] transition-all ${btnStyle}`}
+                            disabled={examFinished}
+                          >
+                            {opt.text}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {(q.type === 'fill' || q.type === 'unspecified') && (
+                    <div className="space-y-2 pt-1 text-right">
+                      <input
+                        type="text"
+                        disabled={examFinished}
+                        value={selectedAnswers[q.id] || ''}
+                        onChange={(e) => handleAnswerSelect(q.id, e.target.value)}
+                        placeholder={lang === 'ar' ? 'اكتب إجابتك هنا...' : 'Type your answer here...'}
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold text-center focus:outline-none focus:border-emerald-500"
+                      />
+                      {examFinished && (
+                        <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
+                          {lang === 'ar' ? `✔️ الإجابة النموذجية: ${q.correctAnswers?.join(' أو ') || q.correctKey || ''}` : `✔️ Model Answer: ${q.correctAnswers?.join(' or ') || q.correctKey || ''}`}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Explanation for Ministry Exam Questions */}
                   {examFinished && q.explanation && (

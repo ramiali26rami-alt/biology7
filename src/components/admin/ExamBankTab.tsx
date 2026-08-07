@@ -450,10 +450,10 @@ export default function ExamBankTab({
             : (existingLesson?.glossary || []);
 
           // Parse quizzes (preserve if not found in Excel)
-          const hasQuizzesInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true');
+          const hasQuizzesInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank', 'unspecified'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true');
           const lessonQuizzes = (examBankRaw.length > 0 && hasQuizzesInExcel)
             ? examBankRaw
-              .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true')
+              .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank', 'unspecified'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true')
               .map(q => {
                 const type = String(q.questionType).trim().toLowerCase();
                 let options: { key: string; textAr: string; textEn: string }[] | undefined = undefined;
@@ -487,10 +487,10 @@ export default function ExamBankTab({
             : (existingLesson?.quiz || []);
 
           // Parse ministry exams (preserve if not found in Excel)
-          const hasMinistryExamsInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true');
+          const hasMinistryExamsInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank', 'unspecified'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true');
           const lessonMinistryExams = (examBankRaw.length > 0 && hasMinistryExamsInExcel)
             ? examBankRaw
-              .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true')
+              .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank', 'unspecified'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true')
               .map(q => {
                 const type = String(q.questionType).trim().toLowerCase();
                 let options: { key: string; textAr: string; textEn: string }[] | undefined = undefined;
