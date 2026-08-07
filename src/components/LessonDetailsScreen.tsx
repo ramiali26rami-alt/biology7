@@ -536,7 +536,14 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
     if (showFeedback) return;
     setSelectedOption(key);
     const currentQ = activeQuestions[currentQuestionIndex];
-    const correct = key === currentQ.correctKey;
+    let correct = false;
+    if (currentQ.type === 'tf') {
+      const isSelectedTrue = key === 'T' || key === 'A' || key === 'صح';
+      const isCorrectTrue = currentQ.correctKey === 'T' || currentQ.correctKey === 'A' || currentQ.correctKey === 'صح' || String(currentQ.correctKey).toLowerCase() === 'true';
+      correct = isSelectedTrue === isCorrectTrue;
+    } else {
+      correct = key === currentQ.correctKey;
+    }
     setIsAnswerCorrect(correct);
     
     const isHintUsed = hintsUsed.has(currentQ.id);
@@ -1180,7 +1187,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           <div className="space-y-2">
                             {(activeQuestions[currentQuestionIndex].options || []).map((opt) => {
                               const isSelected = selectedOption === opt.key;
-                              const isCorrectOpt = opt.key === activeQuestions[currentQuestionIndex].correctKey;
+                              let isCorrectOpt = opt.key === activeQuestions[currentQuestionIndex].correctKey;
+                              if (activeQuestions[currentQuestionIndex].type === 'tf') {
+                                const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
+                                const isCorrectTrue = activeQuestions[currentQuestionIndex].correctKey === 'T' || activeQuestions[currentQuestionIndex].correctKey === 'A' || activeQuestions[currentQuestionIndex].correctKey === 'صح' || String(activeQuestions[currentQuestionIndex].correctKey).toLowerCase() === 'true';
+                                isCorrectOpt = isOptTrue === isCorrectTrue;
+                              }
                               
                               let optionStyle = 'border-slate-100 dark:border-slate-800 hover:border-emerald-500 bg-white dark:bg-slate-900';
                               let checkBadge = null;

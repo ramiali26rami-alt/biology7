@@ -196,7 +196,17 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
   const calculateScore = () => {
     let score = 0;
     activeQuestions.forEach(q => {
-      if (selectedAnswers[q.id] === q.correctKey) {
+      const key = selectedAnswers[q.id];
+      let correct = false;
+      if (q.type === 'tf') {
+        const isSelectedTrue = key === 'T' || key === 'A' || key === 'صح';
+        const isCorrectTrue = q.correctKey === 'T' || q.correctKey === 'A' || q.correctKey === 'صح' || String(q.correctKey).toLowerCase() === 'true';
+        correct = isSelectedTrue === isCorrectTrue;
+      } else {
+        correct = key === q.correctKey;
+      }
+      
+      if (correct) {
         const isHintUsed = hintsUsed.has(q.id);
         score += isHintUsed ? 0.75 : 1.0;
       }
@@ -413,7 +423,12 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                   <div className="grid grid-cols-2 gap-3">
                     {q.options.map((opt) => {
                       const isSelected = selectedAnswers[q.id] === opt.key;
-                      const isCorrect = opt.key === q.correctKey;
+                      let isCorrect = opt.key === q.correctKey;
+                      if (q.type === 'tf') {
+                        const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
+                        const isCorrectTrue = q.correctKey === 'T' || q.correctKey === 'A' || q.correctKey === 'صح' || String(q.correctKey).toLowerCase() === 'true';
+                        isCorrect = isOptTrue === isCorrectTrue;
+                      }
                       
                       let btnStyle = 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300';
                       

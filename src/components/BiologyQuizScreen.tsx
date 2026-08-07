@@ -250,7 +250,14 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     if (showFeedback) return;
     setSelectedOption(key);
     const currentQ = questions[currentQuestionIndex];
-    const correct = key === currentQ.correctKey;
+    let correct = false;
+    if (currentQ.type === 'tf') {
+      const isSelectedTrue = key === 'T' || key === 'A' || key === 'صح';
+      const isCorrectTrue = currentQ.correctKey === 'T' || currentQ.correctKey === 'A' || currentQ.correctKey === 'صح' || String(currentQ.correctKey).toLowerCase() === 'true';
+      correct = isSelectedTrue === isCorrectTrue;
+    } else {
+      correct = key === currentQ.correctKey;
+    }
     setIsAnswerCorrect(correct);
     if (correct) {
       playCorrectSound();
@@ -535,7 +542,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                   itemHeight={52}
                   renderItem={(opt: any) => {
                     const isSelected = selectedOption === opt.key;
-                    const isCorrectOpt = opt.key === currentQ.correctKey;
+                    let isCorrectOpt = opt.key === currentQ.correctKey;
+                    if (currentQ.type === 'tf') {
+                      const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
+                      const isCorrectTrue = currentQ.correctKey === 'T' || currentQ.correctKey === 'A' || currentQ.correctKey === 'صح' || String(currentQ.correctKey).toLowerCase() === 'true';
+                      isCorrectOpt = isOptTrue === isCorrectTrue;
+                    }
                     
                     let optionStyle = 'border-slate-100 dark:border-slate-800 hover:border-emerald-500 hover:bg-emerald-50/10 dark:hover:bg-slate-800/40';
                     let checkBadge = null;
