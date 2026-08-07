@@ -157,7 +157,7 @@ export default function ExamBankTab({
       if (l.quiz) {
         l.quiz.forEach(q => {
           const type = String(q.type || '').trim().toLowerCase();
-          if (!['mcq', 'tf', 'fill', 'fill_blank'].includes(type)) {
+          if (!['mcq', 'tf', 'fill', 'fill_blank', 'unspecified'].includes(type)) {
             return;
           }
 
@@ -189,7 +189,7 @@ export default function ExamBankTab({
       if (l.ministryExams) {
         l.ministryExams.forEach(q => {
           const type = String(q.type || '').trim().toLowerCase();
-          if (!['mcq', 'tf', 'fill', 'fill_blank'].includes(type)) {
+          if (!['mcq', 'tf', 'fill', 'fill_blank', 'unspecified'].includes(type)) {
             return;
           }
 
