@@ -577,7 +577,7 @@ export default function ExamBankTab({
             unit: less.U,
             unitNameAr: less.unitNameAr || '',
             unitNameEn: less.unitNameEn || '',
-            folder: less.folderName || `الوحدة ${less.U}/${less.lessonNameAr}`,
+            folder: less.folderName ? String(less.folderName).trim() : `U${less.U}`,
             titleAr: less.lessonNameAr || '',
             titleEn: less.lessonNameEn || '',
             pdfFile: less.pdfFileName || '',
