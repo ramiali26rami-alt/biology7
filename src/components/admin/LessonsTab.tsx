@@ -1327,6 +1327,39 @@ export default function LessonsTab({
                         />
                       </div>
 
+                      {/* Question Image & Exam Year (Side-by-Side) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">
+                            {lang === 'ar' ? 'اسم ملف الرسم التوضيحي للسؤال (اختياري - H):' : 'Question Image File (Optional - H):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={editingLesson.diagramFile ? `مثال: q-${editingLesson.diagramFile}` : "e.g. q-u1-l1.webp"}
+                            value={q.questionImage || ''}
+                            onChange={(e) => updateQuizQuestion(qIdx, 'questionImage', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                          {editingLesson.diagramFile && !q.questionImage && (
+                            <span className="text-[9px] font-semibold text-slate-400 mt-1 block">
+                              {lang === 'ar' ? `💡 الاسم المقترح: q-${editingLesson.diagramFile}` : `💡 Suggested name: q-${editingLesson.diagramFile}`}
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">
+                            {lang === 'ar' ? 'سنة الامتحان الوزاري (اختياري - E):' : 'Exam Year (Optional - E):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={lang === 'ar' ? "مثال: 2024 أو General" : "e.g. 2024 or General"}
+                            value={q.examYear || ''}
+                            onChange={(e) => updateQuizQuestion(qIdx, 'examYear', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      </div>
+
                       {/* Options / Answer Input based on Type */}
                       {q.type === 'tf' ? (
                         <div className="space-y-2 text-right">
@@ -1524,6 +1557,39 @@ export default function LessonsTab({
                           onChange={(e) => updateMinistryQuestion(qIdx, 'textAr', e.target.value)}
                           className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                         />
+                      </div>
+
+                      {/* Question Image & Exam Year (Side-by-Side) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">
+                            {lang === 'ar' ? 'اسم ملف الرسم التوضيحي للسؤال (اختياري - H):' : 'Question Image File (Optional - H):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={editingLesson.diagramFile ? `مثال: q-${editingLesson.diagramFile}` : "e.g. q-u1-l1.webp"}
+                            value={q.questionImage || ''}
+                            onChange={(e) => updateMinistryQuestion(qIdx, 'questionImage', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                          {editingLesson.diagramFile && !q.questionImage && (
+                            <span className="text-[9px] font-semibold text-slate-400 mt-1 block">
+                              {lang === 'ar' ? `💡 الاسم المقترح: q-${editingLesson.diagramFile}` : `💡 Suggested name: q-${editingLesson.diagramFile}`}
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 mb-1">
+                            {lang === 'ar' ? 'سنة الامتحان الوزاري (اختياري - E):' : 'Exam Year (Optional - E):'}
+                          </label>
+                          <input
+                            type="text"
+                            placeholder={lang === 'ar' ? "مثال: 2024" : "e.g. 2024"}
+                            value={q.examYear || ''}
+                            onChange={(e) => updateMinistryQuestion(qIdx, 'examYear', e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                          />
+                        </div>
                       </div>
 
                       {/* Options / Answer Input based on Type */}

@@ -164,7 +164,8 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         explanation: lang === 'ar' ? q.explanationAr : q.explanationEn,
         hint: lang === 'ar' ? q.hintAr : q.hintEn,
         definition: lang === 'ar' ? q.definitionAr : q.definitionEn,
-        questionImage: q.questionImage
+        questionImage: q.questionImage,
+        examYear: q.examYear
       }))
     : [
         {
@@ -369,9 +370,16 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pe-2 scrollbar-thin">
               {activeQuestions.map((q, idx) => (
                 <div key={q.id} className="space-y-3 border-b border-slate-50 dark:border-slate-800 pb-4 last:border-0 last:pb-0">
-                  <p className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
-                    {idx + 1}. {q.text}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
+                      {idx + 1}. {q.text}
+                    </span>
+                    {q.examYear && (
+                      <span className="bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 text-[9px] font-black px-2 py-0.5 rounded-full select-none">
+                        {lang === 'ar' ? `وزاري ${q.examYear}` : `Ministry ${q.examYear}`}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Question Image (if present) */}
                   {q.questionImage && lesson && (

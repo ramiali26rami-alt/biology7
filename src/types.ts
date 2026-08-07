@@ -54,6 +54,7 @@ export interface ConfigQuestion {
   definitionAr?: string;
   definitionEn?: string;
   questionImage?: string;
+  examYear?: string;
 }
 
 export interface MindmapNode {

@@ -173,7 +173,7 @@ export default function ExamBankTab({
             L,
             questionId: q.id || questionCounter++,
             isMinistry: 'FALSE',
-            examYear: 'General',
+            examYear: q.examYear || 'General',
             questionType: q.type,
             questionText: q.textAr,
             questionImage: q.questionImage || '',
@@ -205,7 +205,7 @@ export default function ExamBankTab({
             L,
             questionId: q.id || questionCounter++,
             isMinistry: 'TRUE',
-            examYear: '2026',
+            examYear: q.examYear || '2026',
             questionType: q.type,
             questionText: q.textAr,
             questionImage: q.questionImage || '',
@@ -479,7 +479,9 @@ export default function ExamBankTab({
                   correctKey: type === 'mcq' || type === 'tf' ? String(q.correctAnswer).trim() : undefined,
                   correctAnswers: type === 'fill_blank' || type === 'fill' ? String(q.correctAnswer).split('|').map(s => s.trim()) : undefined,
                   explanationAr: q.explanation || '',
-                  explanationEn: q.explanationEn || ''
+                  explanationEn: q.explanationEn || '',
+                  questionImage: q.questionImage || '',
+                  examYear: q.examYear ? String(q.examYear).trim() : ''
                 };
               })
             : (existingLesson?.quiz || []);
@@ -514,7 +516,9 @@ export default function ExamBankTab({
                   correctKey: type === 'mcq' || type === 'tf' ? String(q.correctAnswer).trim() : undefined,
                   correctAnswers: type === 'fill_blank' || type === 'fill' ? String(q.correctAnswer).split('|').map(s => s.trim()) : undefined,
                   explanationAr: q.explanation || '',
-                  explanationEn: q.explanationEn || ''
+                  explanationEn: q.explanationEn || '',
+                  questionImage: q.questionImage || '',
+                  examYear: q.examYear ? String(q.examYear).trim() : ''
                 };
               })
             : (existingLesson?.ministryExams || []);
