@@ -1309,7 +1309,7 @@ export default function LessonsTab({
                           >
                             <option value="tf">{lang === 'ar' ? 'صح أم خطأ (T/F)' : 'True / False (T/F)'}</option>
                             <option value="mcq">{lang === 'ar' ? 'اختيار من متعدد (MCQ)' : 'Multiple Choice (MCQ)'}</option>
-                            <option value="fill_blank">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
+                            <option value="fill">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
                           </select>
                         </div>
                       </div>
@@ -1508,7 +1508,7 @@ export default function LessonsTab({
                           >
                             <option value="tf">{lang === 'ar' ? 'صح أم خطأ (T/F)' : 'True / False (T/F)'}</option>
                             <option value="mcq">{lang === 'ar' ? 'اختيار من متعدد (MCQ)' : 'Multiple Choice (MCQ)'}</option>
-                            <option value="fill_blank">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
+                            <option value="fill">{lang === 'ar' ? 'كتابة الإجابة / أكمل الفراغ' : 'Fill in the Blank'}</option>
                           </select>
                         </div>
                       </div>
