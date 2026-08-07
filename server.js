@@ -123,6 +123,23 @@ const KV = {
       console.error(`Vercel KV write error for ${key}:`, e);
       return false;
     }
+  },
+  async del(key) {
+    if (!this.isConfigured()) return false;
+    try {
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(['DEL', key])
+      });
+      return res.ok;
+    } catch (e) {
+      console.error(`Vercel KV delete error for ${key}:`, e);
+      return false;
+    }
   }
 };
 
@@ -260,6 +277,7 @@ app.post('/api/reset-curriculum-to-default', async (req, res) => {
     let deleted = false;
     if (KV.isConfigured()) {
       await KV.del('curriculum_data');
+      await KV.del('curriculum_version');
       deleted = true;
     }
     res.json({ success: true, deletedFromKv: deleted });
