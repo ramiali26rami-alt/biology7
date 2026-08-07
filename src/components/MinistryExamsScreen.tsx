@@ -203,13 +203,15 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         const isSelectedTrue = key === 'T' || key === 'A' || key === 'صح';
         const isCorrectTrue = q.correctKey === 'T' || q.correctKey === 'A' || q.correctKey === 'صح' || String(q.correctKey).toLowerCase() === 'true';
         correct = isSelectedTrue === isCorrectTrue;
-      } else if (q.type === 'fill' || q.type === 'unspecified') {
+      } else if (q.type === 'fill') {
         const userAns = String(key || '').trim().toLowerCase();
         if (q.correctAnswers && q.correctAnswers.length > 0) {
           correct = q.correctAnswers.some(ans => ans.trim().toLowerCase() === userAns);
         } else {
           correct = userAns === String(q.correctKey || '').trim().toLowerCase();
         }
+      } else if (q.type === 'unspecified') {
+        correct = true; // Always marked correct for self-study open questions
       } else {
         correct = key === q.correctKey;
       }
@@ -379,7 +381,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                 <div key={q.id} className="space-y-3 border-b border-slate-50 dark:border-slate-800 pb-4 last:border-0 last:pb-0">
                   <div className="flex flex-wrap items-center gap-2 text-right w-full">
                     <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
-                      {idx + 1}. {q.text || '................................................................................................................................'}
+                      {idx + 1}. {q.text}
                     </span>
                     {q.examYear && (
                       <span className="bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 text-[9px] font-black px-2 py-0.5 rounded-full select-none">
@@ -474,7 +476,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                     </div>
                   )}
 
-                  {(q.type === 'fill' || q.type === 'unspecified') && (
+                  {q.type === 'fill' && (
                     <div className="space-y-2 pt-1 text-right">
                       <input
                         type="text"
@@ -485,6 +487,17 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                         className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold text-center focus:outline-none focus:border-emerald-500"
                       />
                       {examFinished && (
+                        <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
+                          {lang === 'ar' ? `✔️ الإجابة النموذجية: ${q.correctAnswers?.join(' أو ') || q.correctKey || ''}` : `✔️ Model Answer: ${q.correctAnswers?.join(' or ') || q.correctKey || ''}`}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {q.type === 'unspecified' && (
+                    <div className="space-y-2 pt-1 text-right">
+                      {/* Left blank under the question during exam */}
+                      {examFinished && (q.correctKey || (q.correctAnswers && q.correctAnswers.length > 0)) && (
                         <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
                           {lang === 'ar' ? `✔️ الإجابة النموذجية: ${q.correctAnswers?.join(' أو ') || q.correctKey || ''}` : `✔️ Model Answer: ${q.correctAnswers?.join(' or ') || q.correctKey || ''}`}
                         </div>
