@@ -415,6 +415,8 @@ export default function ExamBankTab({
         // Map and parse the Excel lessons data
         const nestedLessons: Lesson[] = validLessonsList.map(less => {
           const lessonId = `u${less.U}-l${less.L}`;
+          const existingLesson = lessons.find(l => l.id === lessonId);
+          
           const summaryPointsAr = less.summaryPointsAr
             ? String(less.summaryPointsAr).split('|').map(s => s.trim()).filter(Boolean)
             : [];
@@ -422,125 +424,148 @@ export default function ExamBankTab({
             ? String(less.summaryPointsEn).split('|').map(s => s.trim()).filter(Boolean)
             : [];
 
-          // Parse flashcards
-          const lessonFlashcards = examBankRaw
-            .filter(q => q.U === less.U && q.L === less.L && String(q.questionType).trim().toLowerCase() === '')
-            .map(q => ({
-              qAr: q.questionText || '',
-              qEn: q.questionTextEn || '',
-              aAr: q.correctAnswer || '',
-              aEn: q.correctAnswerEn || ''
-            }));
+          // Parse flashcards (preserve if not found in Excel)
+          const hasFlashcardsInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && String(q.questionType).trim().toLowerCase() === '');
+          const lessonFlashcards = (examBankRaw.length > 0 && hasFlashcardsInExcel)
+            ? examBankRaw
+              .filter(q => q.U === less.U && q.L === less.L && String(q.questionType).trim().toLowerCase() === '')
+              .map(q => ({
+                qAr: q.questionText || '',
+                qEn: q.questionTextEn || '',
+                aAr: q.correctAnswer || '',
+                aEn: q.correctAnswerEn || ''
+              }))
+            : (existingLesson?.flashcards || []);
 
-          // Parse glossary glossary terms
-          const lessonGlossary = examBankRaw
-            .filter(q => q.U === less.U && q.L === less.L && String(q.questionType).trim().toLowerCase() === 'define')
-            .map(q => ({
-              term: q.questionText || '',
-              descAr: q.correctAnswer || '',
-              descEn: q.correctAnswerEn || ''
-            }));
+          // Parse glossary glossary terms (preserve if not found in Excel)
+          const hasGlossaryInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && String(q.questionType).trim().toLowerCase() === 'define');
+          const lessonGlossary = (examBankRaw.length > 0 && hasGlossaryInExcel)
+            ? examBankRaw
+              .filter(q => q.U === less.U && q.L === less.L && String(q.questionType).trim().toLowerCase() === 'define')
+              .map(q => ({
+                term: q.questionText || '',
+                descAr: q.correctAnswer || '',
+                descEn: q.correctAnswerEn || ''
+              }))
+            : (existingLesson?.glossary || []);
 
-          // Parse quizzes
-          const lessonQuizzes = examBankRaw
-            .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true')
-            .map(q => {
-              const type = String(q.questionType).trim().toLowerCase();
-              let options: { key: string; textAr: string; textEn: string }[] | undefined = undefined;
+          // Parse quizzes (preserve if not found in Excel)
+          const hasQuizzesInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true');
+          const lessonQuizzes = (examBankRaw.length > 0 && hasQuizzesInExcel)
+            ? examBankRaw
+              .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() !== 'true')
+              .map(q => {
+                const type = String(q.questionType).trim().toLowerCase();
+                let options: { key: string; textAr: string; textEn: string }[] | undefined = undefined;
 
-              if (type === 'mcq' && q.options) {
-                options = String(q.options).split('|').map((o, idx) => {
-                  const key = String.fromCharCode(65 + idx); // A, B, C, D
-                  return { key, textAr: o.trim(), textEn: o.trim() };
-                });
-              } else if (type === 'tf') {
-                options = [
-                  { key: 'T', textAr: '✔️ صح', textEn: 'True' },
-                  { key: 'F', textAr: '❌ خطأ', textEn: 'False' }
-                ];
-              }
+                if (type === 'mcq' && q.options) {
+                  options = String(q.options).split('|').map((o, idx) => {
+                    const key = String.fromCharCode(65 + idx); // A, B, C, D
+                    return { key, textAr: o.trim(), textEn: o.trim() };
+                  });
+                } else if (type === 'tf') {
+                  options = [
+                    { key: 'T', textAr: '✔️ صح', textEn: 'True' },
+                    { key: 'F', textAr: '❌ خطأ', textEn: 'False' }
+                  ];
+                }
 
-              return {
-                id: q.questionId || 1,
-                type: (type === 'fill_blank' ? 'fill' : type) as any,
-                textAr: q.questionText || '',
-                textEn: q.questionTextEn || '',
-                options,
-                correctKey: type === 'mcq' || type === 'tf' ? String(q.correctAnswer).trim() : undefined,
-                correctAnswers: type === 'fill_blank' || type === 'fill' ? String(q.correctAnswer).split('|').map(s => s.trim()) : undefined,
-                explanationAr: q.explanation || '',
-                explanationEn: q.explanationEn || ''
-              };
-            });
-
-          // Parse ministry exams
-          const lessonMinistryExams = examBankRaw
-            .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true')
-            .map(q => {
-              const type = String(q.questionType).trim().toLowerCase();
-              let options: { key: string; textAr: string; textEn: string }[] | undefined = undefined;
-
-              if (type === 'mcq' && q.options) {
-                options = String(q.options).split('|').map((o, idx) => {
-                  const key = String.fromCharCode(65 + idx); // A, B, C, D
-                  return { key, textAr: o.trim(), textEn: o.trim() };
-                });
-              } else if (type === 'tf') {
-                options = [
-                  { key: 'T', textAr: '✔️ صح', textEn: 'True' },
-                  { key: 'F', textAr: '❌ خطأ', textEn: 'False' }
-                ];
-              }
-
-              return {
-                id: q.questionId || 1,
-                type: (type === 'fill_blank' ? 'fill' : type) as any,
-                textAr: q.questionText || '',
-                textEn: q.questionTextEn || '',
-                options,
-                correctKey: type === 'mcq' || type === 'tf' ? String(q.correctAnswer).trim() : undefined,
-                correctAnswers: type === 'fill_blank' || type === 'fill' ? String(q.correctAnswer).split('|').map(s => s.trim()) : undefined,
-                explanationAr: q.explanation || '',
-                explanationEn: q.explanationEn || ''
-              };
-            });
-
-          // Parse interactive diagrams hotspots
-          const lessonInteractiveDiagramsMap: Record<string, { imageFile: string; titleAr: string; hotspots: any[] }> = {};
-          diagramsInteractiveRaw
-            .filter(d => d.U === less.U && d.L === less.L)
-            .forEach(d => {
-              const key = d.imageName;
-              if (!lessonInteractiveDiagramsMap[key]) {
-                lessonInteractiveDiagramsMap[key] = {
-                  imageFile: d.imageName,
-                  titleAr: d.diagramTitleAr || '',
-                  hotspots: []
+                return {
+                  id: q.questionId || 1,
+                  type: (type === 'fill_blank' ? 'fill' : type) as any,
+                  textAr: q.questionText || '',
+                  textEn: q.questionTextEn || '',
+                  options,
+                  correctKey: type === 'mcq' || type === 'tf' ? String(q.correctAnswer).trim() : undefined,
+                  correctAnswers: type === 'fill_blank' || type === 'fill' ? String(q.correctAnswer).split('|').map(s => s.trim()) : undefined,
+                  explanationAr: q.explanation || '',
+                  explanationEn: q.explanationEn || ''
                 };
-              }
-              lessonInteractiveDiagramsMap[key].hotspots.push({
-                id: String(d.partNumber),
-                x: Number(d.x),
-                y: Number(d.y),
-                arrowX: d.arrowX !== undefined && d.arrowX !== '' ? Number(d.arrowX) : undefined,
-                arrowY: d.arrowY !== undefined && d.arrowY !== '' ? Number(d.arrowY) : undefined,
-                labelAr: d.partName || '',
-                descAr: d.partDetails || ''
+              })
+            : (existingLesson?.quiz || []);
+
+          // Parse ministry exams (preserve if not found in Excel)
+          const hasMinistryExamsInExcel = examBankRaw.some(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true');
+          const lessonMinistryExams = (examBankRaw.length > 0 && hasMinistryExamsInExcel)
+            ? examBankRaw
+              .filter(q => q.U === less.U && q.L === less.L && ['mcq', 'tf', 'fill', 'fill_blank'].includes(String(q.questionType).trim().toLowerCase()) && String(q.isMinistry).trim().toLowerCase() === 'true')
+              .map(q => {
+                const type = String(q.questionType).trim().toLowerCase();
+                let options: { key: string; textAr: string; textEn: string }[] | undefined = undefined;
+
+                if (type === 'mcq' && q.options) {
+                  options = String(q.options).split('|').map((o, idx) => {
+                    const key = String.fromCharCode(65 + idx); // A, B, C, D
+                    return { key, textAr: o.trim(), textEn: o.trim() };
+                  });
+                } else if (type === 'tf') {
+                  options = [
+                    { key: 'T', textAr: '✔️ صح', textEn: 'True' },
+                    { key: 'F', textAr: '❌ خطأ', textEn: 'False' }
+                  ];
+                }
+
+                return {
+                  id: q.questionId || 1,
+                  type: (type === 'fill_blank' ? 'fill' : type) as any,
+                  textAr: q.questionText || '',
+                  textEn: q.questionTextEn || '',
+                  options,
+                  correctKey: type === 'mcq' || type === 'tf' ? String(q.correctAnswer).trim() : undefined,
+                  correctAnswers: type === 'fill_blank' || type === 'fill' ? String(q.correctAnswer).split('|').map(s => s.trim()) : undefined,
+                  explanationAr: q.explanation || '',
+                  explanationEn: q.explanationEn || ''
+                };
+              })
+            : (existingLesson?.ministryExams || []);
+
+          // Parse interactive diagrams hotspots (preserve if Diagrams_Interactive sheet has no data)
+          const lessonInteractiveDiagramsMap: Record<string, { imageFile: string; titleAr: string; hotspots: any[] }> = {};
+          let lessonInteractiveDiagrams = existingLesson?.interactiveDiagrams || [];
+          
+          if (diagramsInteractiveRaw.length > 0) {
+            diagramsInteractiveRaw
+              .filter(d => d.U === less.U && d.L === less.L)
+              .forEach(d => {
+                const key = d.imageName;
+                if (!lessonInteractiveDiagramsMap[key]) {
+                  lessonInteractiveDiagramsMap[key] = {
+                    imageFile: d.imageName,
+                    titleAr: d.diagramTitleAr || '',
+                    hotspots: []
+                  };
+                }
+                lessonInteractiveDiagramsMap[key].hotspots.push({
+                  id: String(d.partNumber),
+                  x: Number(d.x),
+                  y: Number(d.y),
+                  arrowX: d.arrowX !== undefined && d.arrowX !== '' ? Number(d.arrowX) : undefined,
+                  arrowY: d.arrowY !== undefined && d.arrowY !== '' ? Number(d.arrowY) : undefined,
+                  labelAr: d.partName || '',
+                  descAr: d.partDetails || ''
+                });
               });
-            });
+            if (Object.keys(lessonInteractiveDiagramsMap).length > 0) {
+              lessonInteractiveDiagrams = Object.values(lessonInteractiveDiagramsMap);
+            }
+          }
 
-          const lessonInteractiveDiagrams = Object.values(lessonInteractiveDiagramsMap);
-
-          // Parse mindmap nodes
-          const lessonMindmap = mindmapsInteractiveRaw
-            .filter(m => m.U === less.U && m.L === less.L)
-            .map(m => ({
-              id: String(m.nodeId),
-              parentId: m.parentNodeId ? String(m.parentNodeId) : undefined,
-              textAr: m.nodeText || '',
-              details: m.nodeDetails || '',
-              color: m.color || ''
-            }));
+          // Parse mindmap nodes (preserve if MindMaps_Interactive sheet has no data)
+          let lessonMindmap = existingLesson?.mindmap || [];
+          if (mindmapsInteractiveRaw.length > 0) {
+            const parsedMindmap = mindmapsInteractiveRaw
+              .filter(m => m.U === less.U && m.L === less.L)
+              .map(m => ({
+                id: String(m.nodeId),
+                parentId: m.parentNodeId ? String(m.parentNodeId) : undefined,
+                textAr: m.nodeText || '',
+                details: m.nodeDetails || '',
+                color: m.color || ''
+              }));
+            if (parsedMindmap.length > 0) {
+              lessonMindmap = parsedMindmap;
+            }
+          }
 
           // Demo slides filenames array
           const demoSlides = less.demoSlides
