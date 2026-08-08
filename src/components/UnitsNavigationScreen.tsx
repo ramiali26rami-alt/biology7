@@ -18,7 +18,12 @@ import {
   Dna,
   Binary,
   GitBranch,
-  Brain
+  Brain,
+  Activity,
+  Heart,
+  FlaskConical,
+  Leaf,
+  Globe
 } from 'lucide-react';
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
@@ -60,15 +65,14 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
   };
 
   const getFallbackUnitTitle = (unitNum: number, currentLang: Language) => {
-    const trans = translations[currentLang];
-    if (unitNum === 1) return trans.unit1Title || 'الوحدة الأولى: الجهاز العصبي';
-    if (unitNum === 2) return trans.unit2Title || 'الوحدة الثانية: التنظيم الهرموني';
-    if (unitNum === 3) return currentLang === 'ar' ? 'الوحدة الثالثة: التكاثر في الكائنات الحية' : 'Unit 3: Reproduction in Living Organisms';
-    if (unitNum === 4) return currentLang === 'ar' ? 'الوحدة الرابعة: أساسيات علم الوراثة' : 'Unit 4: Basics of Genetics';
-    if (unitNum === 5) return currentLang === 'ar' ? 'الوحدة الخامسة: الوراثة الجزيئية' : 'Unit 5: Molecular Genetics';
-    if (unitNum === 6) return currentLang === 'ar' ? 'الوحدة السادسة: التقانة الحيوية' : 'Unit 6: Biotechnology';
-    if (unitNum === 7) return currentLang === 'ar' ? 'الوحدة السابعة: البيئة ومشكلاتها' : 'Unit 7: Environment and its Problems';
-    if (unitNum === 8) return currentLang === 'ar' ? 'الوحدة الثامنة: تاريخ الأرض' : 'Unit 8: History of Earth';
+    if (unitNum === 1) return currentLang === 'ar' ? 'الجهاز العصبي' : 'Nervous System';
+    if (unitNum === 2) return currentLang === 'ar' ? 'التنظيم الهرموني' : 'Hormonal Regulation';
+    if (unitNum === 3) return currentLang === 'ar' ? 'التكاثر في الكائنات الحية' : 'Reproduction in Living Organisms';
+    if (unitNum === 4) return currentLang === 'ar' ? 'أساسيات علم الوراثة' : 'Basics of Genetics';
+    if (unitNum === 5) return currentLang === 'ar' ? 'الوراثة الجزيئية' : 'Molecular Genetics';
+    if (unitNum === 6) return currentLang === 'ar' ? 'التقانة الحيوية' : 'Biotechnology';
+    if (unitNum === 7) return currentLang === 'ar' ? 'البيئة ومشكلاتها' : 'Environment and its Problems';
+    if (unitNum === 8) return currentLang === 'ar' ? 'تاريخ الأرض' : 'History of Earth';
     return currentLang === 'ar' ? `الوحدة ${unitNum}` : `Unit ${unitNum}`;
   };
 
@@ -102,27 +106,80 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
 
   const unitStyles = [
     {
+      // Unit 1: الجهاز العصبي
       icon: <Brain className="w-8 h-8" />,
-      bg: 'bg-rose-50 dark:bg-rose-950/40',
-      text: 'text-rose-600 dark:text-rose-350',
-      accentText: 'text-rose-500 dark:text-rose-400',
+      bg: 'bg-rose-50 dark:bg-rose-950/30',
+      text: 'text-rose-600 dark:text-rose-400',
+      accentText: 'text-rose-500 dark:text-rose-450 dark:text-rose-400',
       badgeBg: 'bg-rose-500',
       hoverBorder: 'hover:border-rose-500 dark:hover:border-rose-500',
       hoverText: 'group-hover:text-rose-500'
     },
     {
+      // Unit 2: التنظيم الهرموني
+      icon: <Activity className="w-8 h-8" />,
+      bg: 'bg-amber-50 dark:bg-amber-950/30',
+      text: 'text-amber-600 dark:text-amber-400',
+      accentText: 'text-amber-500 dark:text-amber-400',
+      badgeBg: 'bg-amber-500',
+      hoverBorder: 'hover:border-amber-500 dark:hover:border-amber-500',
+      hoverText: 'group-hover:text-amber-500'
+    },
+    {
+      // Unit 3: التكاثر
+      icon: <Heart className="w-8 h-8" />,
+      bg: 'bg-red-50 dark:bg-red-950/30',
+      text: 'text-red-600 dark:text-red-400',
+      accentText: 'text-red-500 dark:text-red-400',
+      badgeBg: 'bg-red-500',
+      hoverBorder: 'hover:border-red-500 dark:hover:border-red-500',
+      hoverText: 'group-hover:text-red-500'
+    },
+    {
+      // Unit 4: أساسيات علم الوراثة
       icon: <Dna className="w-8 h-8" />,
-      bg: 'bg-purple-50 dark:bg-purple-950',
-      text: 'text-purple-600 dark:text-purple-300',
+      bg: 'bg-purple-50 dark:bg-purple-950/30',
+      text: 'text-purple-600 dark:text-purple-400',
       accentText: 'text-purple-500 dark:text-purple-400',
       badgeBg: 'bg-purple-500',
       hoverBorder: 'hover:border-purple-500 dark:hover:border-purple-500',
       hoverText: 'group-hover:text-purple-500'
     },
     {
+      // Unit 5: الوراثة الجزيئية
       icon: <Binary className="w-8 h-8" />,
-      bg: 'bg-blue-50 dark:bg-blue-950',
-      text: 'text-blue-600 dark:text-blue-300',
+      bg: 'bg-indigo-50 dark:bg-indigo-950/30',
+      text: 'text-indigo-600 dark:text-indigo-400',
+      accentText: 'text-indigo-500 dark:text-indigo-400',
+      badgeBg: 'bg-indigo-500',
+      hoverBorder: 'hover:border-indigo-500 dark:hover:border-indigo-500',
+      hoverText: 'group-hover:text-indigo-500'
+    },
+    {
+      // Unit 6: التقانة الحيوية
+      icon: <FlaskConical className="w-8 h-8" />,
+      bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+      text: 'text-emerald-600 dark:text-emerald-400',
+      accentText: 'text-emerald-500 dark:text-emerald-400',
+      badgeBg: 'bg-emerald-500',
+      hoverBorder: 'hover:border-emerald-500 dark:hover:border-emerald-500',
+      hoverText: 'group-hover:text-emerald-500'
+    },
+    {
+      // Unit 7: البيئة ومشكلاتها
+      icon: <Leaf className="w-8 h-8" />,
+      bg: 'bg-teal-50 dark:bg-teal-950/30',
+      text: 'text-teal-600 dark:text-teal-400',
+      accentText: 'text-teal-500 dark:text-teal-400',
+      badgeBg: 'bg-teal-500',
+      hoverBorder: 'hover:border-teal-500 dark:hover:border-teal-500',
+      hoverText: 'group-hover:text-teal-500'
+    },
+    {
+      // Unit 8: تاريخ الأرض
+      icon: <Globe className="w-8 h-8" />,
+      bg: 'bg-blue-50 dark:bg-blue-950/30',
+      text: 'text-blue-600 dark:text-blue-400',
       accentText: 'text-blue-500 dark:text-blue-400',
       badgeBg: 'bg-blue-500',
       hoverBorder: 'hover:border-blue-500 dark:hover:border-blue-500',
