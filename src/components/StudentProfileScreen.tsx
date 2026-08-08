@@ -81,6 +81,7 @@ export default function StudentProfileScreen({
   // Sync states from localStorage for persistence
   const [name, setName] = useState(() => SecureStorage.getItem('student_name') || '');
   const [email, setEmail] = useState(() => localStorage.getItem('student_email') || '');
+  const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem('student_avatar') || PRESET_AVATARS[0].url);
   const [premiumUnlocked, setPremiumUnlocked] = useState(() => {
     try {
       const raw = SecureStorage.getItem('premium_status');

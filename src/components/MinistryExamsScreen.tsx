@@ -31,9 +31,10 @@ interface QuestionImageProps {
   lessonId: string;
   folder: string;
   fileName: string;
+  lang: Language;
 }
 
-function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
+function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
 
   useEffect(() => {
@@ -396,6 +397,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                       lessonId={lesson.id} 
                       folder={lesson.folder} 
                       fileName={q.questionImage} 
+                      lang={lang}
                     />
                   )}
 
