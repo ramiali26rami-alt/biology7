@@ -1140,7 +1140,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                             </span>
                             
                             {activeQuestions[currentQuestionIndex].examYear && (
-                              <span className="text-[9px] font-black bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 px-2.5 py-0.5 rounded-full select-none">
+                              <span className="text-[11px] font-black bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-200/40 dark:border-red-900/20 px-3 py-1 rounded-full select-none">
                                 {lang === 'ar' ? `وزاري ${activeQuestions[currentQuestionIndex].examYear}` : `Ministry ${activeQuestions[currentQuestionIndex].examYear}`}
                               </span>
                             )}
