@@ -287,8 +287,13 @@ export async function claimActivationCode(code: string): Promise<{ success: bool
 
     if (error) throw error;
     if (data?.success) {
+      const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+      SecureStorage.setItem('premium_status', JSON.stringify({
+        unlocked: true,
+        activatedAt: Date.now(),
+        deviceUuid
+      }));
       SecureStorage.setItem('premium_unlocked', 'true');
-      localStorage.setItem('premium_unlocked', 'true');
     }
     return {
       success: data?.success ?? false,

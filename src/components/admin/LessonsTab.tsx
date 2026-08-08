@@ -9,6 +9,7 @@ import {
 import { translations } from '../../utils/translations';
 import { getAbsoluteUrl } from '../../utils/urlHelper';
 import { Lesson, VideoChapter, Flashcard, ConfigQuestion, MindmapNode } from '../../types';
+import DOMPurify from 'dompurify';
 
 type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'ministry-quiz' | 'files';
 
@@ -1893,7 +1894,12 @@ export default function LessonsTab({
                       
                       <p 
                         className="text-[11px] font-black text-slate-800 dark:text-white leading-relaxed text-right"
-                        dangerouslySetInnerHTML={{ __html: lang === 'ar' ? curQ.textAr : curQ.textEn }}
+                        dangerouslySetInnerHTML={{ 
+                          __html: DOMPurify.sanitize(lang === 'ar' ? curQ.textAr : curQ.textEn, {
+                            ALLOWED_TAGS: ['b', 'strong', 'em', 'i', 'br', 'p', 'ul', 'ol', 'li', 'span', 'div'],
+                            ALLOWED_ATTR: ['class', 'dir']
+                          })
+                        }}
                       />
 
                       {/* Options for MCQ / TF */}
@@ -1978,7 +1984,12 @@ export default function LessonsTab({
                           </div>
                           <p 
                             className="text-[9px] text-slate-500 dark:text-slate-450 font-bold leading-relaxed text-right"
-                            dangerouslySetInnerHTML={{ __html: lang === 'ar' ? curQ.explanationAr : curQ.explanationEn }}
+                            dangerouslySetInnerHTML={{ 
+                              __html: DOMPurify.sanitize(lang === 'ar' ? curQ.explanationAr : curQ.explanationEn, {
+                                ALLOWED_TAGS: ['b', 'strong', 'em', 'i', 'br', 'p', 'ul', 'ol', 'li', 'span', 'div'],
+                                ALLOWED_ATTR: ['class', 'dir']
+                              })
+                            }}
                           />
                           <button
                             onClick={() => {

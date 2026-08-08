@@ -23,7 +23,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-gemini-key,x-admin-passcode');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-admin-passcode');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
@@ -33,6 +33,28 @@ app.use((req, res, next) => {
 
 const publicDir = path.resolve(__dirname, 'public');
 const dataDir = path.resolve(__dirname, 'data');
+
+/** Helper: Safe path resolution against path traversal */
+function resolveSafePath(base, inputPath) {
+  const root = path.resolve(base);
+  const target = path.resolve(root, inputPath || '');
+  const relative = path.relative(root, target);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error('Forbidden path: ' + inputPath);
+  }
+  return target;
+}
+
+/** Helper: Admin Passcode Check */
+function checkAdminAuth(req, res) {
+  const passcode = req.headers['x-admin-passcode'];
+  const adminPasscode = process.env.ADMIN_PASSCODE;
+  if (!passcode || !adminPasscode || passcode !== adminPasscode) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return false;
+  }
+  return true;
+}
 
 // 1. Shared API middleware (version, backups)
 app.use(async (req, res, next) => {
@@ -73,99 +95,10 @@ function rescanAssets(publicDir) {
   }
 }
 
-// ─── Vercel KV Database Helper ───
+// Dummy KV fallback if not present in apiMiddleware
 const KV = {
-  url: process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '',
-  isConfigured() {
-    return !!(this.url && this.token);
-  },
-  async get(key) {
-    if (!this.isConfigured()) return null;
-    try {
-      const res = await fetch(this.url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(['GET', key])
-      });
-      if (!res.ok) return null;
-      const data = await res.json();
-      if (data && data.result) {
-        try {
-          return JSON.parse(data.result);
-        } catch {
-          return data.result;
-        }
-      }
-      return null;
-    } catch (e) {
-      console.error(`Vercel KV read error for ${key}:`, e);
-      return null;
-    }
-  },
-  async set(key, value) {
-    if (!this.isConfigured()) return false;
-    try {
-      const valStr = typeof value === 'string' ? value : JSON.stringify(value);
-      const res = await fetch(this.url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(['SET', key, valStr])
-      });
-      return res.ok;
-    } catch (e) {
-      console.error(`Vercel KV write error for ${key}:`, e);
-      return false;
-    }
-  },
-  async del(key) {
-    if (!this.isConfigured()) return false;
-    try {
-      const res = await fetch(this.url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(['DEL', key])
-      });
-      return res.ok;
-    } catch (e) {
-      console.error(`Vercel KV delete error for ${key}:`, e);
-      return false;
-    }
-  }
+  isConfigured: () => false
 };
-
-// ─── GET /api/debug-status ───
-app.get('/api/debug-status', async (req, res) => {
-  try {
-    const isKvConfigured = KV.isConfigured();
-    let kvVersion = null;
-    if (isKvConfigured) {
-      try {
-        kvVersion = await KV.get('curriculum_version');
-      } catch (err) {
-        kvVersion = "error: " + err.message;
-      }
-    }
-    res.json({
-      kvConfigured: isKvConfigured,
-      kvVersion: kvVersion,
-      envKeys: Object.keys(process.env).filter(k => k.includes('KV') || k.includes('REDIS') || k.includes('UPSTASH')),
-      localVersionExists: fs.existsSync('data/curriculum_version.json'),
-      localConfigExists: fs.existsSync(path.join(publicDir, 'lessons_config.json'))
-    });
-  } catch (e) {
-    res.status(500).json({ error: String(e) });
-  }
-});
 
 // ─── GET /api/get-config ───
 app.get('/api/get-config', async (req, res) => {
@@ -176,7 +109,7 @@ app.get('/api/get-config', async (req, res) => {
         return res.json(cachedData);
       }
     }
-    const configPath = path.join(publicDir, 'lessons_config.json');
+    const configPath = resolveSafePath(publicDir, 'lessons_config.json');
     if (fs.existsSync(configPath)) {
       const text = fs.readFileSync(configPath, 'utf-8');
       try {
@@ -193,6 +126,7 @@ app.get('/api/get-config', async (req, res) => {
 
 // ─── POST /api/publish-update ───
 app.post('/api/publish-update', async (req, res) => {
+  if (!checkAdminAuth(req, res)) return;
   try {
     let currentLessonsCount = 0;
     if (KV.isConfigured()) {
@@ -201,7 +135,7 @@ app.post('/api/publish-update', async (req, res) => {
         currentLessonsCount = cachedData.length;
       }
     } else {
-      const configPath = path.join(publicDir, 'lessons_config.json');
+      const configPath = resolveSafePath(publicDir, 'lessons_config.json');
       if (fs.existsSync(configPath)) {
         const text = fs.readFileSync(configPath, 'utf-8');
         try {
@@ -226,6 +160,7 @@ app.post('/api/publish-update', async (req, res) => {
 
 // ─── POST /api/save-config ───
 app.post('/api/save-config', async (req, res) => {
+  if (!checkAdminAuth(req, res)) return;
   try {
     const data = req.body;
     let savedToKv = false;
@@ -234,10 +169,10 @@ app.post('/api/save-config', async (req, res) => {
       savedToKv = await KV.set('curriculum_data', data);
     }
 
-    const configPath = path.join(publicDir, 'lessons_config.json');
+    const configPath = resolveSafePath(publicDir, 'lessons_config.json');
     try {
       if (fs.existsSync(configPath)) {
-        const backupsDir = path.join(dataDir, 'backups');
+        const backupsDir = resolveSafePath(dataDir, 'backups');
         if (!fs.existsSync(backupsDir)) {
           fs.mkdirSync(backupsDir, { recursive: true });
         }
@@ -273,6 +208,7 @@ app.post('/api/save-config', async (req, res) => {
 
 // ─── POST /api/reset-curriculum-to-default ───
 app.post('/api/reset-curriculum-to-default', async (req, res) => {
+  if (!checkAdminAuth(req, res)) return;
   try {
     let deleted = false;
     if (KV.isConfigured()) {
@@ -286,7 +222,6 @@ app.post('/api/reset-curriculum-to-default', async (req, res) => {
   }
 });
 
-
 // ─── POST /api/generate-quiz ───
 app.post('/api/generate-quiz', async (req, res) => {
   try {
@@ -299,9 +234,9 @@ app.post('/api/generate-quiz', async (req, res) => {
       questionType
     } = req.body;
 
-    const apiKey = req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(400).json({ error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' });
+      return res.status(503).json({ error: 'AI service not configured' });
     }
 
     const { GoogleGenAI } = await import('@google/genai');
@@ -388,9 +323,9 @@ app.post('/api/analyze-diagram', async (req, res) => {
       return res.status(400).json({ error: 'Missing imageBase64 parameter.' });
     }
 
-    const apiKey = req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(400).json({ error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' });
+      return res.status(503).json({ error: 'AI service not configured' });
     }
 
     const { GoogleGenAI } = await import('@google/genai');
@@ -455,9 +390,9 @@ app.post('/api/tutor-chat', async (req, res) => {
       return res.status(400).json({ error: 'Missing or invalid messages parameter.' });
     }
 
-    const apiKey = req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(400).json({ error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' });
+      return res.status(503).json({ error: 'AI service not configured' });
     }
 
     const { GoogleGenAI } = await import('@google/genai');
@@ -468,7 +403,7 @@ app.post('/api/tutor-chat', async (req, res) => {
 
 شروط صارمة للإجابة:
 1. التزم تماماً بالمصطلحات العلمية والتعاريف المعتمدة في منهج الأحياء اليمني للمرحلة الثانوية.
-2. أجب باختصار ووضوح، واستخدم التنسيق (مثل النقاط والخطوط العريضة) لتسهيل القراءة على شاشات الهواتف.
+2. أجب بااختصار ووضوح، واستخدم التنسيق (مثل النقاط والخطوط العريضة) لتسهيل القراءة على شاشات الهواتف.
 3. إذا كان سؤال الطالب غير متعلق بعلم الأحياء أو المنهج الدراسي، اعتذر منه بلطف ووجهه لطرح أسئلة في مادة الأحياء فقط.
 4. إذا سأل الطالب سؤالاً يتعلق بدرس آخر غير الدرس المفتوح، أجب عليه بدقة علمية مع الإشارة بلطف إلى أن هذا الموضوع ينتمي لدرس آخر في المنهج.`;
 
@@ -517,7 +452,6 @@ app.post('/api/tutor-chat', async (req, res) => {
   }
 });
 
-
 // Helper for atomic key writes
 const saveKeysAtomic = (filePath, data) => {
   const tempPath = filePath + '.' + Math.random().toString(36).substring(2) + '.tmp';
@@ -527,11 +461,8 @@ const saveKeysAtomic = (filePath, data) => {
 
 // ─── GET /api/activation-keys ───
 app.get('/api/activation-keys', (req, res) => {
-  const passcode = req.headers['x-admin-passcode'];
-  if (passcode !== '2026') {
-    return res.status(401).json({ error: 'Unauthorized admin access' });
-  }
-  const keysFilePath = path.join(dataDir, 'activation_keys.json');
+  if (!checkAdminAuth(req, res)) return;
+  const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
   let keys = [];
   if (fs.existsSync(keysFilePath)) {
     try {
@@ -545,14 +476,11 @@ app.get('/api/activation-keys', (req, res) => {
 
 // ─── POST /api/generate-keys ───
 app.post('/api/generate-keys', (req, res) => {
-  const passcode = req.headers['x-admin-passcode'];
-  if (passcode !== '2026') {
-    return res.status(401).json({ error: 'Unauthorized admin access' });
-  }
+  if (!checkAdminAuth(req, res)) return;
   try {
     const { count } = req.body;
     const keysCount = Number(count) || 10;
-    const keysFilePath = path.join(dataDir, 'activation_keys.json');
+    const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
     let existingKeys = [];
     if (fs.existsSync(keysFilePath)) {
       try {
@@ -592,7 +520,7 @@ app.post('/api/activate-key', (req, res) => {
       return res.status(400).json({ error: 'Missing key parameter' });
     }
 
-    const keysFilePath = path.join(dataDir, 'activation_keys.json');
+    const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
     let keys = [];
     if (fs.existsSync(keysFilePath)) {
       try {
@@ -635,17 +563,14 @@ app.post('/api/activate-key', (req, res) => {
 
 // ─── POST /api/reset-key-device ───
 app.post('/api/reset-key-device', (req, res) => {
-  const passcode = req.headers['x-admin-passcode'];
-  if (passcode !== '2026') {
-    return res.status(401).json({ error: 'Unauthorized admin access' });
-  }
+  if (!checkAdminAuth(req, res)) return;
   try {
     const { key } = req.body;
     if (!key || !key.trim()) {
       return res.status(400).json({ error: 'Missing key parameter' });
     }
 
-    const keysFilePath = path.join(dataDir, 'activation_keys.json');
+    const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
     let keys = [];
     if (fs.existsSync(keysFilePath)) {
       try {
@@ -677,17 +602,15 @@ app.post('/api/reset-key-device', (req, res) => {
 
 // ─── POST /api/save-file ───
 app.post('/api/save-file', (req, res) => {
+  if (!checkAdminAuth(req, res)) return;
   try {
     const { filePath, content } = req.body;
-    const fullPath = path.resolve(publicDir, filePath);
-    if (!fullPath.startsWith(publicDir)) {
-      return res.status(403).json({ error: 'Forbidden path' });
-    }
+    const fullPath = resolveSafePath(publicDir, filePath);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, content, 'utf-8');
     res.json({ success: true });
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(400).json({ error: String(e) });
   }
 });
 
@@ -698,32 +621,52 @@ app.get('/api/read-file', (req, res) => {
     return res.status(400).json({ error: 'Missing path parameter' });
   }
   try {
-    const fullPath = path.resolve(publicDir, String(filePath));
-    if (!fullPath.startsWith(publicDir)) {
-      return res.status(403).json({ error: 'Forbidden path' });
-    }
+    const fullPath = resolveSafePath(publicDir, String(filePath));
     const content = fs.readFileSync(fullPath, 'utf-8');
     res.json({ content });
   } catch (e) {
-    res.status(404).json({ error: String(e) });
+    res.status(400).json({ error: String(e) });
   }
 });
 
 // ─── POST /api/upload-binary ───
 app.post('/api/upload-binary', (req, res) => {
+  if (!checkAdminAuth(req, res)) return;
   try {
     const { filePath, contentBase64 } = req.body;
-    const fullPath = path.resolve(publicDir, filePath);
-    if (!fullPath.startsWith(publicDir)) {
-      return res.status(403).json({ error: 'Forbidden path' });
+
+    if (!filePath || !contentBase64) {
+      return res.status(400).json({ error: 'Missing parameter' });
     }
+
+    // 1. Extension check
+    const allowedExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.pdf', '.bin']);
+    const fileExt = path.extname(filePath).toLowerCase();
+    if (!allowedExtensions.has(fileExt)) {
+      return res.status(415).json({ error: 'File type not allowed' });
+    }
+
+    // 2. File size check (base64 ~ 0.75 * string length)
+    const fileSizeBytes = Math.ceil(contentBase64.length * 0.75);
+    const maxSizeBytes = 15 * 1024 * 1024; // 15MB
+    if (fileSizeBytes > maxSizeBytes) {
+      return res.status(413).json({ error: 'File too large' });
+    }
+
+    // 3. Filename control character check
+    const fileName = path.basename(filePath);
+    if (/[<>:"|?*\x00-\x1f]/.test(fileName)) {
+      return res.status(400).json({ error: 'Invalid filename' });
+    }
+
+    const fullPath = resolveSafePath(publicDir, filePath);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     const buffer = Buffer.from(contentBase64, 'base64');
     fs.writeFileSync(fullPath, buffer);
     rescanAssets(publicDir);
     res.json({ success: true });
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(400).json({ error: String(e) });
   }
 });
 

@@ -81,8 +81,17 @@ export default function StudentProfileScreen({
   // Sync states from localStorage for persistence
   const [name, setName] = useState(() => SecureStorage.getItem('student_name') || '');
   const [email, setEmail] = useState(() => localStorage.getItem('student_email') || '');
-  const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem('student_avatar') || PRESET_AVATARS[0].url);
-  const [premiumUnlocked, setPremiumUnlocked] = useState(() => SecureStorage.getItem('premium_unlocked') === 'true');
+  const [premiumUnlocked, setPremiumUnlocked] = useState(() => {
+    try {
+      const raw = SecureStorage.getItem('premium_status');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+        return parsed?.unlocked === true && parsed?.deviceUuid === deviceUuid;
+      }
+    } catch (e) {}
+    return SecureStorage.getItem('premium_unlocked') === 'true';
+  });
   const isDarkMode = theme === 'dark';
 
   const [isEditing, setIsEditing] = useState(false);
@@ -216,8 +225,13 @@ export default function StudentProfileScreen({
   const handleTogglePremium = () => {
     const nextPremium = !premiumUnlocked;
     setPremiumUnlocked(nextPremium);
+    const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+    SecureStorage.setItem('premium_status', JSON.stringify({
+      unlocked: nextPremium,
+      activatedAt: Date.now(),
+      deviceUuid
+    }));
     SecureStorage.setItem('premium_unlocked', nextPremium ? 'true' : 'false');
-    localStorage.setItem('premium_unlocked', nextPremium ? 'true' : 'false');
   };
 
   const toggleDarkMode = () => {

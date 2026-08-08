@@ -11,7 +11,6 @@ import {
 
 dotenv.config();
 
-
 /** Helper: collect full request body */
 function readBody(req: any): Promise<string> {
   return new Promise((resolve) => {
@@ -63,6 +62,28 @@ function jsonRes(res: any, data: object, status = 200) {
   res.end(JSON.stringify(data));
 }
 
+/** Safe path resolution helper against path traversal */
+function resolveSafePath(base: string, inputPath: string): string {
+  const root = path.resolve(base);
+  const target = path.resolve(root, inputPath || '');
+  const relative = path.relative(root, target);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error('Forbidden path: ' + inputPath);
+  }
+  return target;
+}
+
+/** Admin Passcode Check helper */
+function checkAdminAuth(req: any, res: any): boolean {
+  const passcode = req.headers['x-admin-passcode'];
+  const adminPasscode = process.env.ADMIN_PASSCODE;
+  if (!passcode || !adminPasscode || passcode !== adminPasscode) {
+    jsonRes(res, { error: 'Unauthorized' }, 401);
+    return false;
+  }
+  return true;
+}
+
 export default defineConfig(() => {
   return {
     plugins: [
@@ -101,12 +122,12 @@ export default defineConfig(() => {
                     return resStr;
                   };
 
-                  let fullPath = path.join(publicDir, decodedPath);
+                  let fullPath = resolveSafePath(publicDir, decodedPath);
                   
                   // Try to find the file by translating English numbers -> Arabic numbers in path
                   if (!fs.existsSync(fullPath)) {
                     const arabicPath = replaceDigits(decodedPath, true);
-                    const tryPath = path.join(publicDir, arabicPath);
+                    const tryPath = resolveSafePath(publicDir, arabicPath);
                     if (fs.existsSync(tryPath)) {
                       fullPath = tryPath;
                     }
@@ -115,7 +136,7 @@ export default defineConfig(() => {
                   // Try to find the file by translating Arabic numbers -> English numbers in path
                   if (!fs.existsSync(fullPath)) {
                     const englishPath = replaceDigits(decodedPath, false);
-                    const tryPath = path.join(publicDir, englishPath);
+                    const tryPath = resolveSafePath(publicDir, englishPath);
                     if (fs.existsSync(tryPath)) {
                       fullPath = tryPath;
                     }
@@ -166,36 +187,38 @@ export default defineConfig(() => {
             }
             
             // Migrate activation_keys.json from public to data for security if it exists
-            const oldKeysPath = path.join(publicDir, 'activation_keys.json');
-            const newKeysPath = path.join(dataDir, 'activation_keys.json');
-            if (fs.existsSync(oldKeysPath)) {
-              if (!fs.existsSync(dataDir)) {
-                fs.mkdirSync(dataDir, { recursive: true });
+            try {
+              const oldKeysPath = resolveSafePath(publicDir, 'activation_keys.json');
+              const newKeysPath = resolveSafePath(dataDir, 'activation_keys.json');
+              if (fs.existsSync(oldKeysPath)) {
+                if (!fs.existsSync(dataDir)) {
+                  fs.mkdirSync(dataDir, { recursive: true });
+                }
+                fs.copyFileSync(oldKeysPath, newKeysPath);
+                fs.unlinkSync(oldKeysPath);
               }
-              fs.copyFileSync(oldKeysPath, newKeysPath);
-              fs.unlinkSync(oldKeysPath);
-            }
+            } catch (e) {}
 
             // ─── OPTIONS pre-flight ───────────────────────────────────────
             if (req.method === 'OPTIONS') {
               res.setHeader('Access-Control-Allow-Origin', '*');
               res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-              res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-gemini-key, x-admin-passcode');
+              res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-passcode');
               res.statusCode = 204;
               res.end();
               return;
             }
 
             // ─── POST /api/save-config ────────────────────────────────────
-            // Body: JSON array of lessons → writes public/lessons_config.json
             if (req.url === '/api/save-config' && req.method === 'POST') {
+              if (!checkAdminAuth(req, res)) return;
               const body = await readBody(req);
               try {
                 const data = JSON.parse(body);
                 // Auto-Backup before overwrite
-                const configPath = path.join(publicDir, 'lessons_config.json');
+                const configPath = resolveSafePath(publicDir, 'lessons_config.json');
                 if (fs.existsSync(configPath)) {
-                  const backupsDir = path.join(dataDir, 'backups');
+                  const backupsDir = resolveSafePath(dataDir, 'backups');
                   if (!fs.existsSync(backupsDir)) {
                     fs.mkdirSync(backupsDir, { recursive: true });
                   }
@@ -225,32 +248,21 @@ export default defineConfig(() => {
 
             // ─── POST /api/tutor-chat ─────────────────────────────────────
             if (req.url === '/api/tutor-chat' && req.method === 'POST') {
-              console.log('\n💬 [Tutor Chat] Received API request');
               const body = await readBody(req);
               try {
                 const { messages, lessonTitle, lessonSummary } = JSON.parse(body);
 
                 if (!messages || !Array.isArray(messages) || messages.length === 0) {
-                  console.warn('⚠️ [Tutor Chat] Missing messages parameter');
                   jsonRes(res, { error: 'Missing or invalid messages parameter.' }, 400);
                   return;
                 }
 
-                console.log(`💬 [Tutor Chat] Last message: "${messages[messages.length - 1]?.content}"`);
-
-                const headerKey = req.headers['x-gemini-key'];
-                const envKey = process.env.GEMINI_API_KEY;
-                const apiKey = headerKey || envKey;
-                
-                console.log(`💬 [Tutor Chat] Key status - Header key length: ${headerKey ? String(headerKey).length : 0}, Env key length: ${envKey ? envKey.length : 0}`);
-
+                const apiKey = process.env.GEMINI_API_KEY;
                 if (!apiKey) {
-                  console.error('❌ [Tutor Chat] No API Key provided anywhere');
-                  jsonRes(res, { error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' }, 400);
+                  jsonRes(res, { error: 'AI service not configured' }, 503);
                   return;
                 }
 
-                console.log('💬 [Tutor Chat] Importing @google/genai and initializing client...');
                 const { GoogleGenAI } = await import('@google/genai');
                 const ai = new GoogleGenAI({ apiKey: String(apiKey) });
 
@@ -292,32 +304,25 @@ export default defineConfig(() => {
 
                 promptText += `\nالآن، قم بصياغة الإجابة التربوية المناسبة للسؤال الجديد للطالب باللغة العربية:`;
 
-                console.log('💬 [Tutor Chat] Calling Gemini model generateContent...');
                 const response = await ai.models.generateContent({
                   model: 'gemini-3.1-flash-lite',
                   contents: promptText
                 });
 
                 const text = response.text;
-                console.log(`💬 [Tutor Chat] Gemini response received. Text length: ${text ? text.length : 0}`);
-
                 if (!text) {
-                  console.error('❌ [Tutor Chat] Gemini returned empty response text');
                   jsonRes(res, { error: 'Gemini returned an empty response.' }, 500);
                   return;
                 }
 
-                console.log('✅ [Tutor Chat] Success! Sending response to client.');
                 jsonRes(res, { success: true, reply: text });
               } catch (e: any) {
-                console.error(`❌ [Tutor Chat] Error processing request: ${e.message}`, e);
                 jsonRes(res, { error: String(e) }, 500);
               }
               return;
             }
 
             // ─── POST /api/generate-quiz ──────────────────────────────────
-            // Body: { lessonTitleAr, lessonTitleEn, lessonSummaryAr, lessonSummaryEn, questionCount, questionType }
             if (req.url === '/api/generate-quiz' && req.method === 'POST') {
               const body = await readBody(req);
               try {
@@ -330,9 +335,9 @@ export default defineConfig(() => {
                   questionType
                 } = JSON.parse(body);
 
-                const apiKey = req.headers['x-gemini-key'] || process.env.GEMINI_API_KEY;
+                const apiKey = process.env.GEMINI_API_KEY;
                 if (!apiKey) {
-                  jsonRes(res, { error: 'Missing API Key. Please supply a Gemini API key in settings or set GEMINI_API_KEY in process env.' }, 400);
+                  jsonRes(res, { error: 'AI service not configured' }, 503);
                   return;
                 }
 
@@ -422,12 +427,8 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── GET /api/activation-keys ──────────────────────────────────
             if (req.url === '/api/activation-keys' && req.method === 'GET') {
-              const passcode = req.headers['x-admin-passcode'];
-              if (passcode !== '2026') {
-                jsonRes(res, { error: 'Unauthorized admin access' }, 401);
-                return;
-              }
-              const keysFilePath = path.join(dataDir, 'activation_keys.json');
+              if (!checkAdminAuth(req, res)) return;
+              const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
               let keys = [];
               if (fs.existsSync(keysFilePath)) {
                 try {
@@ -442,16 +443,12 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── POST /api/generate-keys ───────────────────────────────────
             if (req.url === '/api/generate-keys' && req.method === 'POST') {
-              const passcode = req.headers['x-admin-passcode'];
-              if (passcode !== '2026') {
-                jsonRes(res, { error: 'Unauthorized admin access' }, 401);
-                return;
-              }
+              if (!checkAdminAuth(req, res)) return;
               const body = await readBody(req);
               try {
                 const { count } = JSON.parse(body);
                 const keysCount = Number(count) || 10;
-                const keysFilePath = path.join(dataDir, 'activation_keys.json');
+                const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
                 let existingKeys = [];
                 if (fs.existsSync(keysFilePath)) {
                   try {
@@ -494,7 +491,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
                   return;
                 }
 
-                const keysFilePath = path.join(dataDir, 'activation_keys.json');
+                const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
                 let keys = [];
                 if (fs.existsSync(keysFilePath)) {
                   try {
@@ -541,11 +538,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── POST /api/reset-key-device ─────────────────────────────────
             if (req.url === '/api/reset-key-device' && req.method === 'POST') {
-              const passcode = req.headers['x-admin-passcode'];
-              if (passcode !== '2026') {
-                jsonRes(res, { error: 'Unauthorized admin access' }, 401);
-                return;
-              }
+              if (!checkAdminAuth(req, res)) return;
               const body = await readBody(req);
               try {
                 const { key } = JSON.parse(body);
@@ -554,7 +547,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
                   return;
                 }
 
-                const keysFilePath = path.join(dataDir, 'activation_keys.json');
+                const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
                 let keys = [];
                 if (fs.existsSync(keysFilePath)) {
                   try {
@@ -587,18 +580,12 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
             }
 
             // ─── POST /api/save-file ──────────────────────────────────────
-            // Body: { filePath: string, content: string }
-            // Saves any UTF-8 text file (HTML, etc.) inside public/
             if (req.url === '/api/save-file' && req.method === 'POST') {
+              if (!checkAdminAuth(req, res)) return;
               const body = await readBody(req);
               try {
                 const { filePath, content } = JSON.parse(body);
-                const fullPath = path.resolve(publicDir, filePath);
-                // Safety: must stay inside public/
-                if (!fullPath.startsWith(publicDir)) {
-                  jsonRes(res, { error: 'Forbidden path' }, 403);
-                  return;
-                }
+                const fullPath = resolveSafePath(publicDir, filePath);
                 fs.mkdirSync(path.dirname(fullPath), { recursive: true });
                 fs.writeFileSync(fullPath, content, 'utf-8');
                 jsonRes(res, { success: true });
@@ -609,7 +596,6 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
             }
 
             // ─── GET /api/read-file?path=... ──────────────────────────────
-            // Returns { content: string } for any text file inside public/
             if (req.url?.startsWith('/api/read-file') && req.method === 'GET') {
               const urlObj = new URL(req.url, `http://localhost`);
               const filePath = urlObj.searchParams.get('path');
@@ -618,11 +604,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
                 return;
               }
               try {
-                const fullPath = path.resolve(publicDir, filePath);
-                if (!fullPath.startsWith(publicDir)) {
-                  jsonRes(res, { error: 'Forbidden path' }, 403);
-                  return;
-                }
+                const fullPath = resolveSafePath(publicDir, filePath);
                 const content = fs.readFileSync(fullPath, 'utf-8');
                 jsonRes(res, { content });
               } catch (e) {
@@ -632,17 +614,41 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
             }
 
             // ─── POST /api/upload-binary ──────────────────────────────────
-            // Body: { filePath: string, contentBase64: string }
-            // Saves a binary file (image/PDF) to public/ then re-scans assets
             if (req.url === '/api/upload-binary' && req.method === 'POST') {
+              if (!checkAdminAuth(req, res)) return;
               const body = await readBody(req);
               try {
                 const { filePath, contentBase64 } = JSON.parse(body);
-                const fullPath = path.resolve(publicDir, filePath);
-                if (!fullPath.startsWith(publicDir)) {
-                  jsonRes(res, { error: 'Forbidden path' }, 403);
+
+                if (!filePath || !contentBase64) {
+                  jsonRes(res, { error: 'Missing parameter' }, 400);
                   return;
                 }
+
+                // 1. Extension check
+                const allowedExtensions = new Set(['.png', '.jpg', '.jpeg', '.webp', '.pdf', '.bin']);
+                const fileExt = path.extname(filePath).toLowerCase();
+                if (!allowedExtensions.has(fileExt)) {
+                  jsonRes(res, { error: 'File type not allowed' }, 415);
+                  return;
+                }
+
+                // 2. File size check
+                const fileSizeBytes = Math.ceil(contentBase64.length * 0.75);
+                const maxSizeBytes = 15 * 1024 * 1024; // 15MB
+                if (fileSizeBytes > maxSizeBytes) {
+                  jsonRes(res, { error: 'File too large' }, 413);
+                  return;
+                }
+
+                // 3. Filename check
+                const fileName = path.basename(filePath);
+                if (/[<>:"|?*\x00-\x1f]/.test(fileName)) {
+                  jsonRes(res, { error: 'Invalid filename' }, 400);
+                  return;
+                }
+
+                const fullPath = resolveSafePath(publicDir, filePath);
                 fs.mkdirSync(path.dirname(fullPath), { recursive: true });
                 const buffer = Buffer.from(contentBase64, 'base64');
                 fs.writeFileSync(fullPath, buffer);
@@ -695,10 +701,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify — file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {
         ignored: ['**/public/**']
       },
