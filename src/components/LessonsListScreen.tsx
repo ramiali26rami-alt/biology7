@@ -56,17 +56,6 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
     }
   };
 
-  // Extract unique units based on the first folder segment
-  const uniqueUnits = lessons.reduce<string[]>((acc, lesson) => {
-    const unitFolder = lesson.folder.split('/')[0];
-    if (unitFolder && !acc.includes(unitFolder)) {
-      acc.push(unitFolder);
-    }
-    return acc;
-  }, []);
-
-  const currentUnitFolder = uniqueUnits[selectedUnit - 1] || '';
-
   const getUnitFullTitle = () => {
     const firstLesson = lessons.find(l => Number(l.unit) === selectedUnit);
     if (!firstLesson) return lang === 'ar' ? `الوحدة ${selectedUnit}` : `Unit ${selectedUnit}`;
@@ -78,7 +67,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
   };
 
   // Filter lessons belonging to the currently selected unit
-  const unitLessons = lessons.filter(l => l.folder.split('/')[0] === currentUnitFolder);
+  const unitLessons = lessons.filter(l => Number(l.unit) === selectedUnit);
 
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
