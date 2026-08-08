@@ -41,14 +41,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     setPremiumUnlocked(localStorage.getItem('premium_unlocked') === 'true');
   }, []);
 
-  // Extract unique units based on unit number
-  const uniqueUnits = lessons.reduce<number[]>((acc, lesson) => {
-    const unitNum = Number(lesson.unit) || 1;
-    if (!acc.includes(unitNum)) {
-      acc.push(unitNum);
-    }
-    return acc;
-  }, []).sort((a, b) => a - b);
+  // Display all 8 units of the curriculum statically so they are always visible in the dashboard
+  const uniqueUnits = [1, 2, 3, 4, 5, 6, 7, 8];
 
   const handleUnitClick = (unitId: number) => {
     onSelectUnit(unitId);
