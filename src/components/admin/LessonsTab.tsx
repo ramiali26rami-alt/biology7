@@ -199,12 +199,42 @@ export default function LessonsTab({
     }
   };
 
-  const handleCreateNewLesson = () => {
+  const getUnitTitleByNum = (num: number) => {
+    if (num === 1) return 'الجهاز العصبي';
+    if (num === 2) return 'التنظيم الهرموني';
+    if (num === 3) return 'التكاثر في الكائنات الحية';
+    if (num === 4) return 'أساسيات علم الوراثة';
+    if (num === 5) return 'الوراثة الجزيئية';
+    if (num === 6) return 'التقانة الحيوية';
+    if (num === 7) return 'البيئة ومشكلاتها';
+    if (num === 8) return 'تاريخ الأرض';
+    return `الوحدة ${num}`;
+  };
+
+  const getUnitSubtitleByNum = (num: number) => {
+    const labels = [
+      'الوحدة الأولى', 
+      'الوحدة الثانية', 
+      'الوحدة الثالثة', 
+      'الوحدة الرابعة', 
+      'الوحدة الخامسة', 
+      'الوحدة السادسة', 
+      'الوحدة السابعة', 
+      'الوحدة الثامنة'
+    ];
+    return labels[num - 1] || `الوحدة ${num}`;
+  };
+
+  const handleCreateNewLesson = (unitNum: any = 1) => {
+    const targetUnit = typeof unitNum === 'number' ? unitNum : 1;
     const newId = `lesson-${Date.now()}`;
+    const unitTitle = getUnitTitleByNum(targetUnit);
+    const unitSubtitle = getUnitSubtitleByNum(targetUnit);
+
     const newLesson: Lesson = {
       id: newId,
-      unit: 1,
-      folder: "الوحدة الاولى     التنظيم العصبي في الكائنات الحية/الدرس الجديد",
+      unit: targetUnit,
+      folder: `${unitSubtitle} - ${unitTitle}/الدرس الجديد`,
       titleAr: "مفهوم بيولوجي جديد",
       titleEn: "New Biological Concept",
       pdfFile: "الدرس الجديد.pdf",
@@ -568,93 +598,126 @@ export default function LessonsTab({
             </button>
           </div>
 
-          <div className="space-y-3">
-            {lessons.map((lesson, idx) => {
-              const unitName = lesson.folder.split('/')[0] || `الوحدة ${lesson.unit}`;
-              const lessonName = lesson.folder.split('/')[1] || lesson.titleAr;
+          <div className="space-y-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(unitNum => {
+              const unitLessons = lessons.filter(l => Number(l.unit) === unitNum);
+              const unitTitle = getUnitTitleByNum(unitNum);
+              const unitSubtitle = getUnitSubtitleByNum(unitNum);
 
               return (
-                <div 
-                  key={lesson.id} 
-                  className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-emerald-500/50 transition-colors"
-                >
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-10 h-10 rounded-app-btn bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                      <BookOpen className="w-5 h-5" />
+                <div key={unitNum} className="border border-slate-100 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/30 dark:bg-slate-900/10">
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-extrabold text-[10px] rounded-full">
+                        {unitSubtitle}
+                      </span>
+                      <h3 className="font-extrabold text-xs text-slate-700 dark:text-slate-300">
+                        {unitTitle}
+                      </h3>
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-black text-slate-500 dark:text-slate-400">
-                          {unitName}
-                        </span>
-                        <button
-                          onClick={() => {
-                            const updated = lessons.map(l => l.id === lesson.id ? { ...l, locked: !l.locked } : l);
-                            setLessons(updated);
-                          }}
-                          className={`text-[10px] px-2.5 py-0.5 rounded-full font-black flex items-center gap-1 border transition-colors ${
-                            lesson.locked 
-                              ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 border-amber-250 dark:border-amber-900' 
-                              : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 border-emerald-250 dark:border-emerald-900'
-                          }`}
-                        >
-                          {lesson.locked ? (
-                            <>
-                              <Lock className="w-2.5 h-2.5" />
-                              <span>{lang === 'ar' ? 'مقفل باقة ذهبية' : 'Premium Locked'}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Unlock className="w-2.5 h-2.5" />
-                              <span>{lang === 'ar' ? 'مجاني للجميع' : 'Free Access'}</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                      <h4 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1">
-                        {lessonName}
-                      </h4>
-                      <p className="text-[10px] text-slate-455 dark:text-slate-500 font-bold mt-0.5 font-sans">
-                        ID: {lesson.id} • {lesson.quiz.length} أسئلة • {lesson.videoChapters.length} فصول فيديو
-                      </p>
-                    </div>
+                    <button
+                      onClick={() => handleCreateNewLesson(unitNum)}
+                      className="text-emerald-500 hover:text-emerald-600 font-black text-xs flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>{lang === 'ar' ? 'إضافة درس' : 'Add Lesson'}</span>
+                    </button>
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 shrink-0">
-                    <button
-                      onClick={() => {
-                        setEditingLesson(lesson);
-                        setEditingLessonIndex(idx);
-                        setEditorSubTab('basic');
-                        setActiveTab('lesson-editor');
-                      }}
-                      className="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 p-2.5 rounded-app-btn transition-colors active:scale-95 flex items-center gap-1.5 text-xs font-black"
-                      title={lang === 'ar' ? 'تعديل المحتوى والأسئلة' : 'Edit content'}
-                    >
-                      <Edit className="w-4 h-4" />
-                      <span>{lang === 'ar' ? 'تعديل' : 'Edit'}</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingLesson(lesson);
-                        setEditingLessonIndex(idx);
-                        setPreviewQuizIdx(0);
-                        setPreviewSelectedAns(null);
-                        setPreviewShowExpl(false);
-                        setActiveTab('preview');
-                      }}
-                      className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 p-2.5 rounded-app-btn transition-colors active:scale-95"
-                      title={lang === 'ar' ? 'معاينة الطالب' : 'Preview student view'}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteLesson(lesson.id)}
-                      className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-450 p-2.5 rounded-app-btn transition-colors active:scale-95"
-                      title={lang === 'ar' ? 'حذف الدرس نهائياً' : 'Delete lesson'}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="space-y-3">
+                    {unitLessons.length === 0 ? (
+                      <p className="text-center py-4 text-xs font-bold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-900/20 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                        {lang === 'ar' ? 'لا توجد دروس مضافة حالياً في هذه الوحدة.' : 'No lessons added in this unit yet.'}
+                      </p>
+                    ) : (
+                      unitLessons.map((lesson) => {
+                        const originalIndex = lessons.findIndex(l => l.id === lesson.id);
+                        const lessonName = lesson.folder.split('/')[1] || lesson.titleAr;
+
+                        return (
+                          <div 
+                            key={lesson.id} 
+                            className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:border-emerald-500/50 transition-colors"
+                          >
+                            <div className="flex items-start gap-3.5">
+                              <div className="w-10 h-10 rounded-app-btn bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <BookOpen className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => {
+                                      const updated = lessons.map(l => l.id === lesson.id ? { ...l, locked: !l.locked } : l);
+                                      setLessons(updated);
+                                    }}
+                                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-black flex items-center gap-1 border transition-colors ${
+                                      lesson.locked 
+                                        ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 border-amber-250 dark:border-amber-900' 
+                                        : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 border-emerald-250 dark:border-emerald-900'
+                                    }`}
+                                  >
+                                    {lesson.locked ? (
+                                      <>
+                                        <Lock className="w-2.5 h-2.5" />
+                                        <span>{lang === 'ar' ? 'مقفل باقة ذهبية' : 'Premium Locked'}</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Unlock className="w-2.5 h-2.5" />
+                                        <span>{lang === 'ar' ? 'مجاني للجميع' : 'Free Access'}</span>
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                                <h4 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1">
+                                  {lessonName}
+                                </h4>
+                                <p className="text-[10px] text-slate-455 dark:text-slate-500 font-bold mt-0.5 font-sans">
+                                  ID: {lesson.id} • {lesson.quiz.length} أسئلة • {lesson.videoChapters.length} فصول فيديو
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 shrink-0">
+                              <button
+                                onClick={() => {
+                                  setEditingLesson(lesson);
+                                  setEditingLessonIndex(originalIndex);
+                                  setEditorSubTab('basic');
+                                  setActiveTab('lesson-editor');
+                                }}
+                                className="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 p-2.5 rounded-app-btn transition-colors active:scale-95 flex items-center gap-1.5 text-xs font-black cursor-pointer"
+                                title={lang === 'ar' ? 'تعديل المحتوى والأسئلة' : 'Edit content'}
+                              >
+                                <Edit className="w-4 h-4" />
+                                <span>{lang === 'ar' ? 'تعديل' : 'Edit'}</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingLesson(lesson);
+                                  setEditingLessonIndex(originalIndex);
+                                  setPreviewQuizIdx(0);
+                                  setPreviewSelectedAns(null);
+                                  setPreviewShowExpl(false);
+                                  setActiveTab('preview');
+                                }}
+                                className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/40 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 p-2.5 rounded-app-btn transition-colors active:scale-95 cursor-pointer"
+                                title={lang === 'ar' ? 'معاينة الطالب' : 'Preview student view'}
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteLesson(lesson.id)}
+                                className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-455 p-2.5 rounded-app-btn transition-colors active:scale-95 cursor-pointer"
+                                title={lang === 'ar' ? 'حذف الدرس نهائياً' : 'Delete lesson'}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               );
