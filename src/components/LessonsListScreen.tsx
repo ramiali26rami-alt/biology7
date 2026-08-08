@@ -61,7 +61,16 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
     if (!firstLesson) return lang === 'ar' ? `الوحدة ${selectedUnit}` : `Unit ${selectedUnit}`;
     const unitTitle = lang === 'ar' ? firstLesson.unitNameAr : firstLesson.unitNameEn;
     const unitNumberText = lang === 'ar' 
-      ? ['الوحدة الأولى', 'الوحدة الثانية', 'الوحدة الثالثة', 'الوحدة الرابعة', 'الوحدة الخامسة'][selectedUnit - 1] || `الوحدة ${selectedUnit}`
+      ? [
+          'الوحدة الأولى', 
+          'الوحدة الثانية', 
+          'الوحدة الثالثة', 
+          'الوحدة الرابعة', 
+          'الوحدة الخامسة', 
+          'الوحدة السادسة', 
+          'الوحدة السابعة', 
+          'الوحدة الثامنة'
+        ][selectedUnit - 1] || `الوحدة ${selectedUnit}`
       : `Unit ${selectedUnit}`;
     return `${unitNumberText}: ${unitTitle}`;
   };

@@ -67,17 +67,41 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
 
   const getFallbackUnitTitle = (unitNum: number, currentLang: Language) => {
     const trans = translations[currentLang];
-    if (unitNum === 1) return trans.unit1Title || 'الوحدة الأولى: التنظيم العصبي في الكائن الحي';
-    if (unitNum === 2) return trans.unit2Title || 'الوحدة الثانية: البيولوجيا الجزيئية';
+    if (unitNum === 1) return trans.unit1Title || 'الوحدة الأولى: الجهاز العصبي';
+    if (unitNum === 2) return trans.unit2Title || 'الوحدة الثانية: التنظيم الهرموني';
+    if (unitNum === 3) return currentLang === 'ar' ? 'الوحدة الثالثة: التكاثر في الكائنات الحية' : 'Unit 3: Reproduction in Living Organisms';
+    if (unitNum === 4) return currentLang === 'ar' ? 'الوحدة الرابعة: أساسيات علم الوراثة' : 'Unit 4: Basics of Genetics';
+    if (unitNum === 5) return currentLang === 'ar' ? 'الوحدة الخامسة: الوراثة الجزيئية' : 'Unit 5: Molecular Genetics';
+    if (unitNum === 6) return currentLang === 'ar' ? 'الوحدة السادسة: التقانة الحيوية' : 'Unit 6: Biotechnology';
+    if (unitNum === 7) return currentLang === 'ar' ? 'الوحدة السابعة: البيئة ومشكلاتها' : 'Unit 7: Environment and its Problems';
+    if (unitNum === 8) return currentLang === 'ar' ? 'الوحدة الثامنة: تاريخ الأرض' : 'Unit 8: History of Earth';
     return currentLang === 'ar' ? `الوحدة ${unitNum}` : `Unit ${unitNum}`;
   };
 
   const getUnitSubtitle = (idx: number) => {
     if (lang === 'ar') {
-      const labels = ['الوحدة الأولى', 'الوحدة الثانية', 'الوحدة الثالثة', 'الوحدة الرابعة', 'الوحدة الخامسة'];
+      const labels = [
+        'الوحدة الأولى', 
+        'الوحدة الثانية', 
+        'الوحدة الثالثة', 
+        'الوحدة الرابعة', 
+        'الوحدة الخامسة', 
+        'الوحدة السادسة', 
+        'الوحدة السابعة', 
+        'الوحدة الثامنة'
+      ];
       return labels[idx] || `الوحدة ${idx + 1}`;
     } else {
-      const labels = ['UNIT 1', 'UNIT 2', 'UNIT 3', 'UNIT 4', 'UNIT 5'];
+      const labels = [
+        'UNIT 1', 
+        'UNIT 2', 
+        'UNIT 3', 
+        'UNIT 4', 
+        'UNIT 5', 
+        'UNIT 6', 
+        'UNIT 7', 
+        'UNIT 8'
+      ];
       return labels[idx] || `UNIT ${idx + 1}`;
     }
   };
