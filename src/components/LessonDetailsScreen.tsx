@@ -1055,7 +1055,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     </button>
 
                     <button 
-                      onClick={() => onNavigate('ministry-exams', 'push')}
+                      onClick={() => startQuiz('ministry')}
                       className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm flex items-center justify-between hover:border-red-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
