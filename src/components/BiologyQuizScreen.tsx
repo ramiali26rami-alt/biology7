@@ -136,10 +136,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     return str
       .trim()
       .toLowerCase()
+      .replace(/[.\-?؟!,،()]/g, '')
       .replace(/[أإآا]/g, 'ا')
       .replace(/ة/g, 'ه')
       .replace(/ى/g, 'ي')
-      .replace(/\s+/g, ' ');
+      .replace(/\s+/g, ' ')
+      .trim();
   };
 
   const validateFillAnswer = (input: string, correctAnswers: string[], correctKey?: string) => {
