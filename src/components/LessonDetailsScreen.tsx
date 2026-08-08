@@ -492,9 +492,11 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
       .replace(/\s+/g, ' ');
   };
 
-  const validateFillAnswer = (input: string, correctAnswers: string[]) => {
+  const validateFillAnswer = (input: string, correctAnswers: string[], correctKey?: string) => {
     const cleanInput = cleanArabic(input);
-    return correctAnswers.some(ans => cleanArabic(ans) === cleanInput);
+    const answers = [...(correctAnswers || [])];
+    if (correctKey) answers.push(correctKey);
+    return answers.some(ans => cleanArabic(ans) === cleanInput);
   };
 
   // Start quiz logic
@@ -566,7 +568,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
   const handleFillSubmit = () => {
     if (showFeedback || !fillInput.trim()) return;
     const currentQ = activeQuestions[currentQuestionIndex];
-    const correct = validateFillAnswer(fillInput, currentQ.correctAnswers || []);
+    const correct = validateFillAnswer(fillInput, currentQ.correctAnswers || [], currentQ.correctKey);
     setIsAnswerCorrect(correct);
     
     const isHintUsed = hintsUsed.has(currentQ.id);
@@ -1134,8 +1136,17 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                             <span className="text-[10px] font-black text-emerald-500 tracking-wider">
                               {lang === 'ar' ? `سؤال ${currentQuestionIndex + 1} من ${activeQuestions.length}` : `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`}
                             </span>
+                            
+                            {activeQuestions[currentQuestionIndex].examYear && (
+                              <span className="text-[9px] font-black bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 px-2.5 py-0.5 rounded-full select-none">
+                                {lang === 'ar' ? `وزاري ${activeQuestions[currentQuestionIndex].examYear}` : `Ministry ${activeQuestions[currentQuestionIndex].examYear}`}
+                              </span>
+                            )}
+
                             <span className="text-[9px] font-black uppercase bg-slate-50 dark:bg-slate-950 px-2.5 py-1 rounded-md text-slate-450">
-                              {activeQuestions[currentQuestionIndex].type}
+                              {activeQuestions[currentQuestionIndex].type === 'mcq' ? (lang === 'ar' ? 'اختيار من متعدد' : 'MCQ')
+                               : activeQuestions[currentQuestionIndex].type === 'tf' ? (lang === 'ar' ? 'صح/خطأ' : 'T/F')
+                               : (lang === 'ar' ? 'أكمل الفراغ' : 'Fill')}
                             </span>
                           </div>
                           <p className="text-slate-800 dark:text-slate-100 text-sm font-extrabold leading-relaxed">

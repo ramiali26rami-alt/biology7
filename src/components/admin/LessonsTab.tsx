@@ -1364,7 +1364,7 @@ export default function LessonsTab({
                             value={q.correctAnswers?.join(', ') || q.correctKey || ''}
                             onChange={(e) => {
                               const val = e.target.value;
-                              const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+                              const arr = val.split(/[،,]/).map(s => s.trim()).filter(Boolean);
                               const quiz = [...(editingLesson.quiz || [])];
                               quiz[qIdx] = {
                                 ...quiz[qIdx],
@@ -1598,7 +1598,7 @@ export default function LessonsTab({
                             value={q.correctAnswers?.join(', ') || q.correctKey || ''}
                             onChange={(e) => {
                               const val = e.target.value;
-                              const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+                              const arr = val.split(/[،,]/).map(s => s.trim()).filter(Boolean);
                               const ministryExams = [...(editingLesson.ministryExams || [])];
                               ministryExams[qIdx] = {
                                 ...ministryExams[qIdx],

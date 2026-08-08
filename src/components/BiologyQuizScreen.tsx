@@ -142,9 +142,11 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
       .replace(/\s+/g, ' ');
   };
 
-  const validateFillAnswer = (input: string, correctAnswers: string[]) => {
+  const validateFillAnswer = (input: string, correctAnswers: string[], correctKey?: string) => {
     const cleanInput = cleanArabic(input);
-    return correctAnswers.some(ans => cleanArabic(ans) === cleanInput);
+    const answers = [...(correctAnswers || [])];
+    if (correctKey) answers.push(correctKey);
+    return answers.some(ans => cleanArabic(ans) === cleanInput);
   };
 
   const backIcon = lang === 'ar'
@@ -290,7 +292,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
   const handleFillSubmit = () => {
     if (showFeedback || !fillInput.trim()) return;
     const currentQ = questions[currentQuestionIndex];
-    const correct = validateFillAnswer(fillInput, currentQ.correctAnswers || []);
+    const correct = validateFillAnswer(fillInput, currentQ.correctAnswers || [], currentQ.correctKey);
     setIsAnswerCorrect(correct);
     if (correct) {
       playCorrectSound();
