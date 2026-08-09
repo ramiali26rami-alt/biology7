@@ -185,6 +185,25 @@ export default function App() {
       setTransitionDirection('none');
     }
     setCurrentScreen(targetScreen);
+
+    // Auto-sync owner updates on navigation transitions
+    if (targetScreen === 'main-dashboard' || targetScreen === 'units-navigation') {
+      checkAndUpdate().then(async (result) => {
+        if (result.updated) {
+          const updatedLessons = await loadCurriculum(true);
+          if (updatedLessons) {
+            setLessons(updatedLessons);
+          }
+          setUpdateInfo({
+            show: true,
+            newLessons: result.newLessons
+          });
+          setTimeout(() =>
+            setUpdateInfo({ show: false, newLessons: 0 })
+          , 4000);
+        }
+      }).catch(() => {});
+    }
   };
 
   // Open Training / Progressive Test mode: resets lesson selection to load all quiz questions
