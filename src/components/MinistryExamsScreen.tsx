@@ -228,7 +228,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
 
   const backIcon = lang === 'ar' ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
-  if (lesson && lesson.ministryExamLocked) {
+  if (lesson && lesson.ministryExamLocked && !checkPremiumStatus()) {
     return (
       <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">

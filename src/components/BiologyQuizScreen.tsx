@@ -23,7 +23,7 @@ import {
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { markQuizDone, getLessonProgress } from '../utils/progress';
-import { SecureStorage } from '../utils/security';
+import { SecureStorage, checkPremiumStatus } from '../utils/security';
 import { VirtualizedList } from './VirtualizedList';
 import LazyImage from './common/LazyImage';
 import { getCachedAssetUrl } from '../utils/cacheManager';
@@ -362,7 +362,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     }
   };
 
-  if (lesson && lesson.quizLocked) {
+  if (lesson && lesson.quizLocked && !checkPremiumStatus()) {
     return (
       <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/30 dark:shadow-none">
