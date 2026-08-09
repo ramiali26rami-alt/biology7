@@ -166,13 +166,8 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
           </div>
           <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
             <h4 className="text-lg md:text-xl font-black text-slate-900 dark:text-white leading-relaxed">
-              {card.qAr}
+              {lang === 'ar' ? (card.qAr || card.qEn) : (card.qEn || card.qAr)}
             </h4>
-            {card.qEn && (
-              <p className="text-[13px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
-                {card.qEn}
-              </p>
-            )}
           </div>
           <div className="text-[11px] text-slate-400 dark:text-slate-500 text-center font-bold">
             {lang === 'ar' ? 'اضغط لقلب البطاقة ورؤية الإجابة 🔄' : 'Click to flip and reveal answer 🔄'}
@@ -189,13 +184,8 @@ function Flashcard3D({ card, lang }: Flashcard3DProps) {
           </div>
           <div className="text-center py-2 flex-1 flex flex-col justify-center items-center">
             <h4 className="text-base md:text-lg font-extrabold text-slate-900 dark:text-white leading-relaxed">
-              {card.aAr}
+              {lang === 'ar' ? (card.aAr || card.aEn) : (card.aEn || card.aAr)}
             </h4>
-            {card.aEn && (
-              <p className="text-[13px] text-slate-400 dark:text-slate-500 font-semibold mt-1">
-                {card.aEn}
-              </p>
-            )}
           </div>
           <div className="text-[11px] text-emerald-600 dark:text-emerald-400 text-center font-bold">
             {lang === 'ar' ? 'اضغط للعودة للسؤال 🔄' : 'Click to flip back 🔄'}
