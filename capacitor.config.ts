@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.biotech.biology',
-  appName: 'Smart Bio',
+  appName: 'الأحياء',
   webDir: 'dist'
 };
 
