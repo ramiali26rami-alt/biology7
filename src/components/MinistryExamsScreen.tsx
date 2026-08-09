@@ -60,7 +60,7 @@ function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps)
       <LazyImage 
         src={imgUrl} 
         alt={lang === 'ar' ? 'مخطط السؤال الوزاري' : 'Ministry Exam Question Diagram'} 
-        className="max-h-48 object-contain rounded-app-btn"
+        className="max-h-24 object-contain rounded-app-btn"
       />
     </div>
   );
@@ -441,7 +441,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                   )}
                   
                    {(q.type === 'mcq' || q.type === 'tf') && q.options && q.options.length > 0 && (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
                       {q.options.map((opt) => {
                         const isSelected = selectedAnswers[q.id] === opt.key;
                         let isCorrect = opt.key === q.correctKey;
@@ -469,7 +469,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
                           <button
                             key={opt.key}
                             onClick={() => handleAnswerSelect(q.id, opt.key)}
-                            className={`p-3 rounded-app-btn border text-xs font-bold text-center active:scale-[0.98] transition-all ${btnStyle}`}
+                            className={`p-2 rounded-app-btn border text-xs font-bold text-center active:scale-[0.98] transition-all ${btnStyle}`}
                             disabled={examFinished}
                           >
                             {opt.text}

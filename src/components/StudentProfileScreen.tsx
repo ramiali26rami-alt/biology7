@@ -400,26 +400,26 @@ export default function StudentProfileScreen({
         </section>
 
         {/* Premium Upgrade & Pricing Screen 1 Integration */}
-        <section className="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/20 text-white p-6 rounded-app-card shadow-xl relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+        <section className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-900 dark:via-emerald-950 dark:to-slate-900 border border-emerald-200 dark:border-emerald-500/20 text-slate-800 dark:text-white p-5 rounded-app-card shadow-md relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-2xl"></div>
           <div className="relative z-10 space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <span className="p-2 bg-white/10 rounded-app-btn border border-white/10">
-                  <CreditCard className="w-5 h-5 text-emerald-400" />
+                <span className="p-2 bg-emerald-100/60 dark:bg-white/10 rounded-app-btn border border-emerald-200/50 dark:border-white/10">
+                  <CreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </span>
-                <h3 className="font-black text-lg">{t.premiumStatus}</h3>
+                <h3 className="font-black text-sm text-slate-850 dark:text-white">{t.premiumStatus}</h3>
               </div>
-              <span className={`text-xs px-3 py-1.5 rounded-full font-black border uppercase tracking-wider ${
+              <span className={`text-[10px] px-2.5 py-1 rounded-full font-black border uppercase tracking-wider ${
                 premiumUnlocked 
-                  ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' 
-                  : 'bg-amber-500/20 border-amber-400 text-amber-300'
+                  ? 'bg-emerald-100 border-emerald-200 text-emerald-700 dark:bg-emerald-500/20 dark:border-emerald-400 dark:text-emerald-300' 
+                  : 'bg-amber-105 border-amber-200 text-amber-700 dark:bg-amber-500/20 dark:border-amber-400 dark:text-amber-300'
               }`}>
                 {premiumUnlocked ? t.premiumUnlocked : t.premiumLocked}
               </span>
             </div>
             
-            <p className="text-emerald-100/90 text-xs font-semibold leading-relaxed">
+            <p className="text-slate-600 dark:text-emerald-100/90 text-xs font-semibold leading-relaxed">
               {lang === 'ar' 
                 ? 'شراء الباقة المميزة يمنحك حق الوصول الفوري إلى الوحدة الثانية والثالثة من منهج الأحياء للصف الثالث الثانوي بالجمهورية اليمنية، وحل نماذج الامتحانات الوزارية مع بنك الأسئلة الممتد.' 
                 : 'Upgrading unlocks Unit 2, Unit 3, past Yemeni Ministry exam simulations, and all interactive flashcard packages instantly.'
@@ -428,10 +428,10 @@ export default function StudentProfileScreen({
 
             <button 
               onClick={handleTogglePremium}
-              className={`w-full font-black text-sm py-3.5 rounded-app-btn active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+              className={`w-full font-black text-xs py-3 rounded-app-btn active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
                 premiumUnlocked 
-                  ? 'bg-white/10 hover:bg-white/15 text-emerald-300 border border-white/10' 
-                  : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-950/30'
+                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 dark:bg-white/10 dark:hover:bg-white/15 dark:text-emerald-300 dark:border-white/10' 
+                  : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/20 dark:shadow-emerald-950/30'
               }`}
             >
               <Flame className="w-4 h-4" />
@@ -442,8 +442,8 @@ export default function StudentProfileScreen({
             </button>
 
             {!premiumUnlocked && (
-              <form onSubmit={handleActivateKey} className="border-t border-white/10 pt-4 mt-4 space-y-3 text-right">
-                <label className="text-xs font-extrabold text-emerald-200 block">
+              <form onSubmit={handleActivateKey} className="border-t border-slate-150 dark:border-white/10 pt-4 mt-4 space-y-3 text-right">
+                <label className="text-xs font-extrabold text-slate-700 dark:text-emerald-200 block">
                   {t.enterActivationKey}
                 </label>
                 <div className="flex gap-2">
@@ -453,7 +453,7 @@ export default function StudentProfileScreen({
                     onChange={(e) => setActivationKey(e.target.value)}
                     placeholder={t.activationKeyPlaceholder}
                     disabled={activationLoading}
-                    className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-app-btn px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider focus:outline-none transition-all"
+                    className="flex-1 bg-white dark:bg-white/10 border border-slate-250 dark:border-white/20 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:bg-slate-50 focus:border-emerald-450 dark:focus:bg-white/15 dark:focus:border-white/30 rounded-app-btn px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider focus:outline-none transition-all"
                   />
                   <button
                     type="submit"
@@ -466,8 +466,8 @@ export default function StudentProfileScreen({
                 {activationMessage && (
                   <div className={`text-[10px] font-black px-3 py-2 rounded-app-btn ${
                     activationMessage.type === 'success' 
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                      : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' 
+                      : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                   }`}>
                     {activationMessage.text}
                   </div>
@@ -476,8 +476,8 @@ export default function StudentProfileScreen({
             )}
 
             {/* Advanced Server Settings */}
-            <div className="border-t border-white/10 pt-4 mt-4 space-y-3 text-right">
-              <label className="text-xs font-extrabold text-emerald-200 block">
+            <div className="border-t border-slate-150 dark:border-white/10 pt-4 mt-4 space-y-3 text-right">
+              <label className="text-xs font-extrabold text-slate-700 dark:text-emerald-200 block">
                 {lang === 'ar' ? 'عنوان خادم المعلم الافتراضي (اختياري)' : 'AI Tutor Server URL (Optional)'}
               </label>
               <div className="flex gap-2">
@@ -489,10 +489,10 @@ export default function StudentProfileScreen({
                     localStorage.setItem('server_url', e.target.value.trim());
                   }}
                   placeholder="https://biology-server.up.railway.app"
-                  className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:bg-white/15 focus:border-white/30 rounded-app-btn px-4 py-2.5 text-xs font-mono focus:outline-none transition-all"
+                  className="flex-1 bg-white dark:bg-white/10 border border-slate-250 dark:border-white/20 text-slate-800 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:bg-slate-50 focus:border-emerald-450 dark:focus:bg-white/15 dark:focus:border-white/30 rounded-app-btn px-4 py-2.5 text-xs font-mono focus:outline-none transition-all"
                 />
               </div>
-              <p className="text-[11.5px] text-emerald-200/70 font-bold leading-normal">
+              <p className="text-[10px] text-slate-500 dark:text-emerald-200/70 font-bold leading-normal">
                 {lang === 'ar' 
                   ? 'ملاحظة: اتركه فارغاً لاستخدام خادم التطبيق الافتراضي. مفيد جداً لتشغيل خدمات الذكاء الاصطناعي أوفلاين على الهواتف.'
                   : 'Note: Leave blank to use default application server. Helpful for offline AI features on mobile apps.'}

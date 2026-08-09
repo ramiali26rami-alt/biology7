@@ -84,7 +84,7 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
       <LazyImage 
         src={imgUrl} 
         alt={lang === 'ar' ? 'رسم توضيحي للسؤال' : 'Question illustration Diagram'} 
-        className="max-h-28 object-contain rounded-app-btn"
+        className="max-h-24 object-contain rounded-app-btn"
       />
     </div>
   );
@@ -437,37 +437,39 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
       </header>
 
       {/* Main Content */}
-      <main className="pt-18 px-4 max-w-2xl mx-auto space-y-3.5">
+      <main className="pt-18 px-4 max-w-2xl mx-auto space-y-2.5">
         
-        {/* Progress Header */}
-        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-app-card shadow-sm">
-          <div className="flex justify-between items-end mb-2">
-            <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-              <span className="text-[10px] text-slate-450 dark:text-slate-500 font-bold block">
+        {/* Progress Header (Slim & Compact) */}
+        <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2.5 rounded-app-card shadow-sm">
+          <div className="flex justify-between items-center mb-1.5">
+            <div className={`flex items-center gap-1.5 text-[10px] font-black ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+              <span className="text-emerald-600 dark:text-emerald-400">
                 {lang === 'ar'
-                  ? `السؤال ${currentQuestionIndex + 1} من ${questions.length}`
-                  : `Question ${currentQuestionIndex + 1} of ${questions.length}`}
+                  ? `سؤال ${currentQuestionIndex + 1}/${questions.length}`
+                  : `Q ${currentQuestionIndex + 1}/${questions.length}`}
               </span>
-              <h2 className="text-xs font-black text-slate-900 dark:text-white mt-0.5">
+              <span className="text-slate-350 dark:text-slate-700">|</span>
+              <span className="text-slate-650 dark:text-slate-400">
                 {getSectionLabel()}
-              </h2>
+              </span>
             </div>
-            <span className="text-xs text-emerald-500 font-black">
+            <span className="text-[10px] text-emerald-500 font-black">
               {score} {lang === 'ar' ? 'درجة' : 'pts'}
             </span>
           </div>
-          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          
+          <div className="h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
 
           {/* Timer section */}
           {timerEnabled && !quizFinished && (
-            <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-slate-500 dark:text-slate-400">
-                  {lang === 'ar' ? '⏱️ الوقت المتبقي:' : '⏱️ Time Left:'}
+                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400">
+                  {lang === 'ar' ? '⏱️ المتبقي:' : '⏱️ Left:'}
                 </span>
-                <span className={`text-[10px] font-sans font-black px-2 py-0.5 rounded-full ${
+                <span className={`text-[9px] font-sans font-black px-1.5 py-0.5 rounded-full ${
                   timeLeft <= 5 
                     ? 'bg-rose-500 text-white animate-pulse' 
                     : 'bg-amber-500/10 text-amber-500 dark:text-amber-400'
@@ -475,7 +477,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                   {timeLeft} {lang === 'ar' ? 'ث' : 's'}
                 </span>
               </div>
-              <div className="flex-1 max-w-[120px] h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div className="flex-1 max-w-[100px] h-0.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                 <div 
                   className={`h-full transition-all duration-1000 ${
                     timeLeft <= 5 ? 'bg-rose-500' : 'bg-amber-500'
@@ -488,7 +490,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
         </section>
 
         {!quizFinished ? (
-          <div className="space-y-3 animate-fadeIn">
+          <div className="space-y-2.5 animate-fadeIn">
             {/* Question Image (if present) - Hidden when feedback is shown to save space for next button */}
             {!showFeedback && currentQ.questionImage && (
               <QuestionImage 
@@ -576,7 +578,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                       <button 
                         key={opt.key}
                         onClick={() => handleOptionClick(opt.key)}
-                        className={`w-full flex items-center p-2.5 rounded-app-btn border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
+                        className={`w-full flex items-center p-2 rounded-app-btn border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
                           lang === 'ar' ? 'text-right' : 'text-left'
                         } ${optionStyle}`}
                         disabled={showFeedback}

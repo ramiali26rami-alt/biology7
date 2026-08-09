@@ -108,17 +108,17 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
   const unitStyles = [
     {
       // Unit 1: الجهاز العصبي
-      icon: <Brain className="w-8 h-8" />,
+      icon: <Brain className="w-5.5 h-5.5" />,
       bg: 'bg-rose-50 dark:bg-rose-950/30',
       text: 'text-rose-600 dark:text-rose-400',
-      accentText: 'text-rose-500 dark:text-rose-450 dark:text-rose-400',
+      accentText: 'text-rose-500 dark:text-rose-450 dark:text-rose-450 dark:text-rose-400',
       badgeBg: 'bg-rose-500',
       hoverBorder: 'hover:border-rose-500 dark:hover:border-rose-500',
       hoverText: 'group-hover:text-rose-500'
     },
     {
       // Unit 2: التنظيم الهرموني
-      icon: <Activity className="w-8 h-8" />,
+      icon: <Activity className="w-5.5 h-5.5" />,
       bg: 'bg-amber-50 dark:bg-amber-950/30',
       text: 'text-amber-600 dark:text-amber-400',
       accentText: 'text-amber-500 dark:text-amber-400',
@@ -128,7 +128,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     },
     {
       // Unit 3: التكاثر
-      icon: <Heart className="w-8 h-8" />,
+      icon: <Heart className="w-5.5 h-5.5" />,
       bg: 'bg-red-50 dark:bg-red-950/30',
       text: 'text-red-600 dark:text-red-400',
       accentText: 'text-red-500 dark:text-red-400',
@@ -138,7 +138,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     },
     {
       // Unit 4: أساسيات علم الوراثة
-      icon: <Dna className="w-8 h-8" />,
+      icon: <Dna className="w-5.5 h-5.5" />,
       bg: 'bg-purple-50 dark:bg-purple-950/30',
       text: 'text-purple-600 dark:text-purple-400',
       accentText: 'text-purple-500 dark:text-purple-400',
@@ -148,7 +148,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     },
     {
       // Unit 5: الوراثة الجزيئية
-      icon: <Binary className="w-8 h-8" />,
+      icon: <Binary className="w-5.5 h-5.5" />,
       bg: 'bg-indigo-50 dark:bg-indigo-950/30',
       text: 'text-indigo-600 dark:text-indigo-400',
       accentText: 'text-indigo-500 dark:text-indigo-400',
@@ -158,7 +158,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     },
     {
       // Unit 6: التقانة الحيوية
-      icon: <FlaskConical className="w-8 h-8" />,
+      icon: <FlaskConical className="w-5.5 h-5.5" />,
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
       text: 'text-emerald-600 dark:text-emerald-400',
       accentText: 'text-emerald-500 dark:text-emerald-400',
@@ -168,7 +168,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     },
     {
       // Unit 7: البيئة ومشكلاتها
-      icon: <Leaf className="w-8 h-8" />,
+      icon: <Leaf className="w-5.5 h-5.5" />,
       bg: 'bg-teal-50 dark:bg-teal-950/30',
       text: 'text-teal-600 dark:text-teal-400',
       accentText: 'text-teal-500 dark:text-teal-400',
@@ -178,7 +178,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
     },
     {
       // Unit 8: تاريخ الأرض
-      icon: <Globe className="w-8 h-8" />,
+      icon: <Globe className="w-5.5 h-5.5" />,
       bg: 'bg-blue-50 dark:bg-blue-950/30',
       text: 'text-blue-600 dark:text-blue-400',
       accentText: 'text-blue-500 dark:text-blue-400',
@@ -273,28 +273,28 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
               <div 
                 key={unitNum}
                 onClick={() => handleUnitClick(unitId)}
-                className={`bg-white dark:bg-slate-900 border p-5 rounded-app-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-4.5 ${
+                className={`bg-white dark:bg-slate-900 border p-3.5 rounded-app-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-3 ${
                   isLocked 
-                    ? 'border-slate-100 dark:border-slate-800 opacity-80' 
+                    ? 'border-slate-100 dark:border-slate-800 opacity-85' 
                     : `border-slate-100 dark:border-slate-800 ${style.hoverBorder}`
                 }`}
               >
-                <div className="flex items-center gap-4.5 flex-1 min-w-0">
-                  <div className={`w-14 h-14 rounded-app-card flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
+                <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                  <div className={`w-11 h-11 rounded-app-card flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
                     {style.icon}
                   </div>
                   <div className="flex-1 min-w-0 text-right">
-                    <h3 className="font-black text-slate-800 dark:text-white transition-colors leading-snug">
-                      <span className={`text-[16px] font-black uppercase tracking-wide inline-block ${lang === 'ar' ? 'ms-2' : 'me-2'} ${style.accentText}`}>
-                        {getUnitSubtitle(idx)}:
-                      </span>
-                      <span className={`text-[20px] ${style.hoverText}`}>{unitTitle}</span>
+                    <span className={`block text-[10px] sm:text-[11px] font-black uppercase tracking-wide opacity-95 mb-0.5 ${style.accentText}`}>
+                      {getUnitSubtitle(idx)}
+                    </span>
+                    <h3 className={`text-sm sm:text-base font-black transition-colors text-slate-800 dark:text-white leading-snug ${style.hoverText}`}>
+                      {unitTitle}
                     </h3>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  {isLocked && <Lock className="w-4.5 h-4.5 text-amber-500" />}
-                  <span className={`text-[12px] font-black text-white px-3.5 py-1 rounded-app-btn shadow-sm shrink-0 ${style.badgeBg}`}>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  {isLocked && <Lock className="w-3.5 h-3.5 text-amber-500" />}
+                  <span className={`text-[10px] font-black text-white px-2.5 py-0.5 rounded-app-btn shadow-sm shrink-0 ${style.badgeBg}`}>
                     {lessonsCount} {t.lessonsQuantity}
                   </span>
                 </div>

@@ -1364,7 +1364,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
 
 
         {/* Next Lesson Card (Only visible at the bottom of the test tab after exams) */}
-        {activeTab === 'test' && (() => {
+        {activeTab === 'test' && quizFinished && (() => {
           const currentIdx = lessons.findIndex(l => l.id === lesson.id);
           const nextLesson = currentIdx >= 0 && currentIdx < lessons.length - 1
             ? lessons[currentIdx + 1]
