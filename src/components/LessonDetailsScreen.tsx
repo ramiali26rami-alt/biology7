@@ -1027,23 +1027,18 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         {activeTab === 'test' && (
           <div className="space-y-6 animate-fadeIn">
             {/* Locked check */}
-            {lesson.quizLocked && !premiumUnlocked && (
-              <div className="relative min-h-[300px]">
-                <LockedOverlay 
-                  messageAr="تم قفل جميع الاختبارات والامتحانات لهذه الحصة من قبل المعلم"
-                  messageEn="All practice quizzes and exams are locked by the teacher."
-                  onUnlockClick={() => onNavigate('student-profile', 'push')}
-                />
-              </div>
-            )}
-
-            {(!lesson.quizLocked || premiumUnlocked) && (
-              <>
                 {/* A. Select Quiz Type Mode */}
                 {quizMode === 'select' && (
                   <div className="grid grid-cols-1 gap-4 animate-fadeIn">
                     <button 
-                      onClick={() => startQuiz('quiz')}
+                      onClick={() => {
+                        if (lesson.quizLocked && !premiumUnlocked) {
+                          alert(lang === 'ar' ? 'عذراً، هذا الاختبار مغلق للمشتركين فقط.' : 'Sorry, this practice quiz is locked for premium subscribers.');
+                          onNavigate('student-profile', 'push');
+                          return;
+                        }
+                        startQuiz('quiz');
+                      }}
                       className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm flex items-center justify-between hover:border-emerald-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
@@ -1053,6 +1048,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                         <div>
                           <h4 className="font-black text-slate-800 dark:text-white text-sm">
                             {lang === 'ar' ? 'الاختبار التجريبي التفاعلي' : 'Interactive Practice Quiz'}
+                            {lesson.quizLocked && !premiumUnlocked && ' 🔒'}
                           </h4>
                           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
                             {lang === 'ar' ? `${lesson.quiz?.length || 0} أسئلة - خيارات متعددة وإكمال فراغات` : `${lesson.quiz?.length || 0} tasks - MCQs, True/False & gaps`}
@@ -1063,7 +1059,14 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                     </button>
 
                     <button 
-                      onClick={() => startQuiz('ministry')}
+                      onClick={() => {
+                        if (lesson.ministryExamLocked && !premiumUnlocked) {
+                          alert(lang === 'ar' ? 'عذراً، قسم الامتحانات الوزارية مغلق للمشتركين فقط.' : 'Sorry, the ministry exams section is locked for premium subscribers.');
+                          onNavigate('student-profile', 'push');
+                          return;
+                        }
+                        startQuiz('ministry');
+                      }}
                       className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-sm flex items-center justify-between hover:border-red-500 transition-all text-right w-full active:scale-98 group cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
@@ -1073,6 +1076,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                         <div>
                           <h4 className="font-black text-slate-800 dark:text-white text-sm">
                             {lang === 'ar' ? 'النماذج والامتحانات الوزارية' : 'Ministry & Official Exams'}
+                            {lesson.ministryExamLocked && !premiumUnlocked && ' 🔒'}
                           </h4>
                           <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
                             {lang === 'ar' ? `${lesson.ministryExams?.length || 0} أسئلة من لجان القياس الرسمية` : `${lesson.ministryExams?.length || 0} official questions`}
@@ -1360,8 +1364,6 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                 )}
 
 
-              </>
-            )}
           </div>
         )}
 
