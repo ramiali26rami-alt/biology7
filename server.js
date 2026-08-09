@@ -95,9 +95,86 @@ function rescanAssets(publicDir) {
   }
 }
 
-// Dummy KV fallback if not present in apiMiddleware
+// Real Vercel KV / Upstash Redis REST Client
 const KV = {
-  isConfigured: () => false
+  isConfigured: () => {
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    return !!(url && token);
+  },
+  
+  _getCredentials: () => {
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    return { url, token };
+  },
+
+  get: async (key) => {
+    try {
+      const { url, token } = KV._getCredentials();
+      if (!url || !token) return null;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(['GET', key])
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.result) {
+          try {
+            return JSON.parse(data.result);
+          } catch {
+            return data.result;
+          }
+        }
+      }
+    } catch (e) {
+      console.error('KV get error:', e);
+    }
+    return null;
+  },
+
+  set: async (key, value) => {
+    try {
+      const { url, token } = KV._getCredentials();
+      if (!url || !token) return false;
+      const strValue = typeof value === 'string' ? value : JSON.stringify(value);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(['SET', key, strValue])
+      });
+      return res.ok;
+    } catch (e) {
+      console.error('KV set error:', e);
+      return false;
+    }
+  },
+
+  del: async (key) => {
+    try {
+      const { url, token } = KV._getCredentials();
+      if (!url || !token) return false;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(['DEL', key])
+      });
+      return res.ok;
+    } catch (e) {
+      console.error('KV del error:', e);
+      return false;
+    }
+  }
 };
 
 // ─── GET /api/get-config ───
