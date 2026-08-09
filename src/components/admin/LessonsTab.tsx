@@ -10,6 +10,7 @@ import { translations } from '../../utils/translations';
 import { getAbsoluteUrl } from '../../utils/urlHelper';
 import { Lesson, VideoChapter, Flashcard, ConfigQuestion, MindmapNode } from '../../types';
 import DOMPurify from 'dompurify';
+import { supabase } from '../../utils/supabaseClient';
 
 type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'ministry-quiz' | 'files';
 
@@ -533,39 +534,60 @@ export default function LessonsTab({
         setUploadingField(fieldName as string);
         setUploadSuccess(null);
         
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async () => {
+        // Directly upload to Supabase Storage
+        (async () => {
           try {
-            const contentBase64 = (reader.result as string).split(',')[1];
-            const filePath = `${editingLesson.folder}/${file.name}`;
-            
-            const res = await fetch(getAbsoluteUrl('/api/upload-binary'), {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
-              },
-              body: JSON.stringify({ filePath, contentBase64 }),
-            });
-            if (res.ok) {
-              const newLesson = { ...editingLesson, [fieldName]: file.name };
-              setEditingLesson(newLesson);
-              const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? newLesson : l);
-              setLessons(updatedLessons);
-              await saveAllToServer(updatedLessons);
-              setUploadSuccess(fieldName as string);
-              setTimeout(() => setUploadSuccess(null), 4000);
-            } else {
-              alert(lang === 'ar' ? 'فشل تحميل الملف على السيرفر.' : 'Failed to upload file to server.');
+            const fileExt = file.name.split('.').pop() || '';
+            const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+            const storagePath = `${editingLesson.folder}/${Date.now()}_${cleanFileName}`;
+
+            // Upload the file binary directly
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from('biology-assets')
+              .upload(storagePath, file, {
+                cacheControl: '3600',
+                upsert: true
+              });
+
+            if (uploadError) {
+              console.warn("Primary bucket upload failed, attempting auto-creation...", uploadError);
+              // Fallback: try creating bucket if not exists (might fail depending on policy, but worth a try)
+              try {
+                await supabase.storage.createBucket('biology-assets', { public: true });
+              } catch (e) {
+                console.error("Failed to auto-create bucket:", e);
+              }
+              // Retry upload
+              const { error: retryError } = await supabase.storage
+                .from('biology-assets')
+                .upload(storagePath, file, { upsert: true });
+
+              if (retryError) {
+                throw new Error(retryError.message);
+              }
             }
-          } catch (err) {
-            console.error("Failed uploading file:", err);
-            alert(lang === 'ar' ? 'حدث خطأ أثناء رفع الملف.' : 'Error uploading file.');
+
+            // Get public URL
+            const { data: publicUrlData } = supabase.storage.from('biology-assets').getPublicUrl(storagePath);
+            const fileUrl = publicUrlData.publicUrl;
+
+            const newLesson = { ...editingLesson, [fieldName]: fileUrl };
+            setEditingLesson(newLesson);
+            const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? newLesson : l);
+            setLessons(updatedLessons);
+            await saveAllToServer(updatedLessons);
+            setUploadSuccess(fieldName as string);
+            setTimeout(() => setUploadSuccess(null), 4000);
+          } catch (err: any) {
+            console.error("Failed uploading file to Supabase Storage:", err);
+            alert(lang === 'ar' 
+              ? `فشل تحميل الملف على السحابة. تأكد من إنشاء سلة تخزين عامة باسم 'biology-assets' في Supabase: ${err.message || ''}` 
+              : `Failed to upload file to cloud storage. Make sure a public bucket named 'biology-assets' exists in Supabase: ${err.message || ''}`
+            );
           } finally {
             setUploadingField(null);
           }
-        };
+        })();
       }
     };
     input.click();
