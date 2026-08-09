@@ -465,8 +465,10 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
         serverUrl = 'https://biology7.vercel.app';
         localStorage.setItem('server_url', serverUrl);
       }
-      const folderPath = lesson.folder || '';
-      const absolutePdfUrl = `${serverUrl}/${folderPath}/${lesson.pdfFile}`;
+      const assetUrl = getAssetUrl(lesson.pdfFile);
+      const absolutePdfUrl = (assetUrl.startsWith('http://') || assetUrl.startsWith('https://') || assetUrl.startsWith('//'))
+        ? assetUrl
+        : `${serverUrl}${assetUrl.startsWith('/') ? '' : '/'}${assetUrl}`;
 
       if (Capacitor.isNativePlatform()) {
         window.open(absolutePdfUrl, '_system');

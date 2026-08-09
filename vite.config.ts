@@ -305,7 +305,7 @@ export default defineConfig(() => {
                 promptText += `\nالآن، قم بصياغة الإجابة التربوية المناسبة للسؤال الجديد للطالب باللغة العربية:`;
 
                 const response = await ai.models.generateContent({
-                  model: 'gemini-3.1-flash-lite',
+                  model: 'gemini-1.5-flash',
                   contents: promptText
                 });
 
@@ -366,7 +366,7 @@ For every question, write detailed explanationAr (in Arabic) and explanationEn (
 Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
                 const response = await ai.models.generateContent({
-                  model: 'gemini-3.1-flash-lite',
+                  model: 'gemini-1.5-flash',
                   contents: prompt,
                   config: {
                     responseMimeType: 'application/json',

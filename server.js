@@ -23,7 +23,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-admin-passcode');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-admin-passcode,x-gemini-key');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
@@ -341,7 +341,7 @@ For every question, write detailed explanationAr (in Arabic) and explanationEn (
 Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite',
+      model: 'gemini-1.5-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -409,7 +409,7 @@ app.post('/api/analyze-diagram', async (req, res) => {
     const ai = new GoogleGenAI({ apiKey: String(apiKey) });
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite',
+      model: 'gemini-1.5-flash',
       contents: [
         {
           inlineData: {
@@ -514,7 +514,7 @@ app.post('/api/tutor-chat', async (req, res) => {
     promptText += `\nالآن، قم بصياغة الإجابة التربوية المناسبة للسؤال الجديد للطالب باللغة العربية:`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite',
+      model: 'gemini-1.5-flash',
       contents: promptText
     });
 
