@@ -13,6 +13,7 @@ interface AdminLoginModalProps {
 export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminLoginModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passcode, setPasscode] = useState(localStorage.getItem('admin_passcode') || '');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -20,7 +21,7 @@ export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminL
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
+    if (!email.trim() || !password.trim() || !passcode.trim()) return;
 
     setLoading(true);
     setErrorMsg('');
@@ -36,6 +37,7 @@ export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminL
       }
 
       if (data.user) {
+        localStorage.setItem('admin_passcode', passcode.trim());
         onLoginSuccess();
       } else {
         throw new Error('Authentication failed');
@@ -106,6 +108,24 @@ export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminL
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 rounded-app-btn pr-11 pl-4 py-3.5 text-slate-800 dark:text-white font-bold text-sm focus:outline-none transition-colors"
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-black text-slate-650 dark:text-slate-300 block px-1">
+              {isAr ? 'رمز مرور السيرفر (ADMIN_PASSCODE):' : 'Server Passcode (ADMIN_PASSCODE):'}
+            </label>
+            <div className="relative">
+              <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                required
+                value={passcode}
+                onChange={e => setPasscode(e.target.value)}
+                placeholder="Secure Passcode"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 rounded-app-btn pr-11 pl-4 py-3.5 text-slate-850 dark:text-white font-bold text-sm focus:outline-none transition-colors"
                 disabled={loading}
               />
             </div>

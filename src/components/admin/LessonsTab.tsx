@@ -148,7 +148,8 @@ export default function LessonsTab({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-gemini-key': localApiKey
+          'x-gemini-key': localApiKey,
+          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
         },
         body: JSON.stringify({
           lessonTitleAr: editingLesson.titleAr,
@@ -541,7 +542,10 @@ export default function LessonsTab({
             
             const res = await fetch(getAbsoluteUrl('/api/upload-binary'), {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+              },
               body: JSON.stringify({ filePath, contentBase64 }),
             });
             if (res.ok) {

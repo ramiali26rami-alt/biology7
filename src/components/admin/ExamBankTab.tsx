@@ -35,7 +35,11 @@ export default function ExamBankTab({
 
   // Fetch backups on tab load
   useEffect(() => {
-    fetch(getAbsoluteUrl('/api/backups'))
+    fetch(getAbsoluteUrl('/api/backups'), {
+      headers: {
+        'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+      }
+    })
       .then(r => r.json())
       .then(d => setBackups(d.backups ?? []))
       .catch(() => {});
@@ -76,7 +80,10 @@ export default function ExamBankTab({
     try {
       const res = await fetch(getAbsoluteUrl('/api/publish-update'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+        }
       });
       if (res.ok) {
         const resData = await res.json();

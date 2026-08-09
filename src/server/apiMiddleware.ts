@@ -116,9 +116,19 @@ export async function triggerBackupAfterSave(
       current = JSON.parse(fs.readFileSync(versionPath, 'utf-8'));
     }
   }
+  
+  let currentVer = '1.0.0';
+  if (current && typeof current === 'object' && 'version' in current) {
+    currentVer = (current as any).version || '1.0.0';
+  } else if (typeof current === 'string') {
+    currentVer = current;
+  }
 
-  const parts = (current.version as string).split('.');
-  parts[2] = String(Number(parts[2]) + 1);
+  const parts = currentVer.split('.');
+  while (parts.length < 3) {
+    parts.push('0');
+  }
+  parts[2] = String(Number(parts[2] || 0) + 1);
 
   const newVersion = {
     version: parts.join('.'),

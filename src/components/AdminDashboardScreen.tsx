@@ -138,7 +138,10 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     try {
       const res = await fetch(getAbsoluteUrl('/api/save-config'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+        },
         body: JSON.stringify(lessonsToSave)
       });
       if (res.ok) {

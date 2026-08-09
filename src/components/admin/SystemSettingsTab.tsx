@@ -65,7 +65,10 @@ export default function SystemSettingsTab({
       // 2. Post the default data directly to server save-config to overwrite the KV store
       const saveRes = await fetch(getAbsoluteUrl('/api/save-config'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+        },
         body: JSON.stringify(defaultData)
       });
 
@@ -560,7 +563,8 @@ export default function SystemSettingsTab({
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'x-gemini-key': localApiKey
+              'x-gemini-key': localApiKey,
+              'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
             },
             body: JSON.stringify({ imageBase64: base64data, mimeType })
           });
