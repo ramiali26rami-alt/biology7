@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { SecureStorage } from './security';
+import { SecureStorage, checkPremiumStatus } from './security';
 import { logger } from './logger';
 
 export interface StudentProfile {
@@ -56,9 +56,14 @@ export async function registerStudent(
         localStorage.setItem('student_phone', formattedPhone);
         localStorage.setItem('student_governorate', existingStudent.governorate || '');
         
+        const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+        SecureStorage.setItem('premium_status', JSON.stringify({
+          unlocked: existingStudent.is_premium,
+          activatedAt: Date.now(),
+          deviceUuid
+        }));
         SecureStorage.setItem('student_name', existingStudent.name);
         SecureStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
-        localStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
         
         return { 
           success: true, 
@@ -82,9 +87,14 @@ export async function registerStudent(
           localStorage.setItem('student_phone', formattedPhone);
           localStorage.setItem('student_governorate', existingStudent.governorate || '');
           
+          const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+          SecureStorage.setItem('premium_status', JSON.stringify({
+            unlocked: existingStudent.is_premium,
+            activatedAt: Date.now(),
+            deviceUuid
+          }));
           SecureStorage.setItem('student_name', existingStudent.name);
           SecureStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
-          localStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
 
           return {
             success: true,
@@ -124,9 +134,14 @@ export async function registerStudent(
     localStorage.setItem('student_phone', formattedPhone);
     localStorage.setItem('student_governorate', newStudent.governorate);
     
+    const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+    SecureStorage.setItem('premium_status', JSON.stringify({
+      unlocked: false,
+      activatedAt: Date.now(),
+      deviceUuid
+    }));
     SecureStorage.setItem('student_name', newStudent.name);
     SecureStorage.setItem('premium_unlocked', 'false');
-    localStorage.setItem('premium_unlocked', 'false');
 
     return { success: true, message: localStorage.getItem('lang') === 'en' ? 'Registration completed successfully!' : 'تم التسجيل بنجاح!' };
   } catch (error: any) {
@@ -203,14 +218,19 @@ export async function checkStudentSubscription(): Promise<boolean> {
     if (error) throw error;
     if (data) {
       const isPremium = data.is_premium;
+      const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+      SecureStorage.setItem('premium_status', JSON.stringify({
+        unlocked: isPremium,
+        activatedAt: Date.now(),
+        deviceUuid
+      }));
       SecureStorage.setItem('premium_unlocked', isPremium ? 'true' : 'false');
-      localStorage.setItem('premium_unlocked', isPremium ? 'true' : 'false');
       return isPremium;
     }
     return false;
   } catch (error) {
     logger.warn('Error checking subscription from server, using cached status:', error);
-    return SecureStorage.getItem('premium_unlocked') === 'true';
+    return checkPremiumStatus();
   }
 }
 

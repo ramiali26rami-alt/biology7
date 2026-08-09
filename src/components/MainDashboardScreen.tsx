@@ -37,7 +37,7 @@ import { overallPercent, getStreak, loadProgress } from '../utils/progress';
 import { scheduleReminderNotification } from '../utils/notifications';
 import { Lesson } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { SecureStorage } from '../utils/security';
+import { SecureStorage, checkPremiumStatus } from '../utils/security';
 
 interface MainDashboardScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -179,7 +179,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
     if (storedName) setStudentName(storedName);
     else setStudentName(lang === 'ar' ? 'أحمد محمد' : 'Ahmed Mohamed');
 
-    setPremiumUnlocked(localStorage.getItem('premium_unlocked') === 'true');
+    setPremiumUnlocked(checkPremiumStatus());
 
     const storedAvatar = localStorage.getItem('student_avatar');
     if (storedAvatar) setAvatarUrl(storedAvatar);

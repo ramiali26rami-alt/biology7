@@ -75,3 +75,15 @@ export function decryptCurriculumData(encryptedText: string): any {
   }
   return JSON.parse(decryptedText);
 }
+
+export function checkPremiumStatus(): boolean {
+  try {
+    const raw = SecureStorage.getItem('premium_status');
+    if (raw) {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
+      return parsed?.unlocked === true && parsed?.deviceUuid === deviceUuid;
+    }
+  } catch (e) {}
+  return SecureStorage.getItem('premium_unlocked') === 'true';
+}

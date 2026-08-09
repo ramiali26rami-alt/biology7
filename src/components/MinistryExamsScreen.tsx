@@ -26,6 +26,7 @@ import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { getCachedAssetUrl } from '../utils/cacheManager';
 import LazyImage from './common/LazyImage';
+import { checkPremiumStatus } from '../utils/security';
 
 interface QuestionImageProps {
   lessonId: string;
@@ -92,7 +93,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
   const t = translations[lang];
 
   useEffect(() => {
-    setPremiumUnlocked(localStorage.getItem('premium_unlocked') === 'true');
+    setPremiumUnlocked(checkPremiumStatus());
   }, []);
 
   // Timer Countdown Effect

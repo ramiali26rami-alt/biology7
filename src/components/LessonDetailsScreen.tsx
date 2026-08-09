@@ -49,7 +49,7 @@ import {
 import { VirtualizedList } from './VirtualizedList';
 import { MindMapVisualizer } from './MindMapVisualizer';
 import { InteractiveDiagramVisualizer } from './InteractiveDiagramVisualizer';
-import { SecureStorage } from '../utils/security';
+import { SecureStorage, checkPremiumStatus } from '../utils/security';
 import { isAssetCached, cacheAsset, getCachedAssetUrl } from '../utils/cacheManager';
 import { motion, AnimatePresence } from 'motion/react';
 import { Capacitor } from '@capacitor/core';
@@ -216,7 +216,7 @@ interface LessonDetailsScreenProps {
 
 export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLesson, lessons = [], onSelectLesson }: LessonDetailsScreenProps) {
   const lesson = (lessons || []).find(l => l.id === propLesson?.id) || propLesson;
-  const premiumUnlocked = SecureStorage.getItem('premium_unlocked') === 'true';
+  const premiumUnlocked = checkPremiumStatus();
   const [activeTab, setActiveTab] = useState<'explore' | 'review' | 'test'>('explore');
   const [exploreSubTab, setExploreSubTab] = useState<'mindmap' | 'diagrams' | 'pdf'>('mindmap');
   const [bookmarked, setBookmarked] = useState(false);

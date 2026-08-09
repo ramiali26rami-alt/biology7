@@ -23,6 +23,7 @@ import {
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { lessonPercent, overallPercent, getStreak } from '../utils/progress';
+import { checkPremiumStatus } from '../utils/security';
 
 interface LessonsListScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -41,7 +42,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
   const t = translations[lang];
 
   useEffect(() => {
-    setPremiumUnlocked(localStorage.getItem('premium_unlocked') === 'true');
+    setPremiumUnlocked(checkPremiumStatus());
   }, []);
 
   const backIcon = lang === 'ar' ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;

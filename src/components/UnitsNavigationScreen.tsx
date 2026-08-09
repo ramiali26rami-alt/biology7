@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
+import { checkPremiumStatus } from '../utils/security';
 
 interface UnitsNavigationScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -43,7 +44,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
   const t = translations[lang];
 
   useEffect(() => {
-    setPremiumUnlocked(localStorage.getItem('premium_unlocked') === 'true');
+    setPremiumUnlocked(checkPremiumStatus());
   }, []);
 
   // Display all 8 units of the curriculum statically so they are always visible in the dashboard
