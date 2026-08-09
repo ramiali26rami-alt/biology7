@@ -806,17 +806,18 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
             <div className="flex-1 min-h-0 relative">
               {exploreSubTab === 'mindmap' && (lesson.mindmap?.length > 0 || lesson.mindmapFile) && (
                 <div className="relative w-full h-[calc(100vh-170px)] bg-white dark:bg-[#0a0e1a] border border-slate-100 dark:border-slate-800 rounded-app-card overflow-y-auto p-4 shadow-sm scrollbar-none">
-                  {lesson.mindmapLocked && !premiumUnlocked && (
+                  {lesson.mindmapLocked && !premiumUnlocked ? (
                     <LockedOverlay 
                       messageAr="تم قفل الخارطة الذهنية التفاعلية لهذه الحصة من قبل المعلم"
                       messageEn="This interactive mind map is locked by the teacher."
                       onUnlockClick={() => onNavigate('student-profile', 'push')}
                     />
-                  )}
-                  {lesson.mindmap && lesson.mindmap.length > 0 ? (
-                    <MindMapVisualizer mindmap={lesson.mindmap} lang={lang} />
-                  ) : lesson.mindmapFile ? (
+                  ) : (
                     <>
+                      {lesson.mindmap && lesson.mindmap.length > 0 ? (
+                        <MindMapVisualizer mindmap={lesson.mindmap} lang={lang} />
+                      ) : lesson.mindmapFile ? (
+                        <>
                       {mapLoading && !mapError && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0a0e1a] z-10">
                           <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
@@ -864,29 +865,32 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                       </div>
                     </div>
                   )}
+                    </>
+                  )}
                 </div>
               )}
 
               {exploreSubTab === 'diagrams' && (
                 <div className="relative w-full animate-fadeIn">
-                  {lesson.diagramLocked && !premiumUnlocked && (
+                  {lesson.diagramLocked && !premiumUnlocked ? (
                     <LockedOverlay 
                       messageAr="تم قفل الرسومات التفاعلية لهذه الحصة من قبل المعلم"
                       messageEn="These interactive diagrams are locked by the teacher."
                       onUnlockClick={() => onNavigate('student-profile', 'push')}
                     />
+                  ) : (
+                    <InteractiveDiagramVisualizer
+                      diagrams={
+                        lesson.interactiveDiagrams && lesson.interactiveDiagrams.length > 0
+                          ? lesson.interactiveDiagrams
+                          : lesson.diagramFile
+                          ? [{ imageFile: lesson.diagramFile, titleAr: lang === 'ar' ? 'الرسم التوضيحي المنهجي' : 'Standard Lesson Diagram', hotspots: [] }]
+                          : []
+                      }
+                      lang={lang}
+                      lessonFolder={lesson.folder}
+                    />
                   )}
-                  <InteractiveDiagramVisualizer
-                    diagrams={
-                      lesson.interactiveDiagrams && lesson.interactiveDiagrams.length > 0
-                        ? lesson.interactiveDiagrams
-                        : lesson.diagramFile
-                        ? [{ imageFile: lesson.diagramFile, titleAr: lang === 'ar' ? 'الرسم التوضيحي المنهجي' : 'Standard Lesson Diagram', hotspots: [] }]
-                        : []
-                    }
-                    lang={lang}
-                    lessonFolder={lesson.folder}
-                  />
                 </div>
               )}
 
