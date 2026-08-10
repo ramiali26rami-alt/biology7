@@ -131,6 +131,19 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
   const t = translations[lang];
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!quizFinished) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [quizFinished]);
+
   // Helper to normalize Arabic characters to ensure validation is bulletproof
   const cleanArabic = (str: string) => {
     return str

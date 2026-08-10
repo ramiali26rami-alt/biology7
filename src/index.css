@@ -2,6 +2,10 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+html, body {
+  overscroll-behavior: none;
+}
+
 @theme {
   --font-sans: "Cairo", "Nunito", "Tajawal", ui-sans-serif, system-ui, sans-serif;
   --radius-premium-card: 20px;

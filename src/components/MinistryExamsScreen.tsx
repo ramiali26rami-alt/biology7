@@ -93,6 +93,19 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
   const t = translations[lang];
 
   useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isSimulating && !examFinished) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isSimulating, examFinished]);
+
+  useEffect(() => {
     setPremiumUnlocked(checkPremiumStatus());
   }, []);
 
