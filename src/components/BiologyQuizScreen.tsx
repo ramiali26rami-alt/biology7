@@ -120,6 +120,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
   const [score, setScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+  const [isExplanationExpanded, setIsExplanationExpanded] = useState(false);
 
   const [hintsUsed, setHintsUsed] = useState<Set<number>>(new Set());
   const [showHintMsg, setShowHintMsg] = useState(false);
@@ -336,6 +337,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setFillInput('');
     setShowFeedback(false);
     setShowHintMsg(false); // Reset hint display for next question
+    setIsExplanationExpanded(false);
     
     if (currentQuestionIndex < questions.length - 1) {
       playNextSound();
@@ -354,6 +356,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     setFillInput('');
     setShowFeedback(false);
     setShowHintMsg(false);
+    setIsExplanationExpanded(false);
     setHintsUsed(new Set()); // Reset hints used
     setScore(0);
     setQuizFinished(false);
@@ -666,7 +669,22 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                       : (isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText)}
                   </p>
                   <p className="text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold">
-                    {currentQ.explanation}
+                    {currentQ.explanation && (
+                      currentQ.explanation.length > 100 && !isExplanationExpanded
+                        ? `${currentQ.explanation.substring(0, 100)}...`
+                        : currentQ.explanation
+                    )}
+                    {currentQ.explanation && currentQ.explanation.length > 100 && (
+                      <button
+                        type="button"
+                        onClick={() => setIsExplanationExpanded(prev => !prev)}
+                        className="inline-block text-[9px] font-black underline ml-1.5 text-emerald-600 dark:text-emerald-400 hover:opacity-80 active:scale-95 transition-all cursor-pointer"
+                      >
+                        {isExplanationExpanded 
+                          ? (lang === 'ar' ? 'عرض أقل' : 'Show Less') 
+                          : (lang === 'ar' ? 'اقرأ المزيد ➕' : 'Read More ➕')}
+                      </button>
+                    )}
                   </p>
                 </div>
               </div>
