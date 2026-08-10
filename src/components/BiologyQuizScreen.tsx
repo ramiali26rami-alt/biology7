@@ -668,24 +668,22 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                       ? (lang === 'ar' ? '⏱️ انتهى وقت الإجابة على هذا السؤال!' : "⏱️ Time's up for this question!")
                       : (isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText)}
                   </p>
-                  <p className="text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold">
-                    {currentQ.explanation && (
-                      currentQ.explanation.length > 100 && !isExplanationExpanded
-                        ? `${currentQ.explanation.substring(0, 100)}...`
-                        : currentQ.explanation
-                    )}
-                    {currentQ.explanation && currentQ.explanation.length > 100 && (
-                      <button
-                        type="button"
-                        onClick={() => setIsExplanationExpanded(prev => !prev)}
-                        className="inline-block text-[9px] font-black underline ml-1.5 text-emerald-600 dark:text-emerald-400 hover:opacity-80 active:scale-95 transition-all cursor-pointer"
-                      >
-                        {isExplanationExpanded 
-                          ? (lang === 'ar' ? 'عرض أقل' : 'Show Less') 
-                          : (lang === 'ar' ? 'اقرأ المزيد ➕' : 'Read More ➕')}
-                      </button>
-                    )}
+                  <p className={`text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold ${
+                    !isExplanationExpanded ? 'line-clamp-2' : ''
+                  }`}>
+                    {currentQ.explanation}
                   </p>
+                  {currentQ.explanation && currentQ.explanation.length > 100 && (
+                    <button
+                      type="button"
+                      onClick={() => setIsExplanationExpanded(prev => !prev)}
+                      className="inline-block text-[9px] font-black underline mt-1 text-emerald-600 dark:text-emerald-400 hover:opacity-80 active:scale-95 transition-all cursor-pointer"
+                    >
+                      {isExplanationExpanded 
+                        ? (lang === 'ar' ? 'عرض أقل' : 'Show Less') 
+                        : (lang === 'ar' ? 'اقرأ المزيد ➕' : 'Read More ➕')}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
