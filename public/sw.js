@@ -1,4 +1,4 @@
-const CACHE = 'biology-app-v25';
+const CACHE = 'biology-app-v26';
 const OFFLINE_URL = '/';
 
 // On install: cache the app shell

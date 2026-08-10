@@ -1,20 +1,57 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# تطبيق الأحياء - الصف الثالث الثانوي (اليمن) 🧪📱
 
-# Run and deploy your AI Studio app
+تطبيق تفاعلي متكامل لمساعدة طلاب الصف الثالث الثانوي (القسم العلمي) في اليمن على دراسة وفهم مادة الأحياء، مع لوحة تحكم كاملة للمالك لإدارة المحتوى والدروس والأسئلة والاختبارات التفاعلية.
 
-This contains everything you need to run your app locally.
+## 🚀 المميزات الرئيسية
+* **منهج تفاعلي بالكامل:** ملخصات ذكية، بطاقات تذكر تفاعلية ثلاثية الأبعاد (Flashcards)، ومخططات تشريحية تفاعلية.
+* **المساعد الذكي (AI Tutor):** معلم أحياء افتراضي مدعوم بذكاء Gemini الاصطناعي للإجابة على أسئلة الطلاب في منهج الأحياء اليمني.
+* **بنك الأسئلة والاختبارات:** اختبارات تجريبية بعد كل درس واختبارات وزارية سابقة مع شروحات وتوضيحات نموذجية لكل إجابة.
+* **لوحة تحكم المالك (Admin Dashboard):** لإدارة وتعديل الدروس، بنك الأسئلة، تتبع الأكواد، وتوليد الأسئلة بالذكاء الاصطناعي.
+* **تخزين آمن وأوفلاين:** دعم تشغيل التطبيق والتحقق من الاشتراكات دون الحاجة للإنترنت بعد التحميل الأول عبر نظام تخزين مشفر ومحلي.
 
-View your app in AI Studio: https://ai.studio/apps/e05fb0bd-187e-4b9a-94f1-46be93a063ac
+---
 
-## Run Locally
+## 🛠️ التشغيل المحلي (Run Locally)
 
-**Prerequisites:**  Node.js
+### المتطلبات الأساسية
+* تثبيت بيئة عمل **Node.js** (إصدار LTS الأخير).
+* قاعدة بيانات ومخزن ملفات على **Supabase**.
+* مفتاح **Gemini API** من Google AI Studio لتفعيل الذكاء الاصطناعي.
 
+### خطوات التشغيل:
+1. قم بتثبيت المكتبات البرمجية للمشروع:
+   ```bash
+   npm install
+   ```
+2. أنشئ ملف متغيرات البيئة باسم `.env` في المجلد الرئيسي للمشروع وضع فيه البيانات التالية:
+   ```env
+   VITE_SUPABASE_URL=رابط_مشروع_supabase
+   VITE_SUPABASE_ANON_KEY=مفتاح_supabase_العام
+   VITE_SERVER_URL=http://localhost:3000
+   GEMINI_API_KEY=مفتاح_gemini_api_key
+   ADMIN_PASSCODE=رمز_لوحة_التحكم_الخاص_بك
+   ```
+3. تشغيل الواجهة محلياً للتطوير:
+   ```bash
+   npm run dev
+   ```
+4. تشغيل خادم الـ API المحلي:
+   ```bash
+   npx tsx server.js
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+---
+
+## 🌐 النشر والاستضافة (Deployment)
+المشروع جاهز تماماً للنشر المباشر والسريع على منصة **Vercel** من خلال ربط مستودع GitHub بحساب Vercel الخاص بك.
+
+### متغيرات البيئة المطلوبة على Vercel:
+* `SUPABASE_URL`
+* `SUPABASE_ANON_KEY`
+* `SUPABASE_SERVICE_ROLE_KEY`
+* `GEMINI_API_KEY`
+* `ADMIN_PASSCODE`
+* `KV_URL` (لإصدارات وتحديثات المنهج)
+* `KV_REST_API_URL`
+* `KV_REST_API_TOKEN`
+* `KV_REST_API_READ_ONLY_TOKEN`
