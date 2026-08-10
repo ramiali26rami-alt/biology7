@@ -1340,6 +1340,101 @@ export default function LessonsTab({
                 </h4>
               </div>
 
+              {/* صندوق توليد الأسئلة بالذكاء الاصطناعي */}
+              <div className="bg-gradient-to-br from-emerald-500/5 to-teal-500/5 dark:from-emerald-950/10 dark:to-slate-950 p-4 rounded-app-card border border-emerald-500/10 dark:border-emerald-950/40 space-y-3.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">✨</span>
+                  <h5 className="font-black text-xs text-slate-800 dark:text-white">
+                    {lang === 'ar' ? 'توليد الأسئلة تلقائياً بالذكاء الاصطناعي (Gemini)' : 'Auto-Generate Quiz with AI (Gemini)'}
+                  </h5>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-500">
+                      {lang === 'ar' ? 'مفتاح Gemini API (اختياري، يقرأ من السيرفر):' : 'Gemini API Key (Optional):'}
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="AI Studio API Key"
+                      value={localApiKey}
+                      onChange={(e) => handleApiKeyChange(e.target.value)}
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-app-btn text-xs font-semibold focus:outline-none focus:border-emerald-500 dark:text-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-500">
+                      {lang === 'ar' ? 'عدد الأسئلة المطلوب توليدها:' : 'Number of Questions:'}
+                    </label>
+                    <select
+                      value={aiCount}
+                      onChange={(e) => setAiCount(Number(e.target.value))}
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-app-btn text-xs font-semibold focus:outline-none focus:border-emerald-500 dark:text-white"
+                    >
+                      <option value={3}>3 {lang === 'ar' ? 'أسئلة' : 'Questions'}</option>
+                      <option value={5}>5 {lang === 'ar' ? 'أسئلة' : 'Questions'}</option>
+                      <option value={10}>10 {lang === 'ar' ? 'أسئلة' : 'Questions'}</option>
+                      <option value={15}>15 {lang === 'ar' ? 'أسئلة' : 'Questions'}</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-slate-500">
+                      {lang === 'ar' ? 'نوع الأسئلة:' : 'Question Type:'}
+                    </label>
+                    <select
+                      value={aiType}
+                      onChange={(e) => setAiType(e.target.value as any)}
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-app-btn text-xs font-semibold focus:outline-none focus:border-emerald-500 dark:text-white"
+                    >
+                      <option value="all">{lang === 'ar' ? 'مزيج (كل الأنواع)' : 'Mixed (All Types)'}</option>
+                      <option value="mcq">{lang === 'ar' ? 'اختيار من متعدد' : 'Multiple Choice'}</option>
+                      <option value="tf">{lang === 'ar' ? 'صح وخطأ' : 'True / False'}</option>
+                      <option value="fill">{lang === 'ar' ? 'أكمل الفراغ' : 'Fill in the Blank'}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 border-t border-slate-100/50 dark:border-slate-800/40">
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold max-w-md text-center sm:text-right">
+                    {lang === 'ar' 
+                      ? '💡 سيقوم الذكاء الاصطناعي بتحليل ملخص الدرس الحالي وتوليد أسئلة مطابقة لمنهج الأحياء بدقة مع كتابة الشرح النموذجي تلقائياً.'
+                      : '💡 The AI will analyze the current lesson summary and generate matching questions along with model explanations.'}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleGenerateAIQuiz}
+                    disabled={aiLoading}
+                    className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/50 text-white font-black text-xs px-4 py-2.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-0 shadow-sm shrink-0"
+                  >
+                    {aiLoading ? (
+                      <>
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span>{lang === 'ar' ? 'جاري التوليد...' : 'Generating...' }</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✨</span>
+                        <span>{lang === 'ar' ? 'توليد الأسئلة تلقائياً' : 'Generate Questions'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* رسالة حالة التوليد */}
+                {aiStatusMsg && (
+                  <div className={`p-3 rounded-app-btn text-xs font-bold text-center border animate-fadeIn ${
+                    aiStatusMsg.type === 'success'
+                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400'
+                  }`}>
+                    {aiStatusMsg.text}
+                  </div>
+                )}
+              </div>
+
               {(!editingLesson.quiz || editingLesson.quiz.length === 0) ? (
                 <div className="py-8 text-center text-slate-400 font-bold text-xs">
                   {lang === 'ar' ? 'لا توجد أسئلة اختبار مضافة لهذا الدرس.' : 'No quiz questions added.'}
