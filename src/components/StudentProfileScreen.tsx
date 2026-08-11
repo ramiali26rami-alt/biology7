@@ -47,8 +47,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import { loadProgress, getStreak, overallPercent } from '../utils/progress';
 import { playClickSound, playCorrectSound } from '../utils/soundEffects';
 import { scheduleReminderNotification, getReminderTime, setReminderTime } from '../utils/notifications';
-import { SecureStorage } from '../utils/security';
+import { SecureStorage, setPremiumUnlockedState } from '../utils/security';
 import { claimActivationCode } from '../utils/supabaseHelper';
+import { getAbsoluteUrl } from '../utils/urlHelper';
 
 interface StudentProfileScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -151,19 +152,33 @@ export default function StudentProfileScreen({
 
   const t = translations[lang];
 
-  const handleCheckAdminPin = () => {
+  const handleCheckAdminPin = async () => {
     const inputElement = document.getElementById('admin-pin-input') as HTMLInputElement | null;
     if (inputElement) {
       const pin = inputElement.value.trim();
-      if (pin === '2026' || pin === 'admin') {
-        setShowSettingsModal(false);
-        onNavigate('admin-dashboard', 'push');
-      } else {
-        alert(lang === 'ar' 
-          ? 'رمز الدخول غير صحيح!' 
-          : 'Incorrect PIN!'
-        );
-        inputElement.value = '';
+      if (!pin) return;
+      
+      try {
+        setActivationLoading(true);
+        const res = await fetch(getAbsoluteUrl('/api/activation-keys'), {
+          method: 'GET',
+          headers: {
+            'x-admin-passcode': pin
+          }
+        });
+        
+        if (res.ok) {
+          localStorage.setItem('admin_passcode', pin);
+          setShowSettingsModal(false);
+          onNavigate('admin-dashboard', 'push');
+        } else {
+          alert(lang === 'ar' ? 'رمز الدخول غير صحيح!' : 'Incorrect PIN!');
+          inputElement.value = '';
+        }
+      } catch (e) {
+        alert(lang === 'ar' ? 'فشل الاتصال بالسيرفر للتحقق!' : 'Failed to verify passcode with the server!');
+      } finally {
+        setActivationLoading(false);
       }
     }
   };
@@ -226,13 +241,7 @@ export default function StudentProfileScreen({
   const handleTogglePremium = () => {
     const nextPremium = !premiumUnlocked;
     setPremiumUnlocked(nextPremium);
-    const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
-    SecureStorage.setItem('premium_status', JSON.stringify({
-      unlocked: nextPremium,
-      activatedAt: Date.now(),
-      deviceUuid
-    }));
-    SecureStorage.setItem('premium_unlocked', nextPremium ? 'true' : 'false');
+    setPremiumUnlockedState(nextPremium);
   };
 
   const toggleDarkMode = () => {
@@ -266,8 +275,7 @@ export default function StudentProfileScreen({
       setEmail('');
       setAvatarUrl(PRESET_AVATARS[0].url);
       setPremiumUnlocked(false);
-      SecureStorage.setItem('premium_unlocked', 'false');
-      localStorage.setItem('premium_unlocked', 'false');
+      setPremiumUnlockedState(false);
       window.location.reload();
     }
   };

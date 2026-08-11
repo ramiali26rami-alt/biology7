@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { SecureStorage, checkPremiumStatus } from './security';
+import { SecureStorage, checkPremiumStatus, setPremiumUnlockedState } from './security';
 import { logger } from './logger';
 
 export interface StudentProfile {
@@ -63,7 +63,7 @@ export async function registerStudent(
           deviceUuid
         }));
         SecureStorage.setItem('student_name', existingStudent.name);
-        SecureStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
+        setPremiumUnlockedState(existingStudent.is_premium);
         
         return { 
           success: true, 
@@ -94,7 +94,7 @@ export async function registerStudent(
             deviceUuid
           }));
           SecureStorage.setItem('student_name', existingStudent.name);
-          SecureStorage.setItem('premium_unlocked', existingStudent.is_premium ? 'true' : 'false');
+          setPremiumUnlockedState(existingStudent.is_premium);
 
           return {
             success: true,
@@ -141,7 +141,7 @@ export async function registerStudent(
       deviceUuid
     }));
     SecureStorage.setItem('student_name', newStudent.name);
-    SecureStorage.setItem('premium_unlocked', 'false');
+    setPremiumUnlockedState(false);
 
     return { success: true, message: localStorage.getItem('lang') === 'en' ? 'Registration completed successfully!' : 'تم التسجيل بنجاح!' };
   } catch (error: any) {
@@ -224,7 +224,7 @@ export async function checkStudentSubscription(): Promise<boolean> {
         activatedAt: Date.now(),
         deviceUuid
       }));
-      SecureStorage.setItem('premium_unlocked', isPremium ? 'true' : 'false');
+      setPremiumUnlockedState(isPremium);
       return isPremium;
     }
     return false;
@@ -313,7 +313,7 @@ export async function claimActivationCode(code: string): Promise<{ success: bool
         activatedAt: Date.now(),
         deviceUuid
       }));
-      SecureStorage.setItem('premium_unlocked', 'true');
+      setPremiumUnlockedState(true);
     }
     return {
       success: data?.success ?? false,

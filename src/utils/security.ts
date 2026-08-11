@@ -78,12 +78,32 @@ export function decryptCurriculumData(encryptedText: string): any {
 
 export function checkPremiumStatus(): boolean {
   try {
-    const raw = SecureStorage.getItem('premium_status');
-    if (raw) {
-      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-      const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
-      return parsed?.unlocked === true && parsed?.deviceUuid === deviceUuid;
-    }
+    const deviceUuid = localStorage.getItem('client_device_uuid') || '';
+    if (!deviceUuid) return false;
+
+    const isUnlocked = SecureStorage.getItem('premium_unlocked') === 'true';
+    if (!isUnlocked) return false;
+
+    const storedSig = localStorage.getItem('premium_signature');
+    const expectedSig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
+    
+    return storedSig === expectedSig;
   } catch (e) {}
-  return SecureStorage.getItem('premium_unlocked') === 'true';
+  return false;
+}
+
+export function setPremiumUnlockedState(unlocked: boolean): void {
+  try {
+    const deviceUuid = localStorage.getItem('client_device_uuid') || '';
+    if (unlocked && deviceUuid) {
+      SecureStorage.setItem('premium_unlocked', 'true');
+      const sig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
+      localStorage.setItem('premium_signature', sig);
+    } else {
+      SecureStorage.setItem('premium_unlocked', 'false');
+      localStorage.removeItem('premium_signature');
+    }
+  } catch (e) {
+    logger.error("Error setting premium status:", e);
+  }
 }

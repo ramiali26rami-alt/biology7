@@ -691,20 +691,7 @@ app.post('/api/save-file', (req, res) => {
   }
 });
 
-// ─── GET /api/read-file ───
-app.get('/api/read-file', (req, res) => {
-  const filePath = req.query.path;
-  if (!filePath) {
-    return res.status(400).json({ error: 'Missing path parameter' });
-  }
-  try {
-    const fullPath = resolveSafePath(publicDir, String(filePath));
-    const content = fs.readFileSync(fullPath, 'utf-8');
-    res.json({ content });
-  } catch (e) {
-    res.status(400).json({ error: String(e) });
-  }
-});
+
 
 // ─── POST /api/upload-binary ───
 app.post('/api/upload-binary', (req, res) => {

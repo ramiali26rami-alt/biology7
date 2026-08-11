@@ -595,23 +595,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
               return;
             }
 
-            // ─── GET /api/read-file?path=... ──────────────────────────────
-            if (req.url?.startsWith('/api/read-file') && req.method === 'GET') {
-              const urlObj = new URL(req.url, `http://localhost`);
-              const filePath = urlObj.searchParams.get('path');
-              if (!filePath) {
-                jsonRes(res, { error: 'Missing ?path parameter' }, 400);
-                return;
-              }
-              try {
-                const fullPath = resolveSafePath(publicDir, filePath);
-                const content = fs.readFileSync(fullPath, 'utf-8');
-                jsonRes(res, { content });
-              } catch (e) {
-                jsonRes(res, { error: String(e) }, 404);
-              }
-              return;
-            }
+
 
             // ─── POST /api/upload-binary ──────────────────────────────────
             if (req.url === '/api/upload-binary' && req.method === 'POST') {
