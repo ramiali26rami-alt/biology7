@@ -147,7 +147,7 @@ export default function SystemSettingsTab({
           location: row.location || '',
           created_at: row.created_at || ''
         }));
-        setKeysList(mappedKeys);
+        setKeysList(mappedKeys as any);
       }
     } catch (err: any) {
       console.error('Error fetching keys:', err);

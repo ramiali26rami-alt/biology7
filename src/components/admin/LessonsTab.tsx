@@ -1197,7 +1197,7 @@ export default function LessonsTab({
                 ) : (
                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
                     {editingLesson.flashcards.map((card, idx) => (
-                      <div key={card.id || idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
+                      <div key={(card as any).id || idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
                         <button
                           type="button"
                           onClick={() => deleteFlashcard(idx)}
@@ -1795,7 +1795,7 @@ export default function LessonsTab({
                             className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                           />
                         </div>
-                      ) : q.type === 'unspecified' ? (
+                      ) : (q.type as any) === 'unspecified' ? (
                         <div className="text-right space-y-1">
                           <label className="block text-[10px] font-black text-slate-400">
                             {lang === 'ar' ? 'الإجابة النموذجية الصحيحة (ستظهر للطالب بعد تسليم الاختبار):' : 'Model Correct Answer (will appear to student after exam submission):'}

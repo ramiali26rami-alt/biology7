@@ -225,7 +225,7 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
         } else {
           correct = userAns === String(q.correctKey || '').trim().toLowerCase();
         }
-      } else if (q.type === 'unspecified') {
+      } else if ((q.type as any) === 'unspecified') {
         correct = true; // Always marked correct for self-study open questions
       } else {
         correct = key === q.correctKey;
