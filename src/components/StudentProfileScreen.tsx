@@ -92,7 +92,7 @@ export default function StudentProfileScreen({
         return parsed?.unlocked === true && parsed?.deviceUuid === deviceUuid;
       }
     } catch (e) {}
-    return SecureStorage.getItem('premium_unlocked') === 'false';
+    return false;
   });
   const isDarkMode = theme === 'dark';
 
