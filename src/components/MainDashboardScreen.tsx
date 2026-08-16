@@ -38,6 +38,7 @@ import { scheduleReminderNotification } from '../utils/notifications';
 import { Lesson } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
+import { Share } from '@capacitor/share';
 
 interface MainDashboardScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -65,6 +66,21 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         : 'Download the Smart Biology App and enjoy interactive summaries, mindmaps, and quizzes!',
       url: window.location.origin
     };
+
+    try {
+      const canShareResult = await Share.canShare();
+      if (canShareResult.value) {
+        await Share.share({
+          title: shareData.title,
+          text: shareData.text,
+          url: shareData.url,
+          dialogTitle: lang === 'ar' ? 'مشاركة التطبيق عبر' : 'Share App via'
+        });
+        return;
+      }
+    } catch (e) {
+      console.log('Capacitor share not available, falling back to Web Share API', e);
+    }
 
     if (navigator.share) {
       try {

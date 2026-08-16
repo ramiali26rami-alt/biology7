@@ -564,56 +564,52 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
             {/* Interactive Options Cards */}
             {currentQ.type !== 'fill' ? (
-              <div className="space-y-3">
-                <VirtualizedList
-                  items={currentQ.options || []}
-                  itemHeight={52}
-                  renderItem={(opt: any) => {
-                    const isSelected = selectedOption === opt.key;
-                    let isCorrectOpt = opt.key === currentQ.correctKey;
-                    if (currentQ.type === 'tf') {
-                      const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
-                      const isCorrectTrue = currentQ.correctKey === 'T' || currentQ.correctKey === 'A' || currentQ.correctKey === 'صح' || String(currentQ.correctKey).toLowerCase() === 'true';
-                      isCorrectOpt = isOptTrue === isCorrectTrue;
-                    }
-                    
-                    let optionStyle = 'border-slate-100 dark:border-slate-800 hover:border-emerald-500 hover:bg-emerald-50/10 dark:hover:bg-slate-800/40';
-                    let checkBadge = null;
+              <div className="space-y-2">
+                {(currentQ.options || []).map((opt: any) => {
+                  const isSelected = selectedOption === opt.key;
+                  let isCorrectOpt = opt.key === currentQ.correctKey;
+                  if (currentQ.type === 'tf') {
+                    const isOptTrue = opt.key === 'T' || opt.key === 'A' || opt.key === 'صح';
+                    const isCorrectTrue = currentQ.correctKey === 'T' || currentQ.correctKey === 'A' || currentQ.correctKey === 'صح' || String(currentQ.correctKey).toLowerCase() === 'true';
+                    isCorrectOpt = isOptTrue === isCorrectTrue;
+                  }
+                  
+                  let optionStyle = 'border-slate-100 dark:border-slate-800 hover:border-emerald-500 hover:bg-emerald-50/10 dark:hover:bg-slate-800/40';
+                  let checkBadge = null;
 
-                    if (showFeedback) {
-                      if (isCorrectOpt) {
-                        optionStyle = 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20';
-                        checkBadge = <CheckCircle className={`w-5 h-5 text-emerald-600 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
-                      } else if (isSelected) {
-                        optionStyle = 'border-rose-400 bg-rose-50/40 dark:bg-rose-950/20';
-                        checkBadge = <XCircle className={`w-5 h-5 text-rose-500 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
-                      }
+                  if (showFeedback) {
+                    if (isCorrectOpt) {
+                      optionStyle = 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20';
+                      checkBadge = <CheckCircle className={`w-5 h-5 text-emerald-600 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
+                    } else if (isSelected) {
+                      optionStyle = 'border-rose-400 bg-rose-50/40 dark:bg-rose-950/20';
+                      checkBadge = <XCircle className={`w-5 h-5 text-rose-500 shrink-0 ${lang === 'ar' ? 'me-auto' : 'ms-auto'}`} />;
                     }
+                  }
 
-                    return (
-                      <button 
-                        key={opt.key}
-                        onClick={() => handleOptionClick(opt.key)}
-                        className={`w-full flex items-center p-2 rounded-app-btn border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
-                          lang === 'ar' ? 'text-right' : 'text-left'
-                        } ${optionStyle}`}
-                        disabled={showFeedback}
-                      >
-                        <span className={`w-6 h-6 flex items-center justify-center rounded-md text-[10px] font-black transition-colors shrink-0 ${
-                          lang === 'ar' ? 'ms-2.5' : 'me-2.5'
-                        } ${
-                          isSelected 
-                            ? (isCorrectOpt ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') 
-                            : 'bg-slate-50 dark:bg-slate-800 text-slate-650 dark:text-slate-350 group-hover:bg-emerald-500 group-hover:text-white'
-                        }`}>
-                          {opt.key === 'T' ? '1' : opt.key === 'F' ? '2' : opt.key}
-                        </span>
-                        <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200 flex-1 leading-tight">{opt.text}</span>
-                        {checkBadge}
-                      </button>
-                    );
-                  }}
-                />
+                  return (
+                    <button 
+                      key={opt.key}
+                      onClick={() => handleOptionClick(opt.key)}
+                      className={`w-full flex items-center p-2 rounded-app-btn border transition-all group active:scale-[0.99] bg-white dark:bg-slate-900 ${
+                        lang === 'ar' ? 'text-right' : 'text-left'
+                      } ${optionStyle}`}
+                      disabled={showFeedback}
+                    >
+                      <span className={`w-6 h-6 flex items-center justify-center rounded-md text-[10px] font-black transition-colors shrink-0 ${
+                        lang === 'ar' ? 'ms-2.5' : 'me-2.5'
+                      } ${
+                        isSelected 
+                          ? (isCorrectOpt ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white') 
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-650 dark:text-slate-350 group-hover:bg-emerald-500 group-hover:text-white'
+                      }`}>
+                        {opt.key === 'T' ? '1' : opt.key === 'F' ? '2' : opt.key}
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200 flex-1 leading-tight">{opt.text}</span>
+                      {checkBadge}
+                    </button>
+                  );
+                })}
               </div>
             ) : (
               /* Fill in the Blank Form */
@@ -668,12 +664,19 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                       ? (lang === 'ar' ? '⏱️ انتهى وقت الإجابة على هذا السؤال!' : "⏱️ Time's up for this question!")
                       : (isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText)}
                   </p>
-                  <p className={`text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold ${
-                    !isExplanationExpanded ? 'line-clamp-2' : ''
-                  }`}>
+                  <p 
+                    className="text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold"
+                    style={!isExplanationExpanded ? {
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    } : undefined}
+                  >
                     {currentQ.explanation}
                   </p>
-                  {currentQ.explanation && currentQ.explanation.length > 100 && (
+                  {currentQ.explanation && (currentQ.explanation.length > 80 || currentQ.explanation.includes('\n')) && (
                     <button
                       type="button"
                       onClick={() => setIsExplanationExpanded(prev => !prev)}
