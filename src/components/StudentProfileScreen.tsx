@@ -50,6 +50,7 @@ import { scheduleReminderNotification, getReminderTime, setReminderTime } from '
 import { SecureStorage, setPremiumUnlockedState } from '../utils/security';
 import { claimActivationCode } from '../utils/supabaseHelper';
 import { getAbsoluteUrl } from '../utils/urlHelper';
+import { supabase } from '../utils/supabaseClient';
 
 interface StudentProfileScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -209,13 +210,28 @@ export default function StudentProfileScreen({
     }
   }, []);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setName(inputName);
-    setEmail(inputEmail);
-    SecureStorage.setItem('student_name', inputName);
-    localStorage.setItem('student_email', inputEmail);
+    const cleanName = inputName.trim();
+    const cleanEmail = inputEmail.trim();
+    setName(cleanName);
+    setEmail(cleanEmail);
+    SecureStorage.setItem('student_name', cleanName);
+    localStorage.setItem('student_email', cleanEmail);
     setIsEditing(false);
+
+    // Sync updated name directly to Supabase cloud database
+    const phone = localStorage.getItem('student_phone');
+    if (phone && cleanName) {
+      try {
+        await supabase
+          .from('students')
+          .update({ name: cleanName })
+          .eq('phone', phone);
+      } catch (err) {
+        console.error('Error syncing updated name to Supabase:', err);
+      }
+    }
   };
 
   const handleSelectAvatar = (url: string) => {
