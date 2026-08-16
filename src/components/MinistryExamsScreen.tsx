@@ -27,6 +27,7 @@ import { translations, Language } from '../utils/translations';
 import { getCachedAssetUrl } from '../utils/cacheManager';
 import LazyImage from './common/LazyImage';
 import { checkPremiumStatus } from '../utils/security';
+import { markQuizDone } from '../utils/progress';
 
 interface QuestionImageProps {
   lessonId: string;
@@ -147,6 +148,9 @@ export default function MinistryExamsScreen({ onNavigate, lang, lesson: propLess
   };
 
   const handleFinishExam = () => {
+    const finalScore = calculateScore();
+    const targetLessonId = lesson?.id || 'u1-l1';
+    markQuizDone(targetLessonId, Math.round(finalScore), activeQuestions.length);
     setExamFinished(true);
   };
 

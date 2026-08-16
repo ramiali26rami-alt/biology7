@@ -345,7 +345,8 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
     } else {
       // Quiz finished — save real score
       playCompleteSound();
-      if (lesson) markQuizDone(lesson.id, score, questions.length);
+      const targetLessonId = lesson?.id || (questions[0] as any)?.lessonId || 'u1-l1';
+      markQuizDone(targetLessonId, score, questions.length);
       setQuizFinished(true);
     }
   };
