@@ -190,9 +190,9 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
       </div>
 
       {studentsSubTab === 'roster' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Students List (takes 2 cols) */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+        <div className="space-y-6">
+          {/* Students List Table (Full Width) */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
               <div>
                 <h2 className="text-lg font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'إدارة الطلاب وتفعيل الاشتراكات' : 'Student Subscriptions'}</h2>
@@ -200,7 +200,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
               </div>
               <button
                 onClick={fetchStudents}
-                className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-app-btn border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center"
+                className="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-black text-xs px-3.5 py-2 rounded-app-btn border border-slate-150 dark:border-slate-700 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 justify-center cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${dbStudentsLoading ? 'animate-spin' : ''}`} />
                 {lang === 'ar' ? 'تحديث البيانات' : 'Refresh'}
@@ -213,7 +213,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
               placeholder={lang === 'ar' ? 'ابحث باسم الطالب أو رقم الهاتف...' : 'Search by name or phone...'}
               value={studentSearch}
               onChange={e => setStudentSearch(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-3 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500"
             />
 
             {/* Students List Table */}
@@ -221,12 +221,12 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
               <table className="w-full text-right border-collapse">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-black border-b border-slate-100 dark:border-slate-800">
-                    <th className="p-4">{lang === 'ar' ? 'اسم الطالب' : 'Student Name'}</th>
-                    <th className="p-4">{lang === 'ar' ? 'رقم الهاتف' : 'Phone'}</th>
-                    <th className="p-4">{lang === 'ar' ? 'المحافظة' : 'Gov'}</th>
-                    <th className="p-4">{lang === 'ar' ? 'حالة الهاتف' : 'Device'}</th>
-                    <th className="p-4">{lang === 'ar' ? 'الاشتراك' : 'Access'}</th>
-                    <th className="p-4 text-center">{lang === 'ar' ? 'إجراءات' : 'Actions'}</th>
+                    <th className="px-4 py-3">{lang === 'ar' ? 'اسم الطالب' : 'Student Name'}</th>
+                    <th className="px-4 py-3">{lang === 'ar' ? 'رقم الهاتف' : 'Phone'}</th>
+                    <th className="px-4 py-3">{lang === 'ar' ? 'المحافظة' : 'Gov'}</th>
+                    <th className="px-4 py-3">{lang === 'ar' ? 'حالة الهاتف' : 'Device'}</th>
+                    <th className="px-4 py-3 text-center">{lang === 'ar' ? 'الاشتراك' : 'Access'}</th>
+                    <th className="px-4 py-3 text-center">{lang === 'ar' ? 'إجراءات' : 'Actions'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -260,15 +260,15 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
                       )
                       .map(s => (
                         <tr key={s.phone} className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20">
-                          <td className="p-4">
+                          <td className="px-4 py-3">
                             <span className="font-extrabold block text-slate-900 dark:text-white">{s.name}</span>
                             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
                               {lang === 'ar' ? 'سجل في: ' : 'Reg: '} {new Date(s.created_at).toLocaleDateString(lang === 'ar' ? 'ar-YE' : 'en-US')}
                             </span>
                           </td>
-                          <td className="p-4 font-mono select-all">{s.phone}</td>
-                          <td className="p-4">{s.governorate || '—'}</td>
-                          <td className="p-4">
+                          <td className="px-4 py-3 font-mono select-all text-xs">{s.phone}</td>
+                          <td className="px-4 py-3 text-xs">{s.governorate || '—'}</td>
+                          <td className="px-4 py-3">
                             {s.device_id === 'reset' ? (
                               <span className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-black">
                                 {lang === 'ar' ? 'بانتظار هاتف جديد' : 'Reset Pending'}
@@ -279,10 +279,10 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
                               </span>
                             )}
                           </td>
-                          <td className="p-4">
+                          <td className="px-4 py-3 text-center">
                             <button
                               onClick={() => handleToggleStudentPremium(s.phone, s.is_premium)}
-                              className={`text-[10px] font-black px-3 py-1.5 rounded-app-btn transition-all active:scale-95 shadow-sm ${
+                              className={`text-[10px] font-black px-3 py-1.5 rounded-app-btn transition-all active:scale-95 shadow-sm cursor-pointer ${
                                 s.is_premium
                                   ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
                                   : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-350 border border-slate-200/40 dark:border-slate-700'
@@ -293,11 +293,11 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
                                 : (lang === 'ar' ? 'تفعيل الحساب 🟢' : 'Activate 🟢')}
                             </button>
                           </td>
-                          <td className="p-4 text-center">
+                          <td className="px-4 py-3 text-center">
                             <button
                               onClick={() => handleResetStudentDevice(s.phone)}
                               title={lang === 'ar' ? 'إعادة ضبط الهاتف' : 'Reset Device ID'}
-                              className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-455 text-[10px] font-black px-2.5 py-1.5 rounded-app-btn active:scale-95 transition-all"
+                              className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-455 text-[10px] font-black px-2.5 py-1.5 rounded-app-btn active:scale-95 transition-all cursor-pointer"
                             >
                               {lang === 'ar' ? 'نقل الهاتف 🔄' : 'Transfer 🔄'}
                             </button>
@@ -310,10 +310,10 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
             </div>
           </div>
 
-          {/* Right Column: Code Generator (takes 1 col) */}
-          <div className="space-y-6">
+          {/* Bottom Row: 2 Columns for Code Generator & Codes List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Generator Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-xl shadow-slate-100/25 dark:shadow-none space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-sm space-y-4">
               <div>
                 <h2 className="text-lg font-black text-slate-800 dark:text-white">{lang === 'ar' ? 'توليد أكواد التفعيل' : 'Code Generator'}</h2>
                 <p className="text-xs text-slate-400 font-bold">{lang === 'ar' ? 'أنشئ أكواد فريدة صالحة للتنشيط لمرة واحدة' : 'Generate single-use premium keys'}</p>

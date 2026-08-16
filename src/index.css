@@ -3,6 +3,7 @@
 @variant dark (&:where(.dark, .dark *));
 
 html, body {
+  font-family: "Cairo", "Tajawal", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   overscroll-behavior: none;
 }
 
