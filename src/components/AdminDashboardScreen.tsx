@@ -125,18 +125,32 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     downloadAnchor.remove();
   };
 
-  // ── Save all lessons directly to server disk ───────────────────────────────
+  // ── Save all lessons directly to Supabase cloud and local storage ───────────────────────────────
   const saveAllToServer = async (lessonsToSave: Lesson[]) => {
     setSaveStatus('saving');
-    // Always save to browser cache first so changes are preserved locally in the browser immediately!
+    // 1. Save to local secure storage
     try {
       SecureStorage.setItem('curriculum_data', lessonsToSave);
     } catch (e) {
       console.warn("Failed to write local secure storage cache:", e);
     }
 
+    // 2. Save directly to Supabase cloud table for instant zero-rebuild live sync
     try {
-      const res = await fetch(getAbsoluteUrl('/api/save-config'), {
+      await supabase
+        .from('system_settings')
+        .upsert({ 
+          key: 'curriculum_data', 
+          value: lessonsToSave,
+          updated_at: new Date().toISOString()
+        });
+    } catch (err) {
+      console.warn('Failed to upsert to Supabase system_settings:', err);
+    }
+
+    // 3. Optional local server endpoint save
+    try {
+      await fetch(getAbsoluteUrl('/api/save-config'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -144,19 +158,10 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
         },
         body: JSON.stringify(lessonsToSave)
       });
-      if (res.ok) {
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 4000);
-      } else {
-        // Even if server post fails (e.g. read-only filesystem on Vercel),
-        // we set saved state because we already successfully saved it in the browser cache!
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 4000);
-      }
-    } catch {
-      setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 4000);
-    }
+    } catch {}
+
+    setSaveStatus('saved');
+    setTimeout(() => setSaveStatus('idle'), 4000);
   };
 
   return (

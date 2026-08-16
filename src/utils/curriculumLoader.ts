@@ -3,21 +3,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Capacitor } from '@capacitor/core';
+import { supabase } from './supabaseClient';
 import { decryptCurriculumData, SecureStorage } from './security';
 
-function getServerUrl(): string {
-  return (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || 'https://biology7.vercel.app').replace(/\/$/, '');
-}
-
 export async function loadCurriculum(bypassCache = false): Promise<any> {
-  const isNative = Capacitor.isNativePlatform();
-  const serverUrl = getServerUrl();
-
-  // 1. Always attempt Network-First fetch of latest lessons_config.json (to get live curriculum changes immediately)
+  // 1. Supabase Cloud First: Fetch latest live curriculum from cloud database
   try {
-    const fetchUrl = isNative ? `${serverUrl}/lessons_config.json?t=${Date.now()}` : `/lessons_config.json?t=${Date.now()}`;
-    const res = await fetch(fetchUrl, { cache: 'no-cache' });
+    const { data: cloudConfig, error: cloudErr } = await supabase
+      .from('system_settings')
+      .select('value')
+      .eq('key', 'curriculum_data')
+      .maybeSingle();
+
+    if (!cloudErr && cloudConfig?.value && Array.isArray(cloudConfig.value) && cloudConfig.value.length > 0) {
+      SecureStorage.setItem('curriculum_data', cloudConfig.value);
+      return cloudConfig.value;
+    }
+  } catch (e) {
+    console.warn('Supabase cloud curriculum load failed, falling back to local bundle:', e);
+  }
+
+  // 2. Local/Server JSON file fallback
+  try {
+    const res = await fetch(`/lessons_config.json?t=${Date.now()}`, { cache: 'no-cache' });
     if (res.ok) {
       const text = await res.text();
       let data;
@@ -32,31 +40,10 @@ export async function loadCurriculum(bypassCache = false): Promise<any> {
       }
     }
   } catch (e) {
-    console.warn('Network curriculum fetch failed, checking cache:', e);
+    console.warn('Local bundle fetch failed:', e);
   }
 
-  // 2. Try remote API endpoint /api/get-config
-  try {
-    const apiUrl = isNative ? `${serverUrl}/api/get-config?t=${Date.now()}` : `/api/get-config?t=${Date.now()}`;
-    const res = await fetch(apiUrl, { cache: 'no-cache' });
-    if (res.ok) {
-      const text = await res.text();
-      let data;
-      try {
-        data = decryptCurriculumData(text);
-      } catch {
-        data = JSON.parse(text);
-      }
-      if (data && Array.isArray(data) && data.length > 0) {
-        SecureStorage.setItem('curriculum_data', data);
-        return data;
-      }
-    }
-  } catch (e) {
-    console.warn('API get-config failed:', e);
-  }
-
-  // 3. Fallback to cached curriculum in SecureStorage (for offline use)
+  // 3. Offline storage cache fallback
   const cached = SecureStorage.getItem('curriculum_data');
   if (cached && Array.isArray(cached) && cached.length > 0) {
     return cached;
