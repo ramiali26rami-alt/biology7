@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { HelpCircle, X, ChevronLeft, ChevronRight, Info, ZoomIn, ZoomOut, RefreshCw, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, ChevronLeft, ChevronRight, Info, ZoomIn, ZoomOut, RefreshCw, Sparkles } from 'lucide-react';
 import { InteractiveDiagram, InteractiveHotspot } from '../types';
 import { Language } from '../utils/translations';
 import { playClickSound, playHotspotSound } from '../utils/soundEffects';
@@ -21,12 +21,23 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   const touchStartDist = useRef<number | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll screen into focus when diagram opens to hide top header rows
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (wrapperRef.current) {
+        wrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [activeDiagIdx]);
 
   if (!diagrams || diagrams.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-6 text-center text-slate-400 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl min-h-[260px]">
-        <Info className="w-10 h-10 text-slate-350 dark:text-slate-700 mb-2" />
-        <span className="text-xs font-bold">
+      <div className="flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl min-h-[300px]">
+        <Info className="w-12 h-12 text-slate-350 dark:text-slate-700 mb-3" />
+        <span className="text-sm font-bold">
           {lang === 'ar' ? 'لا توجد رسومات تفاعلية مضافة لهذا الدرس.' : 'No interactive diagrams added for this lesson.'}
         </span>
       </div>
@@ -159,10 +170,10 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs p-3 space-y-2.5">
+    <div ref={wrapperRef} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm p-3.5 space-y-3 scroll-mt-3">
       {/* Tab Navigation if multiple diagrams exist */}
       {diagrams.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
+        <div className="flex gap-2 overflow-x-auto pb-1.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
           {diagrams.map((diag, idx) => (
             <button
               key={idx}
@@ -171,9 +182,9 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                 setSelectedHotspot(null);
                 resetZoom();
               }}
-              className={`px-3 py-1 rounded-app-btn text-xs font-black transition-all shrink-0 ${
+              className={`px-3 py-1.5 rounded-app-btn text-xs font-black transition-all shrink-0 ${
                 activeDiagIdx === idx
-                  ? 'bg-emerald-500 text-white shadow-xs'
+                  ? 'bg-emerald-500 text-white shadow-sm'
                   : 'bg-slate-50 dark:bg-slate-800/60 text-slate-650 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
@@ -183,10 +194,10 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       )}
 
-      {/* Main Diagram Canvas Area - Wraps tightly with Zero Side Gaps */}
+      {/* Main Diagram Canvas Area - Generous Height & Tight Border Fit */}
       <div className="flex items-center justify-center w-full overflow-hidden">
         <div 
-          className="relative inline-block max-w-full border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none touch-none shadow-xs"
+          className="relative inline-block max-w-full border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none touch-none shadow-sm"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -196,6 +207,39 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           onTouchEnd={handleTouchEnd}
           style={{ cursor: transform.scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
         >
+          {/* Subtle Floating Title Badge at Top-Right */}
+          <div className="absolute top-2 right-2 z-25 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-white text-[11px] font-bold shadow-xs pointer-events-none">
+            {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
+          </div>
+
+          {/* Floating Subtle Zoom Glass Controls at Top-Left */}
+          <div className="absolute top-2 left-2 z-25 flex items-center gap-1 bg-black/60 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-xs">
+            <button 
+              onClick={zoomIn} 
+              aria-label={lang === 'ar' ? 'تكبير' : 'Zoom In'}
+              className="p-1 text-slate-200 hover:text-emerald-400 transition-colors border-0 cursor-pointer bg-transparent"
+              title="Zoom In"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button 
+              onClick={zoomOut} 
+              aria-label={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
+              className="p-1 text-slate-200 hover:text-emerald-400 transition-colors border-0 cursor-pointer bg-transparent"
+              title="Zoom Out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <button 
+              onClick={resetZoom} 
+              aria-label={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
+              className="p-1 text-slate-200 hover:text-emerald-400 transition-colors border-0 cursor-pointer bg-transparent"
+              title="Reset"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
           {/* Zoomable Inner Canvas */}
           <div
             ref={containerRef}
@@ -211,7 +255,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
               <img
                 src={getAssetUrl(activeDiagram.imageFile)}
                 alt={lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
-                className="max-h-[42vh] md:max-h-[380px] w-auto max-w-full object-contain block rounded-xl mx-auto"
+                className="max-h-[52vh] md:max-h-[480px] w-auto max-w-full object-contain block rounded-xl mx-auto"
                 draggable={false}
               />
 
@@ -256,12 +300,12 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                       x2={`${hotspot.arrowX}%`}
                       y2={`${hotspot.arrowY}%`}
                       stroke={isActive ? '#f59e0b' : '#10b981'}
-                      strokeWidth={isActive ? 3 : 1.8}
+                      strokeWidth={isActive ? 3.5 : 2}
                       strokeDasharray={isActive ? 'none' : '3 3'}
                       markerEnd={`url(#arrow-head-${isActive ? 'active' : 'default'})`}
                       className="transition-all duration-300"
                       style={{
-                        opacity: selectedHotspot ? (isActive ? 1 : 0.4) : 0.85
+                        opacity: selectedHotspot ? (isActive ? 1 : 0.4) : 0.9
                       }}
                     />
                   );
@@ -288,7 +332,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                         playHotspotSound();
                         setSelectedHotspot(isActive ? null : hotspot);
                       }}
-                      className={`w-6 h-6 md:w-7 md:h-7 flex items-center justify-center group focus:outline-none relative cursor-pointer rounded-full transition-transform ${
+                      className={`w-7 h-7 md:w-8 md:h-8 flex items-center justify-center group focus:outline-none relative cursor-pointer rounded-full transition-transform ${
                         isActive ? 'scale-125' : 'hover:scale-110 active:scale-95'
                       }`}
                       title={hotspot.labelAr}
@@ -299,7 +343,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                         isActive ? 'animate-ping bg-amber-400' : 'animate-pulse bg-emerald-400'
                       }`}></span>
                       {/* Inner core badge with number */}
-                      <span className={`relative inline-flex items-center justify-center rounded-full h-4.5 w-4.5 md:h-5 md:w-5 text-[9px] md:text-[10px] font-black text-white shadow-xs border border-white transition-colors ${
+                      <span className={`relative inline-flex items-center justify-center rounded-full h-5 w-5 md:h-6 md:w-6 text-[10px] md:text-xs font-black text-white shadow-md border-2 border-white transition-colors ${
                         isActive ? 'bg-amber-500 ring-2 ring-amber-300' : 'bg-emerald-600'
                       }`}>
                         {idx + 1}
@@ -313,98 +357,61 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       </div>
 
-      {/* Dedicated Compact Bottom Info Panel */}
+      {/* Large, Clear, Dedicated Bottom Info Panel */}
       {selectedHotspot ? (
-        <div className="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 dark:from-slate-800/95 dark:to-slate-850 border border-emerald-200/90 dark:border-emerald-800/70 p-3 rounded-2xl shadow-2xs space-y-1.5 animate-fadeIn transition-all">
-          <div className="flex items-center justify-between gap-2 border-b border-emerald-100 dark:border-slate-700/60 pb-1.5">
-            <div className="flex items-center gap-1.5">
-              <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+        <div className="bg-gradient-to-br from-emerald-50/95 to-teal-50/70 dark:from-slate-800/95 dark:to-slate-850 border border-emerald-200/90 dark:border-emerald-800/70 p-4 rounded-2xl shadow-sm space-y-2.5 animate-fadeIn transition-all">
+          <div className="flex items-center justify-between gap-2 border-b border-emerald-100 dark:border-slate-700/60 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full shadow-xs">
                 {hotspotsList.findIndex(h => h.id === selectedHotspot.id) + 1} / {hotspotsList.length}
               </span>
-              <h4 className="text-xs md:text-sm font-black text-emerald-850 dark:text-emerald-300">
+              <h4 className="text-sm md:text-base font-black text-emerald-900 dark:text-emerald-300">
                 {lang === 'ar' ? selectedHotspot.labelAr : (selectedHotspot.labelEn || selectedHotspot.labelAr)}
               </h4>
             </div>
             
             <button
               onClick={() => setSelectedHotspot(null)}
-              className="p-1 rounded-lg hover:bg-emerald-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
               title={lang === 'ar' ? 'إغلاق الشرح' : 'Close'}
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          <p className="text-[11px] md:text-xs font-semibold text-slate-750 dark:text-slate-200 leading-relaxed max-h-24 overflow-y-auto">
+          <p className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-100 leading-relaxed">
             {lang === 'ar' ? selectedHotspot.descAr : (selectedHotspot.descEn || selectedHotspot.descAr)}
           </p>
 
           {/* Sequential Hotspot Navigation Buttons */}
-          <div className="flex items-center justify-between pt-0.5 text-xs">
+          <div className="flex items-center justify-between pt-1">
             <button
               onClick={handlePrevHotspot}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-750 text-slate-700 dark:text-slate-200 font-bold border border-slate-200/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 text-[11px] cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-750 text-slate-750 dark:text-slate-200 font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs shadow-xs cursor-pointer"
             >
-              <ChevronRight className="w-3.5 h-3.5" />
-              <span>{lang === 'ar' ? 'السابق' : 'Previous'}</span>
+              <ChevronRight className="w-4 h-4" />
+              <span>{lang === 'ar' ? 'النقطة السابقة' : 'Previous'}</span>
             </button>
 
             <button
               onClick={handleNextHotspot}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all active:scale-95 text-[11px] cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all active:scale-95 text-xs shadow-xs cursor-pointer"
             >
-              <span>{lang === 'ar' ? 'التالي' : 'Next'}</span>
-              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>{lang === 'ar' ? 'النقطة التالية' : 'Next'}</span>
+              <ChevronLeft className="w-4 h-4" />
             </button>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-150 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-[11px]">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-          <p className="font-bold leading-normal">
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-150 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-xs">
+          <Sparkles className="w-5 h-5 text-emerald-500 shrink-0" />
+          <p className="font-bold leading-relaxed">
             {lang === 'ar'
-              ? 'انقر على أي رقم ملون على الرسمة لتمييز السهم وقراءة الشرح.'
-              : 'Tap any numbered point on the diagram to highlight its arrow and read details.'}
+              ? 'انقر على أي رقم ملون على الرسمة لتمييز السهم وقراءة الشرح المفصل، أو استخدم أزرار التنقل.'
+              : 'Tap any numbered point on the diagram to highlight its arrow and read full details.'}
           </p>
         </div>
       )}
-
-      {/* Diagram Title & Zoom controls outside the image canvas */}
-      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 px-3 py-2 rounded-xl border border-slate-100 dark:border-slate-800">
-        <div className="text-right flex-1 min-w-0">
-          <h3 className="text-xs font-black text-slate-800 dark:text-slate-100 truncate">
-            {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
-          </h3>
-        </div>
-        
-        {/* Compact Zoom Controls */}
-        <div className="flex gap-1 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 p-1 rounded-lg shadow-2xs shrink-0">
-          <button 
-            onClick={zoomIn} 
-            aria-label={lang === 'ar' ? 'تكبير' : 'Zoom In'}
-            className="p-1 text-slate-650 dark:text-slate-200 hover:text-emerald-500 rounded transition-colors border-0 cursor-pointer"
-            title="Zoom In"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-          <button 
-            onClick={zoomOut} 
-            aria-label={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
-            className="p-1 text-slate-650 dark:text-slate-200 hover:text-emerald-500 rounded transition-colors border-0 cursor-pointer"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </button>
-          <button 
-            onClick={resetZoom} 
-            aria-label={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
-            className="p-1 text-slate-650 dark:text-slate-200 hover:text-emerald-500 rounded transition-colors border-0 cursor-pointer"
-            title="Reset"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
