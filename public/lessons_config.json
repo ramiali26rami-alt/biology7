@@ -934,7 +934,7 @@
     "titleAr": "الجهاز العصبي في الحلقيات (دودة الأرض)",
     "titleEn": "Nervous System in Annelids (Earthworm)",
     "pdfFile": "u1-l2.pdf",
-    "diagramFile": "u1-l2.png",
+    "diagramFile": "u1-l2.webp",
     "summaryFile": "",
     "mindmapFile": "",
     "quizFile": "",
@@ -1386,64 +1386,75 @@
     ],
     "interactiveDiagrams": [
       {
-        "imageFile": "u1-l2.png",
-        "titleAr": "الجهاز العصبي في دودة الأرض",
-        "titleEn": "Nervous System of Earthworm",
+        "imageFile": "u1-l2.webp",
+        "titleAr": "الشكل (3) الجهاز العصبي في دودة الأرض",
+        "titleEn": "Fig 3: Nervous System of Earthworm",
         "hotspots": [
           {
             "id": "1",
-            "x": 42.5,
-            "y": 34.5,
-            "labelAr": "الدماغ (عقدة فوق بلعومية)",
-            "labelEn": "Cerebral Ganglion",
-            "descAr": "عقدة دماغية مزدوجة تقع فوق البلعوم وتمثل مركز التحكم العصبي الرئيسي.",
+            "x": 48.0,
+            "y": 18.0,
+            "labelAr": "الدماغ (عقدة دماغية مزدوجة فوق بلعومية)",
+            "labelEn": "Cerebral Ganglia (Brain)",
+            "descAr": "عقدة دماغية مزدوجة تقع فوق البلعوم، تمثل المركز العصبي الرئيسي للتحكم واستقبال المؤثرات.",
             "descEn": "",
-            "arrowX": 39,
-            "arrowY": 34
+            "arrowX": 46.5,
+            "arrowY": 25.0
           },
           {
             "id": "2",
-            "x": 51,
-            "y": 28,
+            "x": 58.0,
+            "y": 42.0,
             "labelAr": "حلقة حول بلعومية",
             "labelEn": "Circumpharyngeal Connective",
-            "descAr": "حلقة عصبية تحيط بالبلعوم وتصل بين العقدة الدماغية والعقدة تحت البلعومية.",
+            "descAr": "وصلة عصبية حلقية تمتد من العقدة الدماغية وتلتف حول البلعوم لتلتقي تحته بالعقدة العصبية تحت البلعومية.",
             "descEn": "",
-            "arrowX": 46,
-            "arrowY": 38
+            "arrowX": 53.0,
+            "arrowY": 39.0
           },
           {
             "id": "3",
-            "x": 46.5,
-            "y": 55,
+            "x": 42.0,
+            "y": 72.0,
             "labelAr": "عقدة عصبية تحت بلعومية",
             "labelEn": "Subpharyngeal Ganglion",
-            "descAr": "عقدة عصبية تلتقي عندها الحلقة حول البلعومية أسفل البلعوم.",
+            "descAr": "عقدة عصبية تقع أسفل البلعوم، تلتقي عندها الحلقة حول البلعومية، وتخرج منها ومن الدماغ أعصاب الحلقات الأولى.",
             "descEn": "",
-            "arrowX": 45,
-            "arrowY": 50
+            "arrowX": 44.0,
+            "arrowY": 58.0
           },
           {
             "id": "4",
-            "x": 68,
-            "y": 48,
-            "labelAr": "الحبل العصبي البطني المزدوج",
+            "x": 18.0,
+            "y": 70.0,
+            "labelAr": "الحبل العصبي البطني",
             "labelEn": "Ventral Nerve Cord",
-            "descAr": "حبل عصبي يمتد على طول الناحية البطنية لجسم الدودة نحو الخلف.",
+            "descAr": "حبل عصبي بطني مزدوج يمتد على طول الناحية البطنية للجسم نحو الخلف وعليه عقد عصبية صغيرة في كل حلقة.",
             "descEn": "",
-            "arrowX": 66,
-            "arrowY": 51
+            "arrowX": 25.0,
+            "arrowY": 62.0
           },
           {
             "id": "5",
-            "x": 88,
-            "y": 53,
-            "labelAr": "العقد العصبية الحلقية",
-            "labelEn": "Segmental Ganglia",
-            "descAr": "عقد عصبية صغيرة متكررة في كل حلقة جسمية يخرج منها زوج من الأعصاب.",
+            "x": 78.0,
+            "y": 30.0,
+            "labelAr": "أعصاب الحلقات الأربع الأولى",
+            "labelEn": "Anterior Segmental Nerves",
+            "descAr": "أعصاب خاصة تخرج من العقدة الدماغية والعقدة تحت البلعومية لتغذية الحلقات الأربع الأولى من الجسم.",
             "descEn": "",
-            "arrowX": 86,
-            "arrowY": 49
+            "arrowX": 68.0,
+            "arrowY": 34.0
+          },
+          {
+            "id": "6",
+            "x": 30.0,
+            "y": 35.0,
+            "labelAr": "تفرع الأعصاب والعقد الحلقية",
+            "labelEn": "Segmental Nerves Branching",
+            "descAr": "يخرج من كل عقدة زوج من الأعصاب يتفرع لفرعين (بطني وجانبي) وتتشابك عبر حواجز الحلقات مكونة شبكة من الخيوط العصبية.",
+            "descEn": "",
+            "arrowX": 32.0,
+            "arrowY": 45.0
           }
         ]
       }
