@@ -23,14 +23,27 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll screen into focus when diagram opens to hide top header rows
+  // Auto-scroll screen smoothly into focus when diagram opens to hide top header rows
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const scrollToDiagram = () => {
       if (wrapperRef.current) {
-        wrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const headerOffset = 12;
+        const elementPosition = wrapperRef.current.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth'
+        });
       }
-    }, 150);
-    return () => clearTimeout(timer);
+    };
+
+    const timer1 = setTimeout(scrollToDiagram, 120);
+    const timer2 = setTimeout(scrollToDiagram, 350);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, [activeDiagIdx]);
 
   if (!diagrams || diagrams.length === 0) {

@@ -453,3 +453,31 @@ export async function getDifficultQuestions(): Promise<any[]> {
     return [];
   }
 }
+
+// Upload media files (images, diagrams, PDFs) directly to Supabase storage bucket
+export async function uploadMediaToSupabase(file: File, folder = 'curriculum'): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const fileExt = file.name.split('.').pop() || 'webp';
+    const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = `${folder}/${Date.now()}_${cleanFileName}`;
+    
+    const { data, error } = await supabase.storage
+      .from('media')
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: publicData } = supabase.storage
+      .from('media')
+      .getPublicUrl(path);
+
+    return { success: true, url: publicData.publicUrl };
+  } catch (err: any) {
+    console.error('Failed to upload media to Supabase storage:', err);
+    return { success: false, error: err.message || 'Upload failed' };
+  }
+}
+
