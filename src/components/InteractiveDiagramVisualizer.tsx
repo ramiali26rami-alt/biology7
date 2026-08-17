@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { HelpCircle, X, ChevronLeft, ChevronRight, Info, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { HelpCircle, X, ChevronLeft, ChevronRight, Info, ZoomIn, ZoomOut, RefreshCw, Sparkles } from 'lucide-react';
 import { InteractiveDiagram, InteractiveHotspot } from '../types';
 import { Language } from '../utils/translations';
 import { playClickSound, playHotspotSound } from '../utils/soundEffects';
@@ -34,6 +34,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   }
 
   const activeDiagram = diagrams[activeDiagIdx];
+  const hotspotsList = activeDiagram.hotspots || [];
 
   const getAssetUrl = (file: string) => {
     if (!file) return '';
@@ -59,9 +60,34 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
     setTransform({ scale: 1, x: 0, y: 0 });
   };
 
+  // Navigate between hotspots
+  const handlePrevHotspot = () => {
+    if (hotspotsList.length === 0) return;
+    playHotspotSound();
+    if (!selectedHotspot) {
+      setSelectedHotspot(hotspotsList[hotspotsList.length - 1]);
+      return;
+    }
+    const currentIdx = hotspotsList.findIndex(h => h.id === selectedHotspot.id);
+    const prevIdx = currentIdx > 0 ? currentIdx - 1 : hotspotsList.length - 1;
+    setSelectedHotspot(hotspotsList[prevIdx]);
+  };
+
+  const handleNextHotspot = () => {
+    if (hotspotsList.length === 0) return;
+    playHotspotSound();
+    if (!selectedHotspot) {
+      setSelectedHotspot(hotspotsList[0]);
+      return;
+    }
+    const currentIdx = hotspotsList.findIndex(h => h.id === selectedHotspot.id);
+    const nextIdx = currentIdx < hotspotsList.length - 1 ? currentIdx + 1 : 0;
+    setSelectedHotspot(hotspotsList[nextIdx]);
+  };
+
   // Mouse Drag / Pan handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (transform.scale === 1) return; // Disable drag/pan when scale is 1
+    if (transform.scale === 1) return;
     e.preventDefault();
     setIsDragging(true);
     dragStart.current = { x: e.clientX - transform.x, y: e.clientY - transform.y };
@@ -72,7 +98,6 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
     const newX = e.clientX - dragStart.current.x;
     const newY = e.clientY - dragStart.current.y;
     
-    // Restrict pan bounds based on scale
     const bound = 300 * (transform.scale - 1);
     setTransform(prev => ({
       ...prev,
@@ -97,7 +122,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
     if (e.touches.length === 2) {
       touchStartDist.current = getTouchDist(e);
     } else if (e.touches.length === 1) {
-      if (transform.scale === 1) return; // Disable drag/pan when scale is 1
+      if (transform.scale === 1) return;
       setIsDragging(true);
       dragStart.current = { 
         x: e.touches[0].clientX - transform.x, 
@@ -158,7 +183,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       )}
 
-      {/* Main Diagram Area */}
+      {/* Main Diagram Canvas Area (Completely Unobstructed) */}
       <div 
         className="relative w-full h-auto border border-slate-150 dark:border-slate-800/80 rounded-app-card overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none flex items-start justify-center touch-none"
         onMouseDown={handleMouseDown}
@@ -170,8 +195,6 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         onTouchEnd={handleTouchEnd}
         style={{ cursor: transform.scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
       >
-
-
         {/* Zoomable Inner Canvas */}
         <div
           ref={containerRef}
@@ -191,7 +214,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
               draggable={false}
             />
 
-             {/* SVG arrows overlay */}
+            {/* SVG arrows overlay */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-15">
               <defs>
                 {/* Arrow marker for default state */}
@@ -220,7 +243,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                 </marker>
               </defs>
 
-              {activeDiagram.hotspots?.map((hotspot) => {
+              {hotspotsList.map((hotspot) => {
                 if (hotspot.arrowX === undefined || hotspot.arrowY === undefined || hotspot.arrowX === null || hotspot.arrowY === null) return null;
                 const isActive = selectedHotspot?.id === hotspot.id;
                 
@@ -232,20 +255,20 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                     x2={`${hotspot.arrowX}%`}
                     y2={`${hotspot.arrowY}%`}
                     stroke={isActive ? '#f59e0b' : '#10b981'}
-                    strokeWidth={isActive ? 2.5 : 1.5}
+                    strokeWidth={isActive ? 3 : 1.8}
                     strokeDasharray={isActive ? 'none' : '3 3'}
                     markerEnd={`url(#arrow-head-${isActive ? 'active' : 'default'})`}
                     className="transition-all duration-300"
                     style={{
-                      opacity: selectedHotspot ? (isActive ? 1 : 0.35) : 0.85
+                      opacity: selectedHotspot ? (isActive ? 1 : 0.4) : 0.85
                     }}
                   />
                 );
               })}
             </svg>
 
-            {/* Hotspots overlay */}
-            {activeDiagram.hotspots?.map((hotspot) => {
+            {/* Hotspots clickable markers */}
+            {hotspotsList.map((hotspot, idx) => {
               const isActive = selectedHotspot?.id === hotspot.id;
               return (
                 <div
@@ -254,7 +277,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                   style={{
                     left: `${hotspot.x}%`,
                     top: `${hotspot.y}%`,
-                    transform: `translate(-50%, -50%) scale(${1 / transform.scale})`, // keep hotspot marker size stable
+                    transform: `translate(-50%, -50%) scale(${1 / transform.scale})`,
                     transformOrigin: 'center center',
                     zIndex: isActive ? 50 : 20
                   }}
@@ -264,67 +287,23 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                       playHotspotSound();
                       setSelectedHotspot(isActive ? null : hotspot);
                     }}
-                    className="w-6 h-6 flex items-center justify-center group focus:outline-none relative cursor-pointer"
+                    className={`w-7 h-7 flex items-center justify-center group focus:outline-none relative cursor-pointer rounded-full transition-transform ${
+                      isActive ? 'scale-125' : 'hover:scale-110 active:scale-95'
+                    }`}
                     title={hotspot.labelAr}
+                    aria-label={hotspot.labelAr}
                   >
-                    {/* Outer pulsing ring */}
-                    <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${
-                      isActive ? 'bg-amber-400' : 'bg-emerald-400'
+                    {/* Pulsing ring */}
+                    <span className={`absolute inline-flex h-full w-full rounded-full opacity-80 ${
+                      isActive ? 'animate-ping bg-amber-400' : 'animate-pulse bg-emerald-400'
                     }`}></span>
-                    {/* Inner circle */}
-                    <span className={`relative inline-flex rounded-full h-3 w-3 shadow-md border border-white transition-colors duration-[250ms] ${
-                      isActive ? 'bg-amber-500' : 'bg-emerald-500'
-                    }`}></span>
+                    {/* Inner core badge with number */}
+                    <span className={`relative inline-flex items-center justify-center rounded-full h-5 w-5 text-[10px] font-black text-white shadow-md border border-white transition-colors ${
+                      isActive ? 'bg-amber-500 ring-2 ring-amber-300' : 'bg-emerald-600'
+                    }`}>
+                      {idx + 1}
+                    </span>
                   </button>
-
-                  {/* Popover Tooltip directly near the hotspot */}
-                  {isActive && (() => {
-                    const isNearTop = hotspot.y < 25;
-                    const isNearLeft = hotspot.x < 30;
-                    const isNearRight = hotspot.x > 70;
-
-                    let horizontalClass = "left-1/2 -translate-x-1/2";
-                    let arrowHorizontalClass = "left-1/2 -translate-x-1/2";
-
-                    if (isNearLeft) {
-                      horizontalClass = "left-0 -translate-x-[15%]";
-                      arrowHorizontalClass = "left-[20%]";
-                    } else if (isNearRight) {
-                      horizontalClass = "right-0 translate-x-[15%] left-auto";
-                      arrowHorizontalClass = "right-[20%] left-auto";
-                    }
-
-                    const verticalClass = isNearTop ? "top-8" : "bottom-8";
-                    
-                    const arrowClass = isNearTop
-                      ? `absolute bottom-full -mb-[1px] border-[6px] border-transparent border-b-white dark:border-b-slate-900 ${arrowHorizontalClass}`
-                      : `absolute top-full -mt-[1px] border-[6px] border-transparent border-t-white dark:border-t-slate-900 ${arrowHorizontalClass}`;
-
-                    return (
-                      <div 
-                        className={`absolute z-30 w-48 md:w-56 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 p-3 rounded-app-card shadow-xl animate-fadeIn flex flex-col gap-1.5 text-right cursor-default ${verticalClass} ${horizontalClass}`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex justify-between items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-1.5">
-                          <button
-                            onClick={() => setSelectedHotspot(null)}
-                            className="tap-target p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-650 transition-colors border-0 bg-transparent cursor-pointer"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                          <h4 className="text-xs md:text-sm font-black text-emerald-500 dark:text-emerald-400 leading-tight">
-                            {lang === 'ar' ? hotspot.labelAr : (hotspot.labelEn || hotspot.labelAr)}
-                          </h4>
-                        </div>
-                        <p className="text-xs md:text-sm font-black text-slate-800 dark:text-slate-200 leading-relaxed max-h-32 overflow-y-auto">
-                          {lang === 'ar' ? hotspot.descAr : (hotspot.descEn || hotspot.descAr)}
-                        </p>
-                        
-                        {/* Dynamic Arrow */}
-                        <div className={arrowClass}></div>
-                      </div>
-                    );
-                  })()}
                 </div>
               );
             })}
@@ -332,14 +311,70 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       </div>
 
+      {/* Dedicated Bottom Info Panel (Solution 1: Unobstructed Image) */}
+      {selectedHotspot ? (
+        <div className="bg-gradient-to-br from-emerald-50/80 to-teal-50/50 dark:from-slate-800/90 dark:to-slate-850 border border-emerald-200/80 dark:border-emerald-800/60 p-3.5 rounded-2xl shadow-sm space-y-2 animate-fadeIn transition-all">
+          <div className="flex items-center justify-between gap-2 border-b border-emerald-100 dark:border-slate-700/60 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full">
+                {hotspotsList.findIndex(h => h.id === selectedHotspot.id) + 1} / {hotspotsList.length}
+              </span>
+              <h4 className="text-sm md:text-base font-black text-emerald-800 dark:text-emerald-300">
+                {lang === 'ar' ? selectedHotspot.labelAr : (selectedHotspot.labelEn || selectedHotspot.labelAr)}
+              </h4>
+            </div>
+            
+            <button
+              onClick={() => setSelectedHotspot(null)}
+              className="p-1 rounded-lg hover:bg-emerald-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+              title={lang === 'ar' ? 'إغلاق الشرح' : 'Close'}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <p className="text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-200 leading-relaxed">
+            {lang === 'ar' ? selectedHotspot.descAr : (selectedHotspot.descEn || selectedHotspot.descAr)}
+          </p>
+
+          {/* Sequential Hotspot Navigation Buttons */}
+          <div className="flex items-center justify-between pt-1 text-xs">
+            <button
+              onClick={handlePrevHotspot}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-750 text-slate-700 dark:text-slate-200 font-bold border border-slate-200/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 shadow-2xs cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+              <span>{lang === 'ar' ? 'النقطة السابقة' : 'Previous'}</span>
+            </button>
+
+            <button
+              onClick={handleNextHotspot}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all active:scale-95 shadow-2xs cursor-pointer"
+            >
+              <span>{lang === 'ar' ? 'النقطة التالية' : 'Next'}</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-150 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs">
+          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+          <p className="font-bold leading-relaxed">
+            {lang === 'ar'
+              ? 'اضغط على أي رقم ملون على الرسمة لتمييز السهم وقراءة الشرح، أو استخدم الأسهم للتنقل.'
+              : 'Tap any numbered point on the diagram to highlight its arrow and read the details.'}
+          </p>
+        </div>
+      )}
+
       {/* Diagram Title & Zoom controls outside the image canvas */}
-      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-3 rounded-app-card border border-slate-100 dark:border-slate-800">
+      <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 p-3 rounded-app-card border border-slate-100 dark:border-slate-800">
         <div className="text-right flex-1 min-w-0">
           <h3 className="text-xs md:text-sm font-black text-slate-800 dark:text-slate-100 truncate">
             {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
           </h3>
-          <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-            {lang === 'ar' ? 'اسحب للتحريك واستخدم الزر للتكبير أو قرصة الأصابع' : 'Drag to pan, pinch to zoom'}
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
+            {lang === 'ar' ? 'إجمالي النقاط التفاعلية: ' + hotspotsList.length : 'Total Hotspots: ' + hotspotsList.length}
           </p>
         </div>
         
@@ -348,7 +383,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           <button 
             onClick={zoomIn} 
             aria-label={lang === 'ar' ? 'تكبير' : 'Zoom In'}
-            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
+            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer"
             title="Zoom In"
           >
             <ZoomIn className="w-3.5 h-3.5" />
@@ -356,7 +391,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           <button 
             onClick={zoomOut} 
             aria-label={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
-            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
+            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer"
             title="Zoom Out"
           >
             <ZoomOut className="w-3.5 h-3.5" />
@@ -364,7 +399,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           <button 
             onClick={resetZoom} 
             aria-label={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
-            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer bg-transparent"
+            className="tap-target p-1.5 text-slate-650 dark:text-slate-200 hover:text-emerald-500 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-750 rounded-app-btn transition-colors border-0 cursor-pointer"
             title="Reset"
           >
             <RefreshCw className="w-3.5 h-3.5" />
