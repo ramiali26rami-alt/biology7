@@ -183,135 +183,137 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       )}
 
-      {/* Main Diagram Canvas Area - Compact Height to fit screen with Zero Scroll */}
-      <div 
-        className="relative w-full h-[36vh] max-h-[320px] min-h-[220px] md:h-[400px] md:max-h-[420px] border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none flex items-center justify-center touch-none"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{ cursor: transform.scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
-      >
-        {/* Zoomable Inner Canvas */}
-        <div
-          ref={containerRef}
-          className="relative max-h-full max-w-full flex items-center justify-center"
-          style={{
-            transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-            transformOrigin: 'center center',
-            transition: isDragging ? 'none' : 'transform 0.15s ease-out'
-          }}
+      {/* Main Diagram Canvas Area - Wraps tightly with Zero Side Gaps */}
+      <div className="flex items-center justify-center w-full overflow-hidden">
+        <div 
+          className="relative inline-block max-w-full border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none touch-none shadow-xs"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ cursor: transform.scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
         >
-          {/* Sub-wrapper that strictly wraps the rendered image dimensions */}
-          <div className="relative inline-block max-h-[36vh] md:max-h-[400px] max-w-full">
-            <img
-              src={getAssetUrl(activeDiagram.imageFile)}
-              alt={lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
-              className="h-[36vh] max-h-[320px] min-h-[220px] md:h-[400px] md:max-h-[420px] w-auto object-contain block rounded-xl mx-auto"
-              draggable={false}
-            />
+          {/* Zoomable Inner Canvas */}
+          <div
+            ref={containerRef}
+            className="relative flex items-center justify-center"
+            style={{
+              transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+              transformOrigin: 'center center',
+              transition: isDragging ? 'none' : 'transform 0.15s ease-out'
+            }}
+          >
+            {/* Sub-wrapper that strictly matches the exact rendered image width & height */}
+            <div className="relative inline-block w-auto h-auto max-w-full">
+              <img
+                src={getAssetUrl(activeDiagram.imageFile)}
+                alt={lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
+                className="max-h-[42vh] md:max-h-[380px] w-auto max-w-full object-contain block rounded-xl mx-auto"
+                draggable={false}
+              />
 
-            {/* SVG arrows overlay */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-15">
-              <defs>
-                {/* Arrow marker for default state */}
-                <marker
-                  id="arrow-head-default"
-                  viewBox="0 0 10 10"
-                  refX="6"
-                  refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
-                  orient="auto-start-reverse"
-                >
-                  <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#10b981" />
-                </marker>
-                {/* Arrow marker for active state */}
-                <marker
-                  id="arrow-head-active"
-                  viewBox="0 0 10 10"
-                  refX="6"
-                  refY="5"
-                  markerWidth="7"
-                  markerHeight="7"
-                  orient="auto-start-reverse"
-                >
-                  <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#f59e0b" />
-                </marker>
-              </defs>
+              {/* SVG arrows overlay */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-15">
+                <defs>
+                  {/* Arrow marker for default state */}
+                  <marker
+                    id="arrow-head-default"
+                    viewBox="0 0 10 10"
+                    refX="6"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#10b981" />
+                  </marker>
+                  {/* Arrow marker for active state */}
+                  <marker
+                    id="arrow-head-active"
+                    viewBox="0 0 10 10"
+                    refX="6"
+                    refY="5"
+                    markerWidth="7"
+                    markerHeight="7"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#f59e0b" />
+                  </marker>
+                </defs>
 
-              {hotspotsList.map((hotspot) => {
-                if (hotspot.arrowX === undefined || hotspot.arrowY === undefined || hotspot.arrowX === null || hotspot.arrowY === null) return null;
+                {hotspotsList.map((hotspot) => {
+                  if (hotspot.arrowX === undefined || hotspot.arrowY === undefined || hotspot.arrowX === null || hotspot.arrowY === null) return null;
+                  const isActive = selectedHotspot?.id === hotspot.id;
+                  
+                  return (
+                    <line
+                      key={`arrow-${hotspot.id}`}
+                      x1={`${hotspot.x}%`}
+                      y1={`${hotspot.y}%`}
+                      x2={`${hotspot.arrowX}%`}
+                      y2={`${hotspot.arrowY}%`}
+                      stroke={isActive ? '#f59e0b' : '#10b981'}
+                      strokeWidth={isActive ? 3 : 1.8}
+                      strokeDasharray={isActive ? 'none' : '3 3'}
+                      markerEnd={`url(#arrow-head-${isActive ? 'active' : 'default'})`}
+                      className="transition-all duration-300"
+                      style={{
+                        opacity: selectedHotspot ? (isActive ? 1 : 0.4) : 0.85
+                      }}
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Hotspots clickable markers */}
+              {hotspotsList.map((hotspot, idx) => {
                 const isActive = selectedHotspot?.id === hotspot.id;
-                
                 return (
-                  <line
-                    key={`arrow-${hotspot.id}`}
-                    x1={`${hotspot.x}%`}
-                    y1={`${hotspot.y}%`}
-                    x2={`${hotspot.arrowX}%`}
-                    y2={`${hotspot.arrowY}%`}
-                    stroke={isActive ? '#f59e0b' : '#10b981'}
-                    strokeWidth={isActive ? 3 : 1.8}
-                    strokeDasharray={isActive ? 'none' : '3 3'}
-                    markerEnd={`url(#arrow-head-${isActive ? 'active' : 'default'})`}
-                    className="transition-all duration-300"
+                  <div
+                    key={hotspot.id}
+                    className="absolute"
                     style={{
-                      opacity: selectedHotspot ? (isActive ? 1 : 0.4) : 0.85
+                      left: `${hotspot.x}%`,
+                      top: `${hotspot.y}%`,
+                      transform: `translate(-50%, -50%) scale(${1 / transform.scale})`,
+                      transformOrigin: 'center center',
+                      zIndex: isActive ? 50 : 20
                     }}
-                  />
+                  >
+                    <button
+                      onClick={() => {
+                        playHotspotSound();
+                        setSelectedHotspot(isActive ? null : hotspot);
+                      }}
+                      className={`w-6 h-6 md:w-7 md:h-7 flex items-center justify-center group focus:outline-none relative cursor-pointer rounded-full transition-transform ${
+                        isActive ? 'scale-125' : 'hover:scale-110 active:scale-95'
+                      }`}
+                      title={hotspot.labelAr}
+                      aria-label={hotspot.labelAr}
+                    >
+                      {/* Pulsing ring */}
+                      <span className={`absolute inline-flex h-full w-full rounded-full opacity-80 ${
+                        isActive ? 'animate-ping bg-amber-400' : 'animate-pulse bg-emerald-400'
+                      }`}></span>
+                      {/* Inner core badge with number */}
+                      <span className={`relative inline-flex items-center justify-center rounded-full h-4.5 w-4.5 md:h-5 md:w-5 text-[9px] md:text-[10px] font-black text-white shadow-xs border border-white transition-colors ${
+                        isActive ? 'bg-amber-500 ring-2 ring-amber-300' : 'bg-emerald-600'
+                      }`}>
+                        {idx + 1}
+                      </span>
+                    </button>
+                  </div>
                 );
               })}
-            </svg>
-
-            {/* Hotspots clickable markers */}
-            {hotspotsList.map((hotspot, idx) => {
-              const isActive = selectedHotspot?.id === hotspot.id;
-              return (
-                <div
-                  key={hotspot.id}
-                  className="absolute"
-                  style={{
-                    left: `${hotspot.x}%`,
-                    top: `${hotspot.y}%`,
-                    transform: `translate(-50%, -50%) scale(${1 / transform.scale})`,
-                    transformOrigin: 'center center',
-                    zIndex: isActive ? 50 : 20
-                  }}
-                >
-                  <button
-                    onClick={() => {
-                      playHotspotSound();
-                      setSelectedHotspot(isActive ? null : hotspot);
-                    }}
-                    className={`w-6 h-6 md:w-7 md:h-7 flex items-center justify-center group focus:outline-none relative cursor-pointer rounded-full transition-transform ${
-                      isActive ? 'scale-125' : 'hover:scale-110 active:scale-95'
-                    }`}
-                    title={hotspot.labelAr}
-                    aria-label={hotspot.labelAr}
-                  >
-                    {/* Pulsing ring */}
-                    <span className={`absolute inline-flex h-full w-full rounded-full opacity-80 ${
-                      isActive ? 'animate-ping bg-amber-400' : 'animate-pulse bg-emerald-400'
-                    }`}></span>
-                    {/* Inner core badge with number */}
-                    <span className={`relative inline-flex items-center justify-center rounded-full h-4.5 w-4.5 md:h-5 md:w-5 text-[9px] md:text-[10px] font-black text-white shadow-xs border border-white transition-colors ${
-                      isActive ? 'bg-amber-500 ring-2 ring-amber-300' : 'bg-emerald-600'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                  </button>
-                </div>
-              );
-            })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Dedicated Compact Bottom Info Panel (Zero Scrolling) */}
+      {/* Dedicated Compact Bottom Info Panel */}
       {selectedHotspot ? (
         <div className="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 dark:from-slate-800/95 dark:to-slate-850 border border-emerald-200/90 dark:border-emerald-800/70 p-3 rounded-2xl shadow-2xs space-y-1.5 animate-fadeIn transition-all">
           <div className="flex items-center justify-between gap-2 border-b border-emerald-100 dark:border-slate-700/60 pb-1.5">
@@ -333,7 +335,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
             </button>
           </div>
 
-          <p className="text-[11px] md:text-xs font-semibold text-slate-750 dark:text-slate-200 leading-relaxed max-h-20 overflow-y-auto">
+          <p className="text-[11px] md:text-xs font-semibold text-slate-750 dark:text-slate-200 leading-relaxed max-h-24 overflow-y-auto">
             {lang === 'ar' ? selectedHotspot.descAr : (selectedHotspot.descEn || selectedHotspot.descAr)}
           </p>
 
