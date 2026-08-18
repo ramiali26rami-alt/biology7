@@ -248,24 +248,23 @@ export default function App() {
       case 'admin-login':
         return (
           <AdminLoginModal 
-            onLoginSuccess={() => handleNavigate('admin-dashboard', 'none')} 
-            onBack={() => { window.location.href = '/'; }} 
+            onLoginSuccess={() => {
+              setIsAdminAuthenticated(true);
+              handleNavigate('admin-dashboard', 'none');
+            }} 
+            onBack={() => { handleNavigate('main-dashboard', 'none'); }} 
             lang={lang} 
           />
         );
       case 'admin-dashboard':
-        if (isAdminAuthenticated === null) {
-          return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-              <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          );
-        }
-        if (!isAdminAuthenticated) {
+        if (isAdminAuthenticated === false) {
           return (
             <AdminLoginModal 
-              onLoginSuccess={() => handleNavigate('admin-dashboard', 'none')} 
-              onBack={() => { window.location.href = '/'; }} 
+              onLoginSuccess={() => {
+                setIsAdminAuthenticated(true);
+                handleNavigate('admin-dashboard', 'none');
+              }} 
+              onBack={() => { handleNavigate('main-dashboard', 'none'); }} 
               lang={lang} 
             />
           );

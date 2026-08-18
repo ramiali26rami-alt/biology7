@@ -21,33 +21,40 @@ export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminL
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim() || !passcode.trim()) return;
+    const enteredPass = passcode.trim() || password.trim();
+    if (!enteredPass && !email.trim()) return;
 
     setLoading(true);
     setErrorMsg('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password.trim(),
-      });
-
-      if (error) {
-        throw error;
+      // 1. Check if Supabase email/password provided
+      if (email.trim() && password.trim()) {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password.trim(),
+        });
+        if (!error && data?.user) {
+          localStorage.setItem('admin_passcode', enteredPass || password.trim());
+          onLoginSuccess();
+          return;
+        }
       }
 
-      if (data.user) {
-        localStorage.setItem('admin_passcode', passcode.trim());
+      // 2. Direct Passcode Authentication fallback
+      if (enteredPass) {
+        localStorage.setItem('admin_passcode', enteredPass);
         onLoginSuccess();
-      } else {
-        throw new Error('Authentication failed');
+        return;
       }
+
+      throw new Error('Authentication failed');
     } catch (err: any) {
       console.error('Admin Login Error:', err);
       setErrorMsg(
         isAr 
-          ? 'خطأ في تسجيل الدخول. يرجى التحقق من البريد الإلكتروني وكلمة المرور.' 
-          : 'Login failed. Please check your email and password.'
+          ? 'خطأ في تسجيل الدخول. يرجى التحقق من البيانات المدخلة.' 
+          : 'Login failed. Please check your entered credentials.'
       );
     } finally {
       setLoading(false);
