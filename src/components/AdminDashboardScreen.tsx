@@ -82,7 +82,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
   useEffect(() => {
     const errs: string[] = [];
-    lessons.forEach(l => {
+    (lessons || []).forEach(l => {
+      if (!l) return;
       if (!l.titleAr) errs.push(lang === 'ar' ? `الدرس (${l.id}) يفتقر للعنوان العربي.` : `Lesson (${l.id}) lacks Arabic title.`);
       if (!l.titleEn) errs.push(lang === 'ar' ? `الدرس (${l.id}) يفتقر للعنوان الإنجليزي.` : `Lesson (${l.id}) lacks English title.`);
       if (!l.pdfFile) errs.push(lang === 'ar' ? `الدرس (${l.id}) لا يحتوي على ملف PDF.` : `Lesson (${l.id}) is missing PDF file.`);
