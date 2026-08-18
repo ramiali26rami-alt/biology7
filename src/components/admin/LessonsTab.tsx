@@ -413,6 +413,27 @@ export default function LessonsTab({
     updateEditingLessonField('mindmap', nodes);
   };
 
+  // Summary Points Mutators
+  const addSummaryPoint = () => {
+    if (!editingLesson) return;
+    const points = [...(editingLesson.summaryPointsAr || [])];
+    points.push('');
+    updateEditingLessonField('summaryPointsAr', points);
+  };
+
+  const updateSummaryPoint = (index: number, text: string) => {
+    if (!editingLesson) return;
+    const points = [...(editingLesson.summaryPointsAr || [])];
+    points[index] = text;
+    updateEditingLessonField('summaryPointsAr', points);
+  };
+
+  const deleteSummaryPoint = (index: number) => {
+    if (!editingLesson) return;
+    const points = (editingLesson.summaryPointsAr || []).filter((_, i) => i !== index);
+    updateEditingLessonField('summaryPointsAr', points);
+  };
+
   // Quiz Question Mutators
   const addQuizQuestion = () => {
     if (!editingLesson) return;
@@ -1167,6 +1188,55 @@ export default function LessonsTab({
           {/* Editor Sub-Tab: Summary & Cards & Mindmap */}
           {editorSubTab === 'summary-flash' && (
             <div className="space-y-6">
+              {/* Part 0: Summary Points (نقاط وخلاصة أفكار الدرس) */}
+              <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
+                  <button
+                    type="button"
+                    onClick={addSummaryPoint}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{lang === 'ar' ? 'إضافة فكرة / نقطة ملخص' : 'Add Summary Point'}</span>
+                  </button>
+                  <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                    <span>💡</span>
+                    <span>{lang === 'ar' ? 'نقاط وخلاصة أفكار الدرس الرئيسية' : 'Key Lesson Summary Points'}</span>
+                  </h4>
+                </div>
+
+                {(!editingLesson.summaryPointsAr || editingLesson.summaryPointsAr.length === 0) ? (
+                  <div className="py-8 text-center text-slate-400 font-bold text-xs">
+                    {lang === 'ar' ? 'لا توجد نقاط ملخص مضافة حالياً. اضغط على زر الإضافة أعلاه لكتابة أفكار الدرس.' : 'No summary points added yet.'}
+                  </div>
+                ) : (
+                  <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                    {editingLesson.summaryPointsAr.map((point, idx) => (
+                      <div key={idx} className="bg-slate-50 dark:bg-slate-950 p-3.5 rounded-app-card border border-slate-150 dark:border-slate-800/80 flex items-start gap-3">
+                        <span className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black text-[11px] shrink-0 mt-1">
+                          {idx + 1}
+                        </span>
+                        <textarea
+                          value={point || ''}
+                          onChange={(e) => updateSummaryPoint(idx, e.target.value)}
+                          placeholder={lang === 'ar' ? `اكتب النقطة / الفكرة رقم ${idx + 1}...` : `Summary point ${idx + 1}...`}
+                          rows={2}
+                          className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-500 leading-relaxed text-right"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => deleteSummaryPoint(idx)}
+                          className="text-slate-400 hover:text-rose-500 transition-colors p-1.5 shrink-0 mt-1 cursor-pointer"
+                          title={lang === 'ar' ? 'حذف النقطة' : 'Delete Point'}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Part A: Flashcards */}
               <div className="bg-white dark:bg-slate-900 rounded-app-card border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
