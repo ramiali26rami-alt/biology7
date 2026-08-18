@@ -19,17 +19,73 @@ const app = express();
 
 app.use(express.json({ limit: '50mb' }));
 
-// CORS middleware to support native Capacitor WebView calls
+// FIX: تقييد CORS بدلاً من السماح لجميع المصادر
+const ALLOWED_ORIGINS = [
+  'capacitor://localhost',
+  'http://localhost',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.ALLOWED_ORIGIN || ''
+].filter(Boolean);
+
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  // السماح لطلبات Capacitor الأصلية وطلبات التطوير المحلي
+  if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.startsWith('capacitor://')) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-admin-passcode,x-gemini-key');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  // FIX: إضافة Security Headers لحماية إضافية
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
   next();
 });
+
+// FIX: Rate Limiting يدوي بدون حاجة لمكتبة خارجية
+const rateLimitStore = new Map();
+function rateLimit(windowMs, max) {
+  return (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const key = `${ip}:${req.path}`;
+
+    if (!rateLimitStore.has(key)) {
+      rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
+      return next();
+    }
+
+    const record = rateLimitStore.get(key);
+    if (now > record.resetAt) {
+      rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
+      return next();
+    }
+
+    record.count++;
+    if (record.count > max) {
+      return res.status(429).json({
+        error: 'Too many requests. Please try again later.'
+      });
+    }
+    next();
+  };
+}
+
+// تنظيف دوري لـ rateLimitStore كل 10 دقائق لمنع تراكم الذاكرة
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitStore.entries()) {
+    if (now > record.resetAt) rateLimitStore.delete(key);
+  }
+}, 10 * 60 * 1000);
 
 const publicDir = path.resolve(__dirname, 'public');
 const dataDir = path.resolve(__dirname, 'data');
@@ -590,7 +646,8 @@ app.post('/api/generate-keys', (req, res) => {
 });
 
 // ─── POST /api/activate-key ───
-app.post('/api/activate-key', (req, res) => {
+// FIX: إضافة Rate Limiting — 10 محاولات كل 15 دقيقة لكل IP
+app.post('/api/activate-key', rateLimit(15 * 60 * 1000, 10), (req, res) => {
   try {
     const { key, studentName, deviceUuid } = req.body;
     if (!key || !key.trim()) {

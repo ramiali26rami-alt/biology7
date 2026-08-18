@@ -16,9 +16,8 @@ function generateSecureUuid(): string {
   crypto.getRandomValues(array);
   array[6] = (array[6] & 0x0f) | 0x40;
   array[8] = (array[8] & 0x3f) | 0x80;
-  return [...array]
-    .map((b, i) => ([4, 6, 8, 10].includes(i) ? '-' : '') + b.toString(16).padStart(2, '0'))
-    .join('');
+  const hex = Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
 }
 
 const getRuntimeKey = (): string => {
@@ -84,9 +83,10 @@ export function checkPremiumStatus(): boolean {
     const isUnlocked = SecureStorage.getItem('premium_unlocked') === 'true';
     if (!isUnlocked) return false;
 
-    const storedSig = localStorage.getItem('premium_signature');
+    // FIX: نقل premium_signature من localStorage إلى SecureStorage لمنع النسخ بين الأجهزة
+    const storedSig = SecureStorage.getItem('premium_signature');
     const expectedSig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
-    
+
     return storedSig === expectedSig;
   } catch (e) {}
   return false;
@@ -98,9 +98,13 @@ export function setPremiumUnlockedState(unlocked: boolean): void {
     if (unlocked && deviceUuid) {
       SecureStorage.setItem('premium_unlocked', 'true');
       const sig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
-      localStorage.setItem('premium_signature', sig);
+      // FIX: حفظ الـ signature في SecureStorage بدلاً من localStorage العادي
+      SecureStorage.setItem('premium_signature', sig);
+      // إزالة النسخة القديمة من localStorage إن وُجدت
+      localStorage.removeItem('premium_signature');
     } else {
       SecureStorage.setItem('premium_unlocked', 'false');
+      SecureStorage.removeItem('premium_signature');
       localStorage.removeItem('premium_signature');
     }
   } catch (e) {

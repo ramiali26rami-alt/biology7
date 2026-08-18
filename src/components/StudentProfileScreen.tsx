@@ -70,6 +70,9 @@ const PRESET_AVATARS = [
   { id: 'scientist', name: 'Scientist', url: 'https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&q=80&w=256' }
 ];
 
+// FIX: حد أقصى لحجم الصورة المرفوعة (2MB)
+const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024;
+
 export default function StudentProfileScreen({ 
   onNavigate, 
   lang, 
@@ -80,9 +83,10 @@ export default function StudentProfileScreen({
   fontSize,
   setFontSize
 }: StudentProfileScreenProps) {
-  // Sync states from localStorage for persistence
+  // Sync states from localStorage / SecureStorage for persistence
   const [name, setName] = useState(() => SecureStorage.getItem('student_name') || '');
-  const [email, setEmail] = useState(() => localStorage.getItem('student_email') || '');
+  // FIX: نقل student_email من localStorage إلى SecureStorage
+  const [email, setEmail] = useState(() => SecureStorage.getItem('student_email') || localStorage.getItem('student_email') || '');
   const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem('student_avatar') || PRESET_AVATARS[0].url);
   const [premiumUnlocked, setPremiumUnlocked] = useState(() => {
     try {
@@ -169,7 +173,7 @@ export default function StudentProfileScreen({
         });
         
         if (res.ok) {
-          localStorage.setItem('admin_passcode', pin);
+          // FIX: لا نحفظ الـ PIN في localStorage إطلاقاً
           setShowSettingsModal(false);
           onNavigate('admin-dashboard', 'push');
         } else {
@@ -184,7 +188,7 @@ export default function StudentProfileScreen({
     }
   };
 
-  const ENABLE_IN_APP_ADMIN = true;
+  const ENABLE_IN_APP_ADMIN = false;
 
   const handleVersionClick = () => {
     if (!ENABLE_IN_APP_ADMIN) return;
@@ -217,7 +221,9 @@ export default function StudentProfileScreen({
     setName(cleanName);
     setEmail(cleanEmail);
     SecureStorage.setItem('student_name', cleanName);
-    localStorage.setItem('student_email', cleanEmail);
+    // FIX: حفظ الإيميل في SecureStorage بدلاً من localStorage
+    SecureStorage.setItem('student_email', cleanEmail);
+    localStorage.removeItem('student_email'); // تنظيف النسخة القديمة
     setIsEditing(false);
 
     // Sync updated name directly to Supabase cloud database
@@ -242,6 +248,17 @@ export default function StudentProfileScreen({
 
   const handleSimulateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // FIX: فحص حجم الصورة قبل القراءة
+      if (file.size > MAX_AVATAR_SIZE_BYTES) {
+        alert(lang === 'ar'
+          ? 'حجم الصورة كبير جداً. الحد الأقصى 2MB.'
+          : 'Image is too large. Maximum size is 2MB.');
+        e.target.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (uploadEvent) => {
         if (uploadEvent.target?.result) {
@@ -250,14 +267,15 @@ export default function StudentProfileScreen({
           localStorage.setItem('student_avatar', resultStr);
         }
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
     }
   };
 
+  // FIX: handleTogglePremium لا يسمح بالتفعيل اليدوي — فقط إلغاء الاشتراك
   const handleTogglePremium = () => {
-    const nextPremium = !premiumUnlocked;
-    setPremiumUnlocked(nextPremium);
-    setPremiumUnlockedState(nextPremium);
+    if (!premiumUnlocked) return; // منع التفعيل اليدوي — يجب استخدام كود التفعيل
+    setPremiumUnlocked(false);
+    setPremiumUnlockedState(false);
   };
 
   const toggleDarkMode = () => {
