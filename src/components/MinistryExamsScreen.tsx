@@ -42,6 +42,11 @@ function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps)
   useEffect(() => {
     let active = true;
     const loadImg = async () => {
+      if (!fileName) return;
+      if (fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')) {
+        if (active) setImgUrl(fileName);
+        return;
+      }
       try {
         const fallback = `/${folder}/${fileName}`;
         const url = await getCachedAssetUrl(lessonId, fileName, fallback);
