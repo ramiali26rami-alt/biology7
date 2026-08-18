@@ -23,11 +23,11 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll screen smoothly into focus when diagram opens to hide top header rows
+  // Auto-scroll screen smoothly into focus when diagram opens (maintaining top margin so header doesn't cover diagram)
   useEffect(() => {
     const scrollToDiagram = () => {
       if (wrapperRef.current) {
-        const headerOffset = 12;
+        const headerOffset = 76; // Clearance for top fixed header
         const elementPosition = wrapperRef.current.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -38,8 +38,8 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
       }
     };
 
-    const timer1 = setTimeout(scrollToDiagram, 120);
-    const timer2 = setTimeout(scrollToDiagram, 350);
+    const timer1 = setTimeout(scrollToDiagram, 100);
+    const timer2 = setTimeout(scrollToDiagram, 300);
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -183,10 +183,45 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
   };
 
   return (
-    <div ref={wrapperRef} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm p-3.5 space-y-3 scroll-mt-3">
+    <div ref={wrapperRef} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm p-3.5 space-y-2.5 scroll-mt-20">
+      {/* Top Header Bar: Clean Title & Zoom Controls Outside Canvas */}
+      <div className="flex justify-between items-center bg-slate-50/80 dark:bg-slate-800/80 px-3.5 py-2 rounded-2xl border border-slate-100 dark:border-slate-800">
+        <h3 className="text-xs md:text-sm font-black text-slate-850 dark:text-slate-100 truncate">
+          {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
+        </h3>
+
+        {/* Clean Zoom Controls Outside Image */}
+        <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-750 p-1 rounded-xl shadow-2xs shrink-0">
+          <button 
+            onClick={zoomIn} 
+            aria-label={lang === 'ar' ? 'تكبير' : 'Zoom In'}
+            className="p-1 text-slate-650 dark:text-slate-300 hover:text-emerald-500 rounded transition-colors border-0 cursor-pointer bg-transparent"
+            title={lang === 'ar' ? 'تكبير' : 'Zoom In'}
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            onClick={zoomOut} 
+            aria-label={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
+            className="p-1 text-slate-650 dark:text-slate-300 hover:text-emerald-500 rounded transition-colors border-0 cursor-pointer bg-transparent"
+            title={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            onClick={resetZoom} 
+            aria-label={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
+            className="p-1 text-slate-650 dark:text-slate-300 hover:text-emerald-500 rounded transition-colors border-0 cursor-pointer bg-transparent"
+            title={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
       {/* Tab Navigation if multiple diagrams exist */}
       {diagrams.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1.5 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
+        <div className="flex gap-2 overflow-x-auto pb-1 border-b border-slate-100 dark:border-slate-800 scrollbar-none">
           {diagrams.map((diag, idx) => (
             <button
               key={idx}
@@ -195,9 +230,9 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
                 setSelectedHotspot(null);
                 resetZoom();
               }}
-              className={`px-3 py-1.5 rounded-app-btn text-xs font-black transition-all shrink-0 ${
+              className={`px-3 py-1 rounded-app-btn text-xs font-black transition-all shrink-0 ${
                 activeDiagIdx === idx
-                  ? 'bg-emerald-500 text-white shadow-sm'
+                  ? 'bg-emerald-500 text-white shadow-xs'
                   : 'bg-slate-50 dark:bg-slate-800/60 text-slate-650 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
@@ -207,7 +242,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       )}
 
-      {/* Main Diagram Canvas Area - Generous Height & Tight Border Fit */}
+      {/* Main Diagram Canvas Area - 100% Clean without any Overlays */}
       <div className="flex items-center justify-center w-full overflow-hidden">
         <div 
           className="relative inline-block max-w-full border border-slate-150 dark:border-slate-800/80 rounded-2xl overflow-hidden bg-slate-950/20 dark:bg-[#060913] select-none touch-none shadow-sm"
@@ -220,39 +255,6 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
           onTouchEnd={handleTouchEnd}
           style={{ cursor: transform.scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
         >
-          {/* Subtle Floating Title Badge at Top-Right */}
-          <div className="absolute top-2 right-2 z-25 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-white text-[11px] font-bold shadow-xs pointer-events-none">
-            {lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
-          </div>
-
-          {/* Floating Subtle Zoom Glass Controls at Top-Left */}
-          <div className="absolute top-2 left-2 z-25 flex items-center gap-1 bg-black/60 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-xs">
-            <button 
-              onClick={zoomIn} 
-              aria-label={lang === 'ar' ? 'تكبير' : 'Zoom In'}
-              className="p-1 text-slate-200 hover:text-emerald-400 transition-colors border-0 cursor-pointer bg-transparent"
-              title="Zoom In"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-            <button 
-              onClick={zoomOut} 
-              aria-label={lang === 'ar' ? 'تصغير' : 'Zoom Out'}
-              className="p-1 text-slate-200 hover:text-emerald-400 transition-colors border-0 cursor-pointer bg-transparent"
-              title="Zoom Out"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <button 
-              onClick={resetZoom} 
-              aria-label={lang === 'ar' ? 'إعادة ضبط' : 'Reset Zoom'}
-              className="p-1 text-slate-200 hover:text-emerald-400 transition-colors border-0 cursor-pointer bg-transparent"
-              title="Reset"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
           {/* Zoomable Inner Canvas */}
           <div
             ref={containerRef}
@@ -268,7 +270,7 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
               <img
                 src={getAssetUrl(activeDiagram.imageFile)}
                 alt={lang === 'ar' ? activeDiagram.titleAr : (activeDiagram.titleEn || activeDiagram.titleAr)}
-                className="max-h-[52vh] md:max-h-[480px] w-auto max-w-full object-contain block rounded-xl mx-auto"
+                className="max-h-[50vh] md:max-h-[460px] w-auto max-w-full object-contain block rounded-xl mx-auto"
                 draggable={false}
               />
 
@@ -370,9 +372,9 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
         </div>
       </div>
 
-      {/* Large, Clear, Dedicated Bottom Info Panel */}
+      {/* Dedicated Bottom Info Panel with Clean Navigation */}
       {selectedHotspot ? (
-        <div className="bg-gradient-to-br from-emerald-50/95 to-teal-50/70 dark:from-slate-800/95 dark:to-slate-850 border border-emerald-200/90 dark:border-emerald-800/70 p-4 rounded-2xl shadow-sm space-y-2.5 animate-fadeIn transition-all">
+        <div className="bg-gradient-to-br from-emerald-50/95 to-teal-50/70 dark:from-slate-800/95 dark:to-slate-850 border border-emerald-200/90 dark:border-emerald-800/70 p-3.5 rounded-2xl shadow-sm space-y-2 animate-fadeIn transition-all">
           <div className="flex items-center justify-between gap-2 border-b border-emerald-100 dark:border-slate-700/60 pb-2">
             <div className="flex items-center gap-2">
               <span className="bg-emerald-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full shadow-xs">
@@ -396,28 +398,28 @@ export function InteractiveDiagramVisualizer({ diagrams, lang, lessonFolder }: I
             {lang === 'ar' ? selectedHotspot.descAr : (selectedHotspot.descEn || selectedHotspot.descAr)}
           </p>
 
-          {/* Sequential Hotspot Navigation Buttons */}
+          {/* Sequential Hotspot Navigation Buttons (السابق / التالي) */}
           <div className="flex items-center justify-between pt-1">
             <button
               onClick={handlePrevHotspot}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-750 text-slate-750 dark:text-slate-200 font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs shadow-xs cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-white dark:bg-slate-750 text-slate-750 dark:text-slate-200 font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95 text-xs shadow-xs cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
-              <span>{lang === 'ar' ? 'النقطة السابقة' : 'Previous'}</span>
+              <span>{lang === 'ar' ? 'السابق' : 'Previous'}</span>
             </button>
 
             <button
               onClick={handleNextHotspot}
               className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all active:scale-95 text-xs shadow-xs cursor-pointer"
             >
-              <span>{lang === 'ar' ? 'النقطة التالية' : 'Next'}</span>
+              <span>{lang === 'ar' ? 'التالي' : 'Next'}</span>
               <ChevronLeft className="w-4 h-4" />
             </button>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-150 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-xs">
-          <Sparkles className="w-5 h-5 text-emerald-500 shrink-0" />
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-150 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-xs">
+          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
           <p className="font-bold leading-relaxed">
             {lang === 'ar'
               ? 'انقر على أي رقم ملون على الرسمة لتمييز السهم وقراءة الشرح المفصل، أو استخدم أزرار التنقل.'
