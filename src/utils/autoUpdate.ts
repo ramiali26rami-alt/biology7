@@ -3,11 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { supabase } from './supabaseClient';
 import { SecureStorage } from './security';
-
-function getServerUrl(): string {
-  return (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
-}
 
 export async function checkAndUpdate(): Promise<{
   updated: boolean;
@@ -15,93 +12,34 @@ export async function checkAndUpdate(): Promise<{
   error: boolean;
 }> {
   try {
-    const serverUrl = getServerUrl();
-    const storedVersion =
-      SecureStorage.getItem('curriculum_version')
-      ?? '0.0.0';
+    const { data: cloudConfig, error: cloudErr } = await supabase
+      .from('system_settings')
+      .select('value, updated_at')
+      .eq('key', 'curriculum_data')
+      .maybeSingle();
 
-    // 5 second timeout — never hangs the app
-    const controller = new AbortController();
-    const timeout = setTimeout(
-      () => controller.abort(), 5000
-    );
+    if (cloudErr || !cloudConfig?.value || !Array.isArray(cloudConfig.value)) {
+      return { updated: false, newLessons: 0, error: false };
+    }
 
-    const response = await fetch(
-      `${serverUrl}/api/curriculum-version`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeout);
+    const currentCached = SecureStorage.getItem('curriculum_data');
+    const cachedCount = Array.isArray(currentCached) ? currentCached.length : 0;
+    const cloudCount = cloudConfig.value.length;
+    const lastUpdatedAt = SecureStorage.getItem('curriculum_updated_at');
 
-    if (!response.ok) {
-      return { 
-        updated: false, 
-        newLessons: 0, 
-        error: true 
+    if (cloudCount !== cachedCount || cloudConfig.updated_at !== lastUpdatedAt) {
+      SecureStorage.setItem('curriculum_data', cloudConfig.value);
+      SecureStorage.setItem('curriculum_updated_at', cloudConfig.updated_at);
+      return {
+        updated: true,
+        newLessons: cloudCount,
+        error: false
       };
     }
 
-    const serverData = await response.json();
-
-    // No update needed
-    if (serverData.version === storedVersion) {
-      return { 
-        updated: false, 
-        newLessons: 0, 
-        error: false 
-      };
-    }
-
-    // New version — download full curriculum
-    let curriculumRes = await fetch(
-      `${serverUrl}/api/get-config?t=${Date.now()}`
-    );
-    if (!curriculumRes.ok) {
-      curriculumRes = await fetch(
-        `${serverUrl}/lessons_config.json?t=${Date.now()}`
-      );
-    }
-
-    if (!curriculumRes.ok) {
-      return { 
-        updated: false, 
-        newLessons: 0, 
-        error: true 
-      };
-    }
-
-    const curriculumText = await curriculumRes.text();
-    let newCurriculum;
-    try {
-      const { decryptCurriculumData } = await import('./security');
-      newCurriculum = decryptCurriculumData(curriculumText);
-    } catch {
-      newCurriculum = JSON.parse(curriculumText);
-    }
-
-    // Store encrypted locally
-    SecureStorage.setItem(
-      'curriculum_data', newCurriculum
-    );
-    SecureStorage.setItem(
-      'curriculum_version', serverData.version
-    );
-    SecureStorage.setItem(
-      'curriculum_updated_at', serverData.updatedAt
-    );
-
-    return {
-      updated: true,
-      newLessons: serverData.totalLessons,
-      error: false
-    };
-
+    return { updated: false, newLessons: 0, error: false };
   } catch (err) {
     console.warn('Auto-update check failed:', err);
-    // Silent fail — app always works with local data
-    return { 
-      updated: false, 
-      newLessons: 0, 
-      error: true 
-    };
+    return { updated: false, newLessons: 0, error: true };
   }
 }
