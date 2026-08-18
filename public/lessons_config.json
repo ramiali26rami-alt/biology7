@@ -1560,5 +1560,193 @@
       }
     ],
     "demoSlides": []
+  },
+  {
+    "id": "u1-l3",
+    "unit": 1,
+    "unitNameAr": "التنظيم العصبي في الكائنات الحية",
+    "unitNameEn": "Nervous Coordination in Living Organisms",
+    "titleAr": "النسيج العصبي والخلية العصبية",
+    "titleEn": "Nervous Tissue and Neuron Structure",
+    "folder": "U1",
+    "diagramFile": "u1-l3.webp",
+    "pdfFile": "u1-l3.pdf",
+    "locked": false,
+    "diagramLocked": false,
+    "pdfLocked": false,
+    "summaryFile": "",
+    "mindmapFile": "",
+    "videoUrl": "",
+    "summaryPointsAr": [
+      "يتكون النسيج العصبي من نوعين رئيسيين من الخلايا: الخلايا العصبية (العصبونات) وخلايا الغراء العصبي.",
+      "الخلية العصبية هي وحدة البناء والوظيفة في الجهاز العصبي.",
+      "تتكون الخلية العصبية النموذجية من ثلاثة أجزاء رئيسية: جسم الخلية، الزوائد الشجيرية، والمحور العصبي.",
+      "جسم الخلية يحتوي على النواة والسيتوبلازم (النيوروبلازم) وعضيات الخلية وأجسام نسل واللييفات العصبية.",
+      "الزوائد الشجيرية تستقبل السيالات العصبية وتنقلها نحو جسم الخلية.",
+      "المحور ينقل السيالة العصبية بعيداً عن جسم الخلية ويغلفه غمد النخاعين مع عقد رانفييه."
+    ],
+    "summaryPointsEn": [
+      "Nervous tissue consists of neurons and neuroglial cells.",
+      "The neuron is the structural and functional unit of the nervous system.",
+      "A typical neuron comprises cell body (soma), dendrites, and an axon."
+    ],
+    "interactiveDiagrams": [
+      {
+        "imageFile": "u1-l3.webp",
+        "titleAr": "بنية الخلية العصبية النموذجية",
+        "titleEn": "Structure of a Typical Neuron",
+        "hotspots": [
+          {
+            "id": "1",
+            "x": 80.0,
+            "y": 18.0,
+            "labelAr": "زوائد شجيرية",
+            "labelEn": "Dendrites",
+            "descAr": "تفرعات سيتوبلازمية قصيرة وكثيرة تخرج من جسم الخلية، وظيفتها استقبال السيالات العصبية من خلايا أخرى ونقلها باتجاه جسم الخلية.",
+            "descEn": "Short branched extensions that receive nerve impulses and transmit them toward the cell body.",
+            "arrowX": 58.0,
+            "arrowY": 20.0
+          },
+          {
+            "id": "2",
+            "x": 20.0,
+            "y": 24.0,
+            "labelAr": "جسم الخلية (السوما)",
+            "labelEn": "Cell Body (Soma)",
+            "descAr": "الجزء المركزي للخلية العصبية، يحتوي على النواة والسيتوبلازم وعضيات الخلية مثل أجسام نسل واللييفات العصبية.",
+            "descEn": "The central part containing the nucleus, cytoplasm, Nissl granules, and neurofibrils.",
+            "arrowX": 42.0,
+            "arrowY": 25.0
+          },
+          {
+            "id": "3",
+            "x": 80.0,
+            "y": 30.0,
+            "labelAr": "سيتوبلازم الخلية (نيوروبلازم)",
+            "labelEn": "Cytoplasm (Neuroplasm)",
+            "descAr": "سائل خلوي يملأ جسم الخلية العصبية، تسبح فيه العضيات الحيوية وتنتشر فيه اللييفات العصبية وجسيمات نسل الغنية بـ RNA.",
+            "descEn": "The cytoplasmic matrix containing organelles, neurofibrils, and Nissl bodies.",
+            "arrowX": 52.0,
+            "arrowY": 28.0
+          },
+          {
+            "id": "4",
+            "x": 20.0,
+            "y": 36.0,
+            "labelAr": "النواة والنوية",
+            "labelEn": "Nucleus & Nucleolus",
+            "descAr": "نواة كبيرة ومستديرة تتوسط جسم الخلية العصبية، بداخلها نوية واضحة، وتتحكم في جميع الأنشطة الحيوية والتمثيل الغذائي للخلية.",
+            "descEn": "Large, spherical central nucleus with a prominent nucleolus.",
+            "arrowX": 47.0,
+            "arrowY": 27.0
+          },
+          {
+            "id": "5",
+            "x": 20.0,
+            "y": 50.0,
+            "labelAr": "المحور العصبي",
+            "labelEn": "Axon",
+            "descAr": "استطالة سيتوبلازمية مفردة وطويلة تمتد من جسم الخلية، وظيفتها نقل السيالات العصبية بعيداً عن جسم الخلية باتجاه التشعبات النهائية.",
+            "descEn": "A single long extension conducting impulses away from the cell body.",
+            "arrowX": 48.5,
+            "arrowY": 50.0
+          },
+          {
+            "id": "6",
+            "x": 80.0,
+            "y": 58.0,
+            "labelAr": "غمد النخاعين (الميالين)",
+            "labelEn": "Myelin Sheath",
+            "descAr": "طبقة دهنية فوسفاتية بيضاء عازلة تغلف المحور العصبي، تفرزها خلايا شوان وتزيد من سرعة انتقال السيالة العصبية.",
+            "descEn": "White insulating lipid sheath formed by Schwann cells that increases impulse speed.",
+            "arrowX": 51.5,
+            "arrowY": 56.0
+          },
+          {
+            "id": "7",
+            "x": 20.0,
+            "y": 68.0,
+            "labelAr": "عقدة رانفييه",
+            "labelEn": "Node of Ranvier",
+            "descAr": "اختناقات متتالية على مسافات منتظمة على طول المحور يخلو عندها من غمد النخاعين، ويتم عندها التوصيل القفزي السريع للسيالة.",
+            "descEn": "Periodic gaps in the myelin sheath facilitating rapid saltatory conduction.",
+            "arrowX": 49.0,
+            "arrowY": 65.0
+          },
+          {
+            "id": "8",
+            "x": 20.0,
+            "y": 88.0,
+            "labelAr": "أزرار طرفية (تشعبات نهائية)",
+            "labelEn": "Axon Terminals (Synaptic Knobs)",
+            "descAr": "نهايات متفرعة ومفلطحة للمحور الأسطواني، تتشابك مع خلايا عصبية أو عضلية أخرى، وتحتوي على حويصلات النواقل العصبية (مثل الأستيل كولين).",
+            "descEn": "Terminal branches with synaptic knobs storing neurotransmitter vesicles.",
+            "arrowX": 44.0,
+            "arrowY": 88.0
+          }
+        ]
+      }
+    ],
+    "flashcards": [
+      {
+        "qAr": "ما هي وحدة البناء والوظيفة في الجهاز العصبي؟",
+        "aAr": "الخلية العصبية (العصبون)."
+      },
+      {
+        "qAr": "ما وظيفة الزوائد الشجيرية في العصبون؟",
+        "aAr": "استقبال السيالات العصبية ونقلها باتجاه جسم الخلية."
+      },
+      {
+        "qAr": "ما وظيفة المحور العصبي؟",
+        "aAr": "نقل السيالات العصبية بعيداً عن جسم الخلية نحو التشعبات النهائية."
+      },
+      {
+        "qAr": "ما هي أهمية عقد رانفييه على طول المحور النخاعيني؟",
+        "aAr": "تسريع انتقال السيالة العصبية عبر التوصيل القفزي."
+      }
+    ],
+    "quiz": [
+      {
+        "id": 1,
+        "type": "mcq",
+        "textAr": "الجزء من الخلية العصبية الذي ينقل السيالة العصبية باتجاه جسم الخلية هو:",
+        "textEn": "The part of the neuron conducting impulses toward the cell body is:",
+        "options": [
+          { "key": "A", "textAr": "المحور العصبي" },
+          { "key": "B", "textAr": "الزوائد الشجيرية" },
+          { "key": "C", "textAr": "غمد النخاعين" },
+          { "key": "D", "textAr": "عقد رانفييه" }
+        ],
+        "correctKey": "B",
+        "explanationAr": "الزوائد الشجيرية تخرج من جسم الخلية وتستقبل المؤثرات وتنقل السيالات نحو جسم الخلية."
+      },
+      {
+        "id": 2,
+        "type": "mcq",
+        "textAr": "المادة الدهنية الفوسفاتية التي تغلف المحور وتعمل كعازل كهربائي تسمى:",
+        "textEn": "The insulating lipid sheath around the axon is called:",
+        "options": [
+          { "key": "A", "textAr": "النيوروبلازم" },
+          { "key": "B", "textAr": "غمد النخاعين (الميالين)" },
+          { "key": "C", "textAr": "جسيمات نسل" },
+          { "key": "D", "textAr": "عقدة رانفييه" }
+        ],
+        "correctKey": "B",
+        "explanationAr": "غمد النخاعين هو غلاف دهني أبيض تفرزه خلايا شوان يعزل المحور كهربائياً ويزيد سرعة التوصيل."
+      },
+      {
+        "id": 3,
+        "type": "tf",
+        "textAr": "ينقل المحور العصبي السيالات العصبية بعيداً عن جسم الخلية.",
+        "textEn": "The axon conducts nerve impulses away from the cell body.",
+        "options": [
+          { "key": "T", "textAr": "✔️ صح" },
+          { "key": "F", "textAr": "❌ خطأ" }
+        ],
+        "correctKey": "T",
+        "explanationAr": "صح، ينقل المحور السيالة من جسم الخلية باتجاه الأزرار الطرفية."
+      }
+    ],
+    "demoSlides": []
   }
 ]
