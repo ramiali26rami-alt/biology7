@@ -53,6 +53,50 @@ import { SecureStorage, checkPremiumStatus } from '../utils/security';
 import { isAssetCached, cacheAsset, getCachedAssetUrl } from '../utils/cacheManager';
 import { motion, AnimatePresence } from 'motion/react';
 import { Capacitor } from '@capacitor/core';
+import LazyImage from './common/LazyImage';
+
+interface QuestionImageProps {
+  lessonId: string;
+  folder: string;
+  fileName: string;
+  lang: Language;
+}
+
+function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps) {
+  const [imgUrl, setImgUrl] = useState<string>('');
+
+  useEffect(() => {
+    let active = true;
+    const loadImg = async () => {
+      if (!fileName) return;
+      if (fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')) {
+        if (active) setImgUrl(fileName);
+        return;
+      }
+      try {
+        const fallback = `/${folder}/${fileName}`;
+        const url = await getCachedAssetUrl(lessonId, fileName, fallback);
+        if (active) setImgUrl(url);
+      } catch (e) {
+        if (active) setImgUrl(`/${folder}/${fileName}`);
+      }
+    };
+    loadImg();
+    return () => { active = false; };
+  }, [lessonId, folder, fileName]);
+
+  if (!imgUrl) return null;
+
+  return (
+    <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2.5 rounded-app-card shadow-sm overflow-hidden my-3">
+      <LazyImage 
+        src={imgUrl} 
+        alt={lang === 'ar' ? 'مخطط السؤال' : 'Question Diagram'} 
+        className="max-h-36 object-contain rounded-app-btn"
+      />
+    </div>
+  );
+}
 
 interface LockedOverlayProps {
   messageAr: string;
@@ -1154,6 +1198,16 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           <p className="text-slate-800 dark:text-slate-100 text-sm font-extrabold leading-relaxed">
                             {lang === 'ar' ? activeQuestions[currentQuestionIndex].textAr : activeQuestions[currentQuestionIndex].textEn}
                           </p>
+
+                          {/* Question Image if present */}
+                          {activeQuestions[currentQuestionIndex]?.questionImage && (
+                            <QuestionImage
+                              lessonId={lesson.id}
+                              folder={lesson.folder || 'U1'}
+                              fileName={activeQuestions[currentQuestionIndex].questionImage}
+                              lang={lang}
+                            />
+                          )}
                         </div>
 
                         {/* Hint System with Points Deduction */}
