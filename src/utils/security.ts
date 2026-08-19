@@ -80,7 +80,8 @@ export function checkPremiumStatus(): boolean {
     const deviceUuid = localStorage.getItem('client_device_uuid') || '';
     if (!deviceUuid) return false;
 
-    const isUnlocked = SecureStorage.getItem('premium_unlocked') === 'true';
+    const rawUnlocked = SecureStorage.getItem('premium_unlocked');
+    const isUnlocked = rawUnlocked === true || rawUnlocked === 'true';
     if (!isUnlocked) return false;
 
     // FIX: نقل premium_signature من localStorage إلى SecureStorage لمنع النسخ بين الأجهزة
@@ -96,14 +97,14 @@ export function setPremiumUnlockedState(unlocked: boolean): void {
   try {
     const deviceUuid = localStorage.getItem('client_device_uuid') || '';
     if (unlocked && deviceUuid) {
-      SecureStorage.setItem('premium_unlocked', 'true');
+      SecureStorage.setItem('premium_unlocked', true);
       const sig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
       // FIX: حفظ الـ signature في SecureStorage بدلاً من localStorage العادي
       SecureStorage.setItem('premium_signature', sig);
       // إزالة النسخة القديمة من localStorage إن وُجدت
       localStorage.removeItem('premium_signature');
     } else {
-      SecureStorage.setItem('premium_unlocked', 'false');
+      SecureStorage.setItem('premium_unlocked', false);
       SecureStorage.removeItem('premium_signature');
       localStorage.removeItem('premium_signature');
     }

@@ -47,7 +47,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { loadProgress, getStreak, overallPercent } from '../utils/progress';
 import { playClickSound, playCorrectSound } from '../utils/soundEffects';
 import { scheduleReminderNotification, getReminderTime, setReminderTime } from '../utils/notifications';
-import { SecureStorage, setPremiumUnlockedState } from '../utils/security';
+import { SecureStorage, setPremiumUnlockedState, checkPremiumStatus } from '../utils/security';
 import { claimActivationCode } from '../utils/supabaseHelper';
 import { getAbsoluteUrl } from '../utils/urlHelper';
 import { supabase } from '../utils/supabaseClient';
@@ -88,17 +88,7 @@ export default function StudentProfileScreen({
   // FIX: نقل student_email من localStorage إلى SecureStorage
   const [email, setEmail] = useState(() => SecureStorage.getItem('student_email') || localStorage.getItem('student_email') || '');
   const [avatarUrl, setAvatarUrl] = useState(() => localStorage.getItem('student_avatar') || PRESET_AVATARS[0].url);
-  const [premiumUnlocked, setPremiumUnlocked] = useState(() => {
-    try {
-      const raw = SecureStorage.getItem('premium_status');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
-        return parsed?.unlocked === true && parsed?.deviceUuid === deviceUuid;
-      }
-    } catch (e) {}
-    return false;
-  });
+  const [premiumUnlocked, setPremiumUnlocked] = useState(() => checkPremiumStatus());
   const isDarkMode = theme === 'dark';
 
   const [isEditing, setIsEditing] = useState(false);
