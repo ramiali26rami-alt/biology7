@@ -5,6 +5,7 @@
 
 import { supabase } from './supabaseClient';
 import { SecureStorage } from './security';
+import { clearAllAssetCache } from './cacheManager';
 
 export async function checkAndUpdate(): Promise<{
   updated: boolean;
@@ -30,6 +31,8 @@ export async function checkAndUpdate(): Promise<{
     if (cloudCount !== cachedCount || cloudConfig.updated_at !== lastUpdatedAt) {
       SecureStorage.setItem('curriculum_data', cloudConfig.value);
       SecureStorage.setItem('curriculum_updated_at', cloudConfig.updated_at);
+      // Invalidate media cache so updated diagrams and PDFs are freshly retrieved
+      await clearAllAssetCache();
       return {
         updated: true,
         newLessons: cloudCount,

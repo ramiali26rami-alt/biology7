@@ -38,6 +38,7 @@ import { scheduleReminderNotification } from '../utils/notifications';
 import { Lesson } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
+import { getAbsoluteUrl } from '../utils/urlHelper';
 import { Share } from '@capacitor/share';
 
 interface MainDashboardScreenProps {
@@ -158,12 +159,11 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
     setTutorLoading(true);
     setTutorError(null);
 
-    let serverUrl = '';
     try {
       const storedKey = localStorage.getItem('gemini_api_key') || '';
+      const targetUrl = getAbsoluteUrl('/api/tutor-chat');
       
-      serverUrl = (localStorage.getItem('server_url') || import.meta.env.VITE_SERVER_URL || '').replace(/\/$/, '');
-      const response = await fetch(`${serverUrl}/api/tutor-chat`, {
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,8 +182,8 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
       }
     } catch (e: any) {
       setTutorError(lang === 'ar' 
-        ? `⚠️ فشل الاتصال بالخادم (${serverUrl || 'المحلي'}): ${e.message || 'يرجى التأكد من تشغيل السيرفر وعنوانه.'}` 
-        : `⚠️ Connection failed to (${serverUrl || 'local'}): ${e.message || 'Please check your connection and server URL.'}`
+        ? `⚠️ فشل الاتصال بالخادم: ${e.message || 'يرجى التأكد من اتصال الإنترنت.'}` 
+        : `⚠️ Connection failed: ${e.message || 'Please check your internet connection.'}`
       );
     } finally {
       setTutorLoading(false);

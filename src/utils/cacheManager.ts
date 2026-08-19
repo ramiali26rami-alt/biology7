@@ -222,3 +222,28 @@ export async function getCachedAssetUrl(lessonId: string, fileName: string, fall
     throw err;
   }
 }
+
+/**
+ * Clears all cached media files (PDFs, Images) so fresh assets are fetched from cloud.
+ */
+export async function clearAllAssetCache(): Promise<void> {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Filesystem.rmdir({
+          path: 'lessons',
+          directory: Directory.Data,
+          recursive: true
+        });
+      } catch (e) {}
+    } else {
+      const db = await webCache['init']?.();
+      if (db) {
+        const tx = db.transaction('AssetsStore', 'readwrite');
+        tx.objectStore('AssetsStore').clear();
+      }
+    }
+  } catch (err) {
+    console.warn('Error clearing asset cache:', err);
+  }
+}
