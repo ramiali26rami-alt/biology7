@@ -103,9 +103,9 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                       style={{ transform: isBranchExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
                     />
                   </div>
-                  {/* مستوى 1 */}
+                  {/* مستوى 1 (الفرع الرئيسي) */}
                   <h4
-                    className="text-sm md:text-base font-extrabold transition-colors"
+                    className="text-base md:text-lg font-black transition-colors tracking-tight"
                     style={{ color: isBranchExpanded ? (isDarkMode ? '#ffffff' : color) : (isDarkMode ? '#e2e8f0' : '#1e293b') }}
                   >
                     {lang === 'ar' ? branch.textAr : (branch.textEn || branch.textAr)}
@@ -151,15 +151,15 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                             >
                               <div
                                 onClick={() => toggleSub(subNode.id)}
-                                className="p-3 bg-slate-50/50 dark:bg-slate-800/20 flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-100/40 dark:hover:bg-slate-800/40 transition-colors"
+                                className="p-3.5 bg-slate-50/50 dark:bg-slate-800/20 flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-100/40 dark:hover:bg-slate-800/40 transition-colors"
                               >
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2.5">
                                   <ChevronDown
-                                    className="w-3.5 h-3.5 transition-transform duration-300"
+                                    className="w-4 h-4 transition-transform duration-300 shrink-0"
                                     style={{ transform: isSubExpanded ? 'rotate(180deg)' : 'rotate(0deg)', color: color }}
                                   />
-                                  {/* مستوى 2 */}
-                                  <span className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">
+                                  {/* مستوى 2 (الجزء / التركيب) */}
+                                  <span className="text-sm md:text-base font-bold text-slate-900 dark:text-slate-100">
                                     {lang === 'ar' ? subNode.textAr : (subNode.textEn || subNode.textAr)}
                                   </span>
                                 </div>
@@ -192,12 +192,12 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                       {subChildren.map(leaf => (
                                         <div
                                           key={leaf.id}
-                                          /* مستوى 3 (نهائي) */
-                                          className="p-3 bg-slate-50/50 dark:bg-slate-900/40 rounded-app-btn text-xs md:text-sm font-semibold leading-relaxed text-slate-800 dark:text-slate-300 flex items-center justify-between gap-3"
+                                          /* مستوى 3 (الوظيفة / الشرح) */
+                                          className="p-3.5 bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/50 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 flex items-center justify-between gap-3"
                                         >
-                                          <div className="flex items-start gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: color }} />
-                                            <span>{lang === 'ar' ? leaf.textAr : (leaf.textEn || leaf.textAr)}</span>
+                                          <div className="flex items-start gap-2.5">
+                                            <span className="text-base font-bold shrink-0 mt-0.5" style={{ color: color }}>↳</span>
+                                            <span className="leading-relaxed">{lang === 'ar' ? leaf.textAr : (leaf.textEn || leaf.textAr)}</span>
                                           </div>
                                           {leaf.details && (
                                             <button
@@ -223,11 +223,11 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="p-3.5 bg-slate-50/40 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-app-btn text-xs md:text-sm font-bold leading-relaxed text-slate-800 dark:text-slate-300 relative overflow-hidden flex items-center justify-between gap-3"
+                              className="p-3.5 bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 relative overflow-hidden flex items-center justify-between gap-3"
                             >
-                              <div className="absolute right-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: color }} />
-                              <div className="flex items-start gap-2 me-1">
-                                <span className="text-slate-700 dark:text-slate-300 leading-normal">
+                              <div className="absolute right-0 top-0 bottom-0 w-[4px]" style={{ backgroundColor: color }} />
+                              <div className="flex items-start gap-2.5 me-1">
+                                <span className="leading-relaxed">
                                   {lang === 'ar' ? subNode.textAr : (subNode.textEn || subNode.textAr)}
                                 </span>
                               </div>
