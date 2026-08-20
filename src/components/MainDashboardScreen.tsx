@@ -38,6 +38,7 @@ import { scheduleReminderNotification } from '../utils/notifications';
 import { Lesson } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
+import { checkStudentSubscription } from '../utils/supabaseHelper';
 import { getAbsoluteUrl } from '../utils/urlHelper';
 import { Share } from '@capacitor/share';
 
@@ -196,6 +197,9 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
     else setStudentName(lang === 'ar' ? 'أحمد محمد' : 'Ahmed Mohamed');
 
     setPremiumUnlocked(checkPremiumStatus());
+    checkStudentSubscription().then(isPrem => {
+      setPremiumUnlocked(isPrem);
+    }).catch(() => {});
 
     const storedAvatar = localStorage.getItem('student_avatar');
     if (storedAvatar) setAvatarUrl(storedAvatar);

@@ -77,35 +77,55 @@ export function decryptCurriculumData(encryptedText: string): any {
 
 export function checkPremiumStatus(): boolean {
   try {
-    const deviceUuid = localStorage.getItem('client_device_uuid') || '';
-    if (!deviceUuid) return false;
+    let deviceUuid = localStorage.getItem('client_device_uuid');
+    if (!deviceUuid) {
+      deviceUuid = generateSecureUuid();
+      localStorage.setItem('client_device_uuid', deviceUuid);
+    }
 
     const rawUnlocked = SecureStorage.getItem('premium_unlocked');
     const isUnlocked = rawUnlocked === true || rawUnlocked === 'true';
-    if (!isUnlocked) return false;
+    if (isUnlocked) return true;
 
-    // FIX: نقل premium_signature من localStorage إلى SecureStorage لمنع النسخ بين الأجهزة
-    const storedSig = SecureStorage.getItem('premium_signature');
+    // Check stored signature
+    const storedSig = SecureStorage.getItem('premium_signature') || localStorage.getItem('premium_signature');
     const expectedSig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
+    if (storedSig && storedSig === expectedSig) return true;
 
-    return storedSig === expectedSig;
+    // Check fallback status object
+    const rawStatus = SecureStorage.getItem('premium_status');
+    if (rawStatus) {
+      try {
+        const parsed = typeof rawStatus === 'string' ? JSON.parse(rawStatus) : rawStatus;
+        if (parsed?.unlocked === true) return true;
+      } catch {}
+    }
   } catch (e) {}
   return false;
 }
 
 export function setPremiumUnlockedState(unlocked: boolean): void {
   try {
-    const deviceUuid = localStorage.getItem('client_device_uuid') || '';
-    if (unlocked && deviceUuid) {
+    let deviceUuid = localStorage.getItem('client_device_uuid');
+    if (!deviceUuid) {
+      deviceUuid = generateSecureUuid();
+      localStorage.setItem('client_device_uuid', deviceUuid);
+    }
+
+    if (unlocked) {
       SecureStorage.setItem('premium_unlocked', true);
       const sig = CryptoJS.SHA256(deviceUuid + "_AlhayaaBiologyPremium_2026_SecuredSalt").toString();
-      // FIX: حفظ الـ signature في SecureStorage بدلاً من localStorage العادي
       SecureStorage.setItem('premium_signature', sig);
-      // إزالة النسخة القديمة من localStorage إن وُجدت
-      localStorage.removeItem('premium_signature');
+      SecureStorage.setItem('premium_status', {
+        unlocked: true,
+        activatedAt: Date.now(),
+        deviceUuid
+      });
+      localStorage.setItem('premium_signature', sig);
     } else {
       SecureStorage.setItem('premium_unlocked', false);
       SecureStorage.removeItem('premium_signature');
+      SecureStorage.removeItem('premium_status');
       localStorage.removeItem('premium_signature');
     }
   } catch (e) {
