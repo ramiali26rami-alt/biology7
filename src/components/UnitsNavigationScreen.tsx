@@ -28,23 +28,28 @@ import {
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { checkPremiumStatus } from '../utils/security';
+import { checkStudentSubscription } from '../utils/supabaseHelper';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface UnitsNavigationScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
   lang: Language;
-  lessons: Lesson[];
+  lessons?: Lesson[];
   onSelectUnit: (unit: number) => void;
   onQuizNavigate: () => void;
 }
 
 export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSelectUnit, onQuizNavigate }: UnitsNavigationScreenProps) {
-  const [premiumUnlocked, setPremiumUnlocked] = useState(false);
+  const [premiumUnlocked, setPremiumUnlocked] = useState(() => checkPremiumStatus());
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
 
   const t = translations[lang];
 
   useEffect(() => {
     setPremiumUnlocked(checkPremiumStatus());
+    checkStudentSubscription().then(isPrem => {
+      setPremiumUnlocked(isPrem);
+    }).catch(() => {});
   }, []);
 
   // Display all 8 units of the curriculum statically so they are always visible in the dashboard

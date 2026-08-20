@@ -24,6 +24,7 @@ import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
 import { lessonPercent, overallPercent, getStreak } from '../utils/progress';
 import { checkPremiumStatus } from '../utils/security';
+import { checkStudentSubscription } from '../utils/supabaseHelper';
 
 interface LessonsListScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -35,7 +36,7 @@ interface LessonsListScreenProps {
 }
 
 export default function LessonsListScreen({ onNavigate, lang, lessons, selectedUnit, onSelectLesson, onQuizNavigate }: LessonsListScreenProps) {
-  const [premiumUnlocked, setPremiumUnlocked] = useState(false);
+  const [premiumUnlocked, setPremiumUnlocked] = useState(() => checkPremiumStatus());
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
@@ -43,6 +44,9 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
 
   useEffect(() => {
     setPremiumUnlocked(checkPremiumStatus());
+    checkStudentSubscription().then(isPrem => {
+      setPremiumUnlocked(isPrem);
+    }).catch(() => {});
   }, []);
 
   const backIcon = lang === 'ar' ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;

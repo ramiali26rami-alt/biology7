@@ -48,7 +48,7 @@ import { loadProgress, getStreak, overallPercent } from '../utils/progress';
 import { playClickSound, playCorrectSound } from '../utils/soundEffects';
 import { scheduleReminderNotification, getReminderTime, setReminderTime } from '../utils/notifications';
 import { SecureStorage, setPremiumUnlockedState, checkPremiumStatus } from '../utils/security';
-import { claimActivationCode } from '../utils/supabaseHelper';
+import { claimActivationCode, checkStudentSubscription } from '../utils/supabaseHelper';
 import { getAbsoluteUrl } from '../utils/urlHelper';
 import { supabase } from '../utils/supabaseClient';
 
@@ -193,8 +193,16 @@ export default function StudentProfileScreen({
 
   // No longer auto-filling defaults — the WelcomeScreen handles first-time name entry
 
-  // Check notification permission on mount
+  // Sync subscription status and notifications on mount
   useEffect(() => {
+    // 1. فحص فوري للتخزين المحلي المشفر
+    setPremiumUnlocked(checkPremiumStatus());
+
+    // 2. مزامنة حية مع السحابة للتأكد من حالة الطالب وتحديث الواجهة فوراً
+    checkStudentSubscription().then((isPrem) => {
+      setPremiumUnlocked(isPrem);
+    }).catch(() => {});
+
     if ('Notification' in window) {
       setNotifStatus(Notification.permission as 'default'|'granted'|'denied');
       // Re-schedule if already granted
@@ -458,20 +466,17 @@ export default function StudentProfileScreen({
               }
             </p>
 
-            <button 
-              onClick={handleTogglePremium}
-              className={`w-full font-black text-xs py-3 rounded-app-btn active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
-                premiumUnlocked 
-                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 dark:bg-white/10 dark:hover:bg-white/15 dark:text-emerald-300 dark:border-white/10' 
-                  : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-500/20 dark:shadow-emerald-950/30'
-              }`}
-            >
-              <Flame className="w-4 h-4" />
-              {premiumUnlocked 
-                ? (lang === 'ar' ? 'إلغاء الاشتراك التجريبي' : 'Deactivate Premium Trial') 
-                : t.premiumButtonText
-              }
-            </button>
+            {premiumUnlocked ? (
+              <div className="w-full py-3 px-4 rounded-app-btn bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <span>{lang === 'ar' ? '✨ باقتك الذهبية مفعّلة ونشطة (جميع الوحدات والامتحانات مفتوحة)' : '✨ Premium Access Active (All Units & Exams Unlocked)'}</span>
+              </div>
+            ) : (
+              <div className="w-full font-bold text-xs py-3 px-4 rounded-app-btn bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 flex items-center justify-center gap-2">
+                <Flame className="w-4 h-4 text-amber-500" />
+                <span>{lang === 'ar' ? 'أدخل كرت التفعيل أدناه لفتح المنهج كاملاً' : 'Enter your activation key below to unlock full curriculum'}</span>
+              </div>
+            )}
 
             {!premiumUnlocked && (
               <form onSubmit={handleActivateKey} className="border-t border-slate-150 dark:border-white/10 pt-4 mt-4 space-y-3 text-right">

@@ -205,8 +205,8 @@ export async function requestDeviceTransfer(
 
 // Check and sync active subscription from server
 export async function checkStudentSubscription(): Promise<boolean> {
-  const phone = localStorage.getItem('student_phone');
-  if (!phone) return false;
+  const phone = (localStorage.getItem('student_phone') || '').trim().replace(/\s+/g, '');
+  if (!phone) return checkPremiumStatus();
 
   try {
     const { data, error } = await supabase
@@ -217,7 +217,7 @@ export async function checkStudentSubscription(): Promise<boolean> {
 
     if (error) throw error;
     if (data) {
-      const isPremium = data.is_premium;
+      const isPremium = !!data.is_premium;
       const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
       SecureStorage.setItem('premium_status', JSON.stringify({
         unlocked: isPremium,
@@ -227,7 +227,7 @@ export async function checkStudentSubscription(): Promise<boolean> {
       setPremiumUnlockedState(isPremium);
       return isPremium;
     }
-    return false;
+    return checkPremiumStatus();
   } catch (error) {
     logger.warn('Error checking subscription from server, using cached status:', error);
     return checkPremiumStatus();
