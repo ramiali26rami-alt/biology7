@@ -19,19 +19,28 @@ const app = express();
 
 app.use(express.json({ limit: '50mb' }));
 
-// FIX: تقييد CORS بدلاً من السماح لجميع المصادر
+// FIX: إتاحة CORS لتطبيقات Capacitor (Android/iOS) ودومين التطبيق
 const ALLOWED_ORIGINS = [
   'capacitor://localhost',
+  'https://localhost',
   'http://localhost',
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://biology7.vercel.app',
   process.env.ALLOWED_ORIGIN || ''
 ].filter(Boolean);
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  // السماح لطلبات Capacitor الأصلية وطلبات التطوير المحلي
-  if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.startsWith('capacitor://')) {
+  // السماح لطلبات الهاتف (Capacitor)، localhost، ودومينات Vercel
+  if (
+    !origin || 
+    ALLOWED_ORIGINS.includes(origin) || 
+    origin.startsWith('capacitor://') || 
+    origin.startsWith('https://localhost') || 
+    origin.startsWith('http://localhost') ||
+    origin.endsWith('.vercel.app')
+  ) {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
