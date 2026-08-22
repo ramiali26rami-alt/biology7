@@ -116,6 +116,8 @@ export default function ExamBankTab({
       return { U: fallbackUnit, L: isNaN(parsedL) ? lessonId : parsedL };
     };
 
+    try {
+
     // 1. Lessons_Core Sheet Data
     const lessonsCoreData = lessons.map(l => {
       const { U, L } = getUL(l.id, l.unit);
@@ -146,7 +148,7 @@ export default function ExamBankTab({
 
     // Helper to detect subjective question type
     const getSubjectiveType = (qAr: string): 'explain' | 'what_if' | 'define' => {
-      const clean = qAr.trim();
+      const clean = (qAr || '').trim();
       if (/^(علل|Explain)/i.test(clean)) return 'explain';
       if (/^(ماذا يحدث لو|What happens if)/i.test(clean)) return 'what_if';
       if (/^(عرّف|عرف|Define)/i.test(clean)) return 'define';
@@ -228,7 +230,7 @@ export default function ExamBankTab({
       const exportedGlossaryTerms = new Set<string>();
       if (l.glossary) {
         l.glossary.forEach((g, idx) => {
-          exportedGlossaryTerms.add(g.term.trim().toLowerCase());
+          exportedGlossaryTerms.add((g.term || '').trim().toLowerCase());
           examBankData.push({
             U,
             L,
@@ -350,6 +352,13 @@ export default function ExamBankTab({
       }
     } else {
       XLSX.writeFile(wb, fileName);
+    }
+    } catch (exportErr: any) {
+      console.error('Excel Export Error:', exportErr);
+      alert(lang === 'ar'
+        ? `حدث خطأ أثناء تصدير الملف: ${exportErr?.message || exportErr}\nيرجى المحاولة مرة أخرى.`
+        : `Export failed: ${exportErr?.message || exportErr}\nPlease try again.`
+      );
     }
   };
 
