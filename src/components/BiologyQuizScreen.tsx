@@ -524,7 +524,7 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
 
             {/* Question Box */}
             <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3.5 rounded-app-card shadow-sm">
-              <p className="text-slate-800 dark:text-slate-100 text-xs font-black leading-relaxed">
+              <p className="text-slate-800 dark:text-slate-100 text-sm font-extrabold leading-relaxed">
                 <strong>{currentQuestionIndex + 1}.</strong> {currentQ.text}
               </p>
             </div>
