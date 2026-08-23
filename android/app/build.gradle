@@ -16,12 +16,22 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file('app-release-key.jks')
+            storePassword 'Alhayaa2026SecureKey'
+            keyAlias 'alhayaa_key'
+            keyPassword 'Alhayaa2026SecureKey'
+        }
+    }
     buildTypes {
         debug {
+            signingConfig signingConfigs.release
             minifyEnabled false
             debuggable true
         }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
