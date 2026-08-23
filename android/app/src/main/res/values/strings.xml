@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ALAHYA\'A</string>
-    <string name="title_activity_main">ALAHYA\'A</string>
+    <string name="app_name">الأحياء</string>
+    <string name="title_activity_main">الأحياء</string>
     <string name="package_name">com.biotech.biology</string>
     <string name="custom_url_scheme">com.biotech.biology</string>
 </resources>
