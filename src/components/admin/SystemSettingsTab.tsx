@@ -170,7 +170,7 @@ export default function SystemSettingsTab({
 
       const newKeys = [];
       for (let i = 0; i < keysGenerateCount; i++) {
-        const code = `BIOTECH-${gen(4)}-${gen(4)}`;
+        const code = `${gen(4)}-${gen(4)}-${gen(4)}`;
         newKeys.push({
           code,
           is_used: false,

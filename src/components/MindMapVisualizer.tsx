@@ -196,7 +196,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                           className="p-3.5 bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/50 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 flex items-center justify-between gap-3"
                                         >
                                           <div className="flex items-start gap-2.5">
-                                            <span className="text-base font-bold shrink-0 mt-0.5" style={{ color: color }}>↳</span>
+                                            <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-2" style={{ backgroundColor: color }} />
                                             <span className="leading-relaxed">{lang === 'ar' ? leaf.textAr : (leaf.textEn || leaf.textAr)}</span>
                                           </div>
                                           {leaf.details && (
@@ -225,7 +225,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                               key={subNode.id}
                               className="p-3.5 bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 relative overflow-hidden flex items-center justify-between gap-3"
                             >
-                              <div className="absolute right-0 top-0 bottom-0 w-[4px]" style={{ backgroundColor: color }} />
+                              <div className="absolute right-0 top-0 bottom-0 w-[6px]" style={{ backgroundColor: color }} />
                               <div className="flex items-start gap-2.5 me-1">
                                 <span className="leading-relaxed">
                                   {lang === 'ar' ? subNode.textAr : (subNode.textEn || subNode.textAr)}

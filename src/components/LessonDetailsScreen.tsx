@@ -304,7 +304,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
       setTutorMessages([
         {
           role: 'model',
-          content: `أهلاً بك يا بطل! أنا مساعد الأحياء الذكي الخاص بك 🤖. أنا مستعد لمساعدتك في استيعاب درس **"${lesson.titleAr}"**. ما الذي يصعب عليك فهمه أو ترغب في الاستفسار عنه؟`
+          content: `أهلاً بك! كيف أساعدك اليوم في مادة الأحياء؟ 🧬`
         }
       ]);
     }
