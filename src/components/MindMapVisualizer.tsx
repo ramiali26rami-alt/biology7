@@ -84,7 +84,8 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
           return (
             <div
               key={branch.id}
-              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-app-card overflow-hidden shadow-sm transition-all"
+              className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-app-card overflow-hidden shadow-sm transition-all"
+              style={{ borderRight: `6px solid ${color}` }}
             >
               <div
                 onClick={() => toggleBranch(branch.id)}
@@ -137,7 +138,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                   >
-                    <div className="px-4 pb-4 border-t border-slate-50 dark:border-slate-800/40 pt-3 space-y-3">
+                    <div className="px-4 pb-4 border-t-2 border-slate-200 dark:border-slate-800/80 pt-3 space-y-3">
                       {branchChildren.map(subNode => {
                         const subChildren = getChildren(subNode.id);
                         const isSubExpanded = !!expandedSubs[subNode.id];
@@ -147,7 +148,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="border border-slate-100 dark:border-slate-800/60 rounded-app-btn overflow-hidden"
+                              className="border-2 border-slate-200 dark:border-slate-800 rounded-app-btn overflow-hidden"
                             >
                               <div
                                 onClick={() => toggleSub(subNode.id)}
@@ -188,12 +189,13 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                                     exit={{ height: 0, opacity: 0 }}
                                     transition={{ duration: 0.15, ease: 'easeInOut' }}
                                   >
-                                    <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800/40 space-y-2.5">
+                                    <div className="p-3 bg-white dark:bg-slate-900 border-t-2 border-slate-200 dark:border-slate-800/80 space-y-2.5">
                                       {subChildren.map(leaf => (
                                         <div
                                           key={leaf.id}
                                           /* مستوى 3 (الوظيفة / الشرح) */
-                                          className="p-3.5 bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/50 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 flex items-center justify-between gap-3"
+                                          className="p-3.5 bg-slate-50/70 dark:bg-slate-800/40 border-2 border-slate-200 dark:border-slate-800 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 flex items-center justify-between gap-3"
+                                          style={{ borderRight: `4px solid ${color}` }}
                                         >
                                           <div className="flex items-start gap-2.5">
                                             <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-2" style={{ backgroundColor: color }} />
@@ -223,7 +225,7 @@ export function MindMapVisualizer({ mindmap, lang }: MindMapVisualizerProps) {
                           return (
                             <div
                               key={subNode.id}
-                              className="p-3.5 bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/40 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 relative overflow-hidden flex items-center justify-between gap-3"
+                              className="p-3.5 bg-slate-50/50 dark:bg-slate-900/30 border-2 border-slate-200 dark:border-slate-800 rounded-app-btn text-sm md:text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200 relative overflow-hidden flex items-center justify-between gap-3"
                             >
                               <div className="absolute right-0 top-0 bottom-0 w-[6px]" style={{ backgroundColor: color }} />
                               <div className="flex items-start gap-2.5 me-1">
