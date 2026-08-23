@@ -247,22 +247,37 @@ export default function StudentProfileScreen({
   const handleSimulateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-
-      // FIX: فحص حجم الصورة قبل القراءة
-      if (file.size > MAX_AVATAR_SIZE_BYTES) {
-        alert(lang === 'ar'
-          ? 'حجم الصورة كبير جداً. الحد الأقصى 2MB.'
-          : 'Image is too large. Maximum size is 2MB.');
-        e.target.value = '';
-        return;
-      }
-
       const reader = new FileReader();
       reader.onload = (uploadEvent) => {
         if (uploadEvent.target?.result) {
-          const resultStr = uploadEvent.target.result as string;
-          setAvatarUrl(resultStr);
-          localStorage.setItem('student_avatar', resultStr);
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxDim = 300;
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+              if (width > maxDim) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              }
+            } else {
+              if (height > maxDim) {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+              setAvatarUrl(compressedDataUrl);
+              localStorage.setItem('student_avatar', compressedDataUrl);
+            }
+          };
+          img.src = uploadEvent.target.result as string;
         }
       };
       reader.readAsDataURL(file);
