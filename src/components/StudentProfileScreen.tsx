@@ -1110,7 +1110,7 @@ export default function StudentProfileScreen({
                   <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
                     <div className="flex justify-between">
                       <span>{lang === 'ar' ? 'اسم التطبيق:' : 'App Name:'}</span>
-                      <span className="font-extrabold text-slate-800 dark:text-white">Biotech Biology</span>
+                      <span className="font-extrabold text-slate-800 dark:text-white">ALAHYA'A</span>
                     </div>
                     <div className="flex justify-between cursor-pointer active:scale-98 select-none" onClick={handleVersionClick}>
                       <span>{lang === 'ar' ? 'الإصدار:' : 'Version:'}</span>
@@ -1138,7 +1138,7 @@ export default function StudentProfileScreen({
               {/* Close Button / Bottom Info */}
               <div className="mt-6 text-center">
                 <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold tracking-wider">
-                  © 2026 Biotech Academy. All rights reserved.
+                  © 2026 ALAHYA'A. All rights reserved.
                 </span>
               </div>
             </motion.div>
