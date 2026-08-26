@@ -25,6 +25,8 @@ import { checkAndUpdate } from './utils/autoUpdate';
 import { loadCurriculum } from './utils/curriculumLoader';
 import { checkStudentSubscription, syncUnsavedQuizResults } from './utils/supabaseHelper';
 import { isAdminUser, supabase } from './utils/supabaseClient';
+import { checkForAppUpdate, installAppUpdate, type AppUpdateManifest } from './utils/appUpdater';
+import { Download, Loader2, ShieldCheck, X } from 'lucide-react';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(() => {
@@ -46,6 +48,9 @@ export default function App() {
   const [fontSize, setFontSize] = useState<string>(() => {
     return localStorage.getItem('font_size') || 'normal';
   });
+  const [appUpdate, setAppUpdate] = useState<AppUpdateManifest | null>(null);
+  const [appUpdateInstalling, setAppUpdateInstalling] = useState(false);
+  const [appUpdateMessage, setAppUpdateMessage] = useState('');
 
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
 
@@ -68,6 +73,38 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      checkForAppUpdate().then(setAppUpdate).catch(() => {});
+    }, 2500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const handleInstallAppUpdate = async () => {
+    if (!appUpdate) return;
+    setAppUpdateInstalling(true);
+    setAppUpdateMessage(lang === 'ar' ? 'جاري تنزيل التحديث والتحقق منه...' : 'Downloading and verifying the update...');
+    try {
+      const result = await installAppUpdate(appUpdate);
+      if (result.permissionRequired) {
+        setAppUpdateMessage(lang === 'ar'
+          ? 'فعّل «السماح من هذا المصدر»، ثم عد إلى التطبيق واضغط تثبيت التحديث مرة أخرى.'
+          : 'Enable “Allow from this source”, return to the app, then tap install again.');
+      } else {
+        setAppUpdateMessage(lang === 'ar'
+          ? 'تم التحقق من الحزمة. أكمل التثبيت من شاشة Android.'
+          : 'Package verified. Complete the installation in the Android prompt.');
+      }
+    } catch (error) {
+      console.error('App update installation failed:', error);
+      setAppUpdateMessage(lang === 'ar'
+        ? 'فشل تنزيل التحديث أو التحقق من توقيعه. لم يتم تثبيت أي ملف.'
+        : 'The update failed download or signature verification. Nothing was installed.');
+    } finally {
+      setAppUpdateInstalling(false);
+    }
+  };
 
   const [updateInfo, setUpdateInfo] = useState<{
     show: boolean;
@@ -311,6 +348,66 @@ export default function App() {
 
   return (
     <AppWrapper>
+      {appUpdate && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+          <div className="w-full max-w-sm bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900 rounded-app-card shadow-2xl p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <span className="p-2.5 rounded-app-btn bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">
+                  <ShieldCheck className="w-5 h-5" />
+                </span>
+                <div>
+                  <h2 className="font-black text-slate-900 dark:text-white">
+                    {lang === 'ar' ? 'تحديث موثّق متاح' : 'Verified update available'}
+                  </h2>
+                  <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-1" dir="ltr">
+                    v{appUpdate.versionName}
+                  </p>
+                </div>
+              </div>
+              {!appUpdate.mandatory && !appUpdateInstalling && (
+                <button
+                  type="button"
+                  onClick={() => setAppUpdate(null)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                  aria-label={lang === 'ar' ? 'لاحقاً' : 'Later'}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+
+            <p className="text-sm font-bold text-slate-600 dark:text-slate-300 leading-relaxed">
+              {(lang === 'ar' ? appUpdate.notesAr : appUpdate.notesEn)
+                || (lang === 'ar' ? 'يتضمن هذا الإصدار تحسينات أمان وأداء.' : 'This release includes security and performance improvements.')}
+            </p>
+
+            <div className="rounded-app-btn bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
+              {lang === 'ar'
+                ? 'يتحقق التطبيق من رقم الحزمة والتوقيع وبصمة SHA‑256 قبل فتح شاشة تثبيت Android.'
+                : 'The app verifies the package name, signing certificate, version, and SHA-256 before opening Android installer.'}
+            </div>
+
+            {appUpdateMessage && (
+              <p className="text-xs font-bold text-center text-amber-700 dark:text-amber-400 leading-relaxed">
+                {appUpdateMessage}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleInstallAppUpdate}
+              disabled={appUpdateInstalling}
+              className="w-full py-3.5 rounded-app-btn bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
+            >
+              {appUpdateInstalling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {appUpdateInstalling
+                ? (lang === 'ar' ? 'جاري التنزيل والتحقق...' : 'Downloading and verifying...')
+                : (lang === 'ar' ? 'تنزيل وتثبيت التحديث' : 'Download and install update')}
+            </button>
+          </div>
+        </div>
+      )}
       {updateInfo.show && (
         <div
           className="fixed top-4 right-4 left-4 z-50
