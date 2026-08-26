@@ -36,6 +36,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
   const [sortBy, setSortBy] = useState<'score_desc' | 'newest' | 'oldest' | 'quizzes_desc' | 'accuracy_desc' | 'name_asc'>('score_desc');
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
   const [pendingTransfers, setPendingTransfers] = useState<any[]>([]);
+  const [issuedRecovery, setIssuedRecovery] = useState<{ phone: string; code: string } | null>(null);
 
   // Activation Codes States
   const [activationCodes, setActivationCodes] = useState<any[]>([]);
@@ -58,7 +59,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
     try {
       const { data, error } = await supabase
         .from('device_transfer_requests')
-        .select('id, phone, new_device_id, reason, status, requested_at')
+        .select('id, phone, new_device_id, reason, status, requested_at, attempt_count, locked_until')
         .eq('status', 'pending')
         .order('requested_at', { ascending: true });
       if (error) throw error;
@@ -69,12 +70,24 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
   };
 
   const handleReviewTransfer = async (id: string, status: 'approved' | 'rejected') => {
+    const note = window.prompt(
+      lang === 'ar'
+        ? status === 'approved'
+          ? 'اكتب كيف تحققت من هوية الطالب (5 أحرف على الأقل):'
+          : 'اكتب سبب رفض الطلب (5 أحرف على الأقل):'
+        : status === 'approved'
+          ? 'Describe how you verified the student (at least 5 characters):'
+          : 'Enter the rejection reason (at least 5 characters):'
+    );
+    if (!note) return;
     try {
-      const { error } = await supabase
-        .from('device_transfer_requests')
-        .update({ status, reviewed_at: new Date().toISOString() })
-        .eq('id', id);
+      const { data, error } = await supabase.rpc('review_device_transfer', {
+        request_id: id,
+        review_status: status,
+        reviewer_note: note
+      });
       if (error) throw error;
+      if (!data?.success) throw new Error(data?.message || 'Unable to review request');
       setPendingTransfers(prev => prev.filter(request => request.id !== id));
     } catch (err) {
       console.error('Error reviewing device transfer request:', err);
@@ -98,7 +111,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
     setDbStudentsLoading(true);
     try {
       const [{ data: studentsData, error: sErr }, { data: resultsData, error: rErr }] = await Promise.all([
-        supabase.from('students').select('*').order('created_at', { ascending: false }),
+        supabase.from('students').select('phone, name, governorate, device_id, is_premium, created_at, user_id, device_bound_at, recovery_code_created_at').order('created_at', { ascending: false }),
         supabase.from('quiz_results').select('student_phone, score, total_questions, lesson_id, completed_at')
       ]);
 
@@ -168,19 +181,23 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
     }
   };
 
-  const handleResetStudentDevice = async (phone: string) => {
-    if (!window.confirm(lang === 'ar' ? 'هل أنت متأكد من إعادة ضبط هاتف هذا الطالب؟ سيتيح له هذا التسجيل من هاتف جديد.' : 'Are you sure you want to reset this student\'s device? This lets them register on a new phone.')) return;
+  const handleIssueRecoveryCode = async (phone: string) => {
+    if (!window.confirm(lang === 'ar' ? 'إنشاء رمز استرداد جديد؟ سيصبح أي رمز سابق غير صالح.' : 'Create a new recovery code? Any previous code will stop working.')) return;
     try {
-      const { error } = await supabase
-        .from('students')
-        .update({ device_id: 'reset', user_id: null })
-        .eq('phone', phone);
+      const { data, error } = await supabase.rpc('admin_issue_recovery_code', {
+        student_phone: phone
+      });
       if (error) throw error;
-      alert(lang === 'ar' ? 'تم إعادة ضبط الهاتف بنجاح! يمكن للطالب الآن التسجيل من هاتف جديد.' : 'Device reset successfully! The student can now register from a new phone.');
-      fetchStudents();
+      if (!data?.success || !data?.recoveryCode) throw new Error(data?.message || 'Unable to create recovery code');
+      setIssuedRecovery({ phone, code: data.recoveryCode });
+      try {
+        await navigator.clipboard.writeText(data.recoveryCode);
+      } catch {
+        // The code remains visible in the admin panel if clipboard access is unavailable.
+      }
     } catch (err) {
-      console.error('Error resetting device:', err);
-      alert('فشل إعادة ضبط جهاز الطالب');
+      console.error('Error issuing recovery code:', err);
+      alert(lang === 'ar' ? 'فشل إنشاء رمز الاسترداد' : 'Unable to create recovery code');
     }
   };
 
@@ -384,6 +401,31 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
 
       {studentsSubTab === 'roster' && (
         <div className="space-y-6">
+          {issuedRecovery && (
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-300 dark:border-emerald-800 rounded-app-card p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-black text-emerald-900 dark:text-emerald-300">
+                    {lang === 'ar' ? `رمز استرداد الطالب ${issuedRecovery.phone}` : `Recovery code for ${issuedRecovery.phone}`}
+                  </h3>
+                  <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-500 mt-1">
+                    {lang === 'ar' ? 'اعرضه للطالب مرة واحدة عبر قناة موثوقة. تم نسخه تلقائياً إن سمح المتصفح.' : 'Share it once through a trusted channel. It was copied automatically when permitted.'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2" dir="ltr">
+                  <code className="bg-white dark:bg-slate-950 border border-emerald-200 dark:border-emerald-900 px-3 py-2 rounded-app-btn font-black tracking-wider select-all text-sm">{issuedRecovery.code}</code>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(issuedRecovery.code)}
+                    className="p-2.5 rounded-app-btn bg-emerald-600 text-white"
+                    title={lang === 'ar' ? 'نسخ' : 'Copy'}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {pendingTransfers.length > 0 && (
             <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-app-card p-5 space-y-3">
               <div>
@@ -391,7 +433,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
                   {lang === 'ar' ? `طلبات نقل أجهزة معلقة (${pendingTransfers.length})` : `Pending device transfers (${pendingTransfers.length})`}
                 </h3>
                 <p className="text-xs font-bold text-amber-700 dark:text-amber-500 mt-1">
-                  {lang === 'ar' ? 'بعد الموافقة يعيد الطالب محاولة التسجيل من جهازه الجديد لإتمام النقل.' : 'After approval, the student retries registration on the new device to complete the transfer.'}
+                  {lang === 'ar' ? 'لا توافق قبل التحقق من الطالب خارج التطبيق. يجب توثيق طريقة التحقق في الملاحظة.' : 'Verify the student outside the app before approval. The verification method must be documented.'}
                 </p>
               </div>
               <div className="space-y-2">
@@ -653,12 +695,12 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
                           {/* Action: Reset Device */}
                           <td className="px-4 py-3.5 text-center">
                             <button
-                              onClick={() => handleResetStudentDevice(s.phone)}
-                              title={lang === 'ar' ? 'إعادة ضبط الهاتف' : 'Reset Device ID'}
-                              className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-455 text-[10px] font-black px-2.5 py-1.5 rounded-app-btn active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1"
+                              onClick={() => handleIssueRecoveryCode(s.phone)}
+                              title={lang === 'ar' ? 'إنشاء رمز استرداد جديد' : 'Create recovery code'}
+                              className="bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-black px-2.5 py-1.5 rounded-app-btn active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1"
                             >
                               <Smartphone className="w-3 h-3" />
-                              <span>{lang === 'ar' ? 'نقل الهاتف' : 'Transfer'}</span>
+                              <span>{lang === 'ar' ? 'رمز استرداد' : 'Recovery code'}</span>
                             </button>
                           </td>
                         </tr>

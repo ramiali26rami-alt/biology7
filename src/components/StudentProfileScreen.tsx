@@ -37,7 +37,10 @@ import {
   Info,
   Bell,
   BellOff,
-  ShieldCheck
+  ShieldCheck,
+  Copy,
+  KeyRound,
+  Loader2
 } from 'lucide-react';
 import { ScreenId } from '../types';
 import { Lesson } from '../types';
@@ -47,7 +50,7 @@ import { loadProgress, getStreak, overallPercent } from '../utils/progress';
 import { playClickSound, playCorrectSound } from '../utils/soundEffects';
 import { scheduleReminderNotification, getReminderTime, setReminderTime } from '../utils/notifications';
 import { SecureStorage, setPremiumUnlockedState, checkPremiumStatus } from '../utils/security';
-import { claimActivationCode, checkStudentSubscription } from '../utils/supabaseHelper';
+import { claimActivationCode, checkStudentSubscription, rotateMyRecoveryCode } from '../utils/supabaseHelper';
 import { ensureAuthenticatedSession, supabase } from '../utils/supabaseClient';
 
 interface StudentProfileScreenProps {
@@ -105,6 +108,23 @@ export default function StudentProfileScreen({
   const [activationMessage, setActivationMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [serverUrlInput, setServerUrlInput] = useState(() => localStorage.getItem('server_url') || '');
   const [legalModalType, setLegalModalType] = useState<'about' | 'privacy' | 'terms' | null>(null);
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoveryMessage, setRecoveryMessage] = useState('');
+
+  const handleRotateRecoveryCode = async () => {
+    if (!window.confirm(lang === 'ar' ? 'إنشاء رمز استرداد جديد؟ سيصبح الرمز السابق غير صالح.' : 'Create a new recovery code? The previous code will stop working.')) return;
+    setRecoveryLoading(true);
+    setRecoveryMessage('');
+    const result = await rotateMyRecoveryCode();
+    setRecoveryLoading(false);
+    if (result.success && result.recoveryCode) {
+      setRecoveryCode(result.recoveryCode);
+      setRecoveryMessage(result.message);
+    } else {
+      setRecoveryMessage(result.message);
+    }
+  };
 
   const handleActivateKey = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -396,6 +416,60 @@ export default function StudentProfileScreen({
               </div>
             </form>
           )}
+        </section>
+
+        {/* Account recovery: shown once and never persisted on the device. */}
+        <section className="bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 p-5 rounded-app-card shadow-sm space-y-4">
+          <div className="flex items-start gap-3">
+            <span className="p-2.5 bg-amber-100 dark:bg-amber-900/40 rounded-app-btn text-amber-700 dark:text-amber-400">
+              <KeyRound className="w-5 h-5" />
+            </span>
+            <div className="flex-1">
+              <h3 className="font-black text-sm text-amber-950 dark:text-amber-200">
+                {lang === 'ar' ? 'رمز استرداد الحساب' : 'Account recovery code'}
+              </h3>
+              <p className="text-[11px] font-bold text-amber-700 dark:text-amber-500 mt-1 leading-relaxed">
+                {lang === 'ar' ? 'استخدمه إذا غيّرت هاتفك أو أعدت تثبيت التطبيق. خزّنه في مكان آمن ولا ترسله لأي طالب.' : 'Use it after changing phones or reinstalling the app. Store it safely and never share it with another student.'}
+              </p>
+            </div>
+          </div>
+
+          {recoveryCode && (
+            <div className="space-y-2">
+              <div className="bg-white dark:bg-slate-950 border-2 border-amber-300 dark:border-amber-800 p-3 rounded-app-btn text-center" dir="ltr">
+                <code className="font-black text-sm tracking-widest text-slate-900 dark:text-white select-all">{recoveryCode}</code>
+              </div>
+              <p className="text-[10px] font-black text-rose-600 dark:text-rose-400 text-center">
+                {lang === 'ar' ? 'سيختفي الرمز عند مغادرة الصفحة؛ احفظه الآن.' : 'This code disappears when you leave this page; save it now.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(recoveryCode)}
+                className="w-full py-3 rounded-app-btn bg-amber-500 hover:bg-amber-600 text-white text-xs font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
+              >
+                <Copy className="w-4 h-4" />
+                {lang === 'ar' ? 'نسخ رمز الاسترداد' : 'Copy recovery code'}
+              </button>
+            </div>
+          )}
+
+          {recoveryMessage && (
+            <p className={`text-xs font-bold text-center ${recoveryCode ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+              {recoveryMessage}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={handleRotateRecoveryCode}
+            disabled={recoveryLoading}
+            className="w-full py-3 rounded-app-btn border border-amber-300 dark:border-amber-800 bg-white/80 dark:bg-slate-900 text-amber-800 dark:text-amber-300 text-xs font-black flex items-center justify-center gap-2 disabled:opacity-60 active:scale-95 transition-all"
+          >
+            {recoveryLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+            {recoveryCode
+              ? (lang === 'ar' ? 'إنشاء رمز بديل' : 'Create a replacement code')
+              : (lang === 'ar' ? 'إنشاء رمز الاسترداد' : 'Create recovery code')}
+          </button>
         </section>
 
         {/* Premium Upgrade & Pricing Screen 1 Integration */}

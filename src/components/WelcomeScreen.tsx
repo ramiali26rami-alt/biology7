@@ -4,11 +4,11 @@
  */
 
 import React, { useState } from 'react';
-import { Dna, ArrowLeft, ArrowRight, Sparkles, BookOpen, PenTool, Award, Loader2 } from 'lucide-react';
+import { Dna, ArrowLeft, ArrowRight, Sparkles, BookOpen, PenTool, Award, Loader2, Copy, ShieldCheck } from 'lucide-react';
 import { ScreenId } from '../types';
 import { Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
-import { registerStudent, requestDeviceTransfer } from '../utils/supabaseHelper';
+import { recoverStudentAccount, registerStudent, requestDeviceTransfer } from '../utils/supabaseHelper';
 
 interface WelcomeScreenProps {
   onNavigate: (screen: ScreenId, transition?: 'push' | 'push_back' | 'none') => void;
@@ -37,6 +37,10 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
   const [showTransferButton, setShowTransferButton] = useState(false);
   const [transferLoading, setTransferLoading] = useState(false);
   const [transferMessage, setTransferMessage] = useState('');
+  const [recoveryInput, setRecoveryInput] = useState('');
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [recoverySaved, setRecoverySaved] = useState(false);
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
 
   const isAr = lang === 'ar';
 
@@ -49,6 +53,27 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
     if (res.success) {
       setTransferMessage(res.message);
       setShowTransferButton(false);
+    } else {
+      setRegErrorMessage(res.message);
+    }
+  };
+
+  const handleRecoveryTransfer = async () => {
+    if (!recoveryInput.trim()) {
+      setRegErrorMessage(isAr ? 'أدخل رمز الاسترداد أولاً.' : 'Enter your recovery code first.');
+      return;
+    }
+    setRecoveryLoading(true);
+    setRegErrorMessage('');
+    setTransferMessage('');
+    const res = await recoverStudentAccount(phone, recoveryInput);
+    setRecoveryLoading(false);
+    if (res.success) {
+      setRecoveryCode(res.recoveryCode || '');
+      setRecoverySaved(false);
+      setRestoreMessage(res.message);
+      setShowTransferButton(false);
+      setStep('ready');
     } else {
       setRegErrorMessage(res.message);
     }
@@ -77,6 +102,8 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
     try {
       const res = await registerStudent(name, cleanedPhone, governorate);
       if (res.success) {
+        setRecoveryCode(res.recoveryCode || '');
+        setRecoverySaved(false);
         if (res.isPremium) {
           setRestoreMessage(isAr 
             ? '🎉 تم العثور على حسابك النشط سابقاً وتفعيل الباقة الذهبية مجدداً تلقائياً!' 
@@ -366,23 +393,46 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 )}
 
                 {showTransferButton && (
-                  <button
-                    onClick={handleRequestTransfer}
-                    disabled={transferLoading}
-                    className="w-full mt-3 py-4 px-4 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white rounded-app-btn text-xs font-black transition-all flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/10 active:scale-95"
-                  >
-                    {transferLoading ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        {isAr ? 'جاري إرسال الطلب...' : 'Submitting Request...'}
-                      </>
-                    ) : (
-                      <>
-                        <span>📱</span>
-                        <span>{isAr ? 'تقديم طلب نقل الحساب' : 'Request Account Transfer'}</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="rounded-app-card border border-amber-200 dark:border-amber-900/60 bg-amber-50/70 dark:bg-amber-950/20 p-4 space-y-3">
+                    <div>
+                      <p className="text-xs font-black text-amber-900 dark:text-amber-300">
+                        {isAr ? 'نقل الحساب إلى هذا الهاتف' : 'Move the account to this phone'}
+                      </p>
+                      <p className="text-[11px] font-bold text-amber-700 dark:text-amber-500 mt-1 leading-relaxed">
+                        {isAr ? 'أدخل رمز الاسترداد الذي حفظته عند التسجيل. سيُلغى ارتباط الهاتف السابق فور نجاح النقل.' : 'Enter the recovery code saved during registration. The old phone will be disconnected after a successful transfer.'}
+                      </p>
+                    </div>
+                    <input
+                      type="text"
+                      value={recoveryInput}
+                      onChange={e => setRecoveryInput(e.target.value.toUpperCase())}
+                      placeholder="BIO-XXXX-XXXX-XXXX-XXXX"
+                      autoComplete="off"
+                      dir="ltr"
+                      className="w-full bg-white dark:bg-slate-900 border-2 border-amber-200 dark:border-amber-900 focus:border-emerald-500 rounded-app-btn px-4 py-3 text-center text-slate-900 dark:text-white font-black text-sm tracking-wider focus:outline-none"
+                    />
+                    <button
+                      onClick={handleRecoveryTransfer}
+                      disabled={recoveryLoading || transferLoading}
+                      className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-app-btn text-xs font-black transition-all flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      {recoveryLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                      {isAr ? 'تحقق وانقل الحساب بأمان' : 'Verify and transfer securely'}
+                    </button>
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-amber-600 dark:text-amber-600">
+                      <span className="h-px flex-1 bg-amber-200 dark:bg-amber-900" />
+                      {isAr ? 'لا تملك الرمز؟' : 'No recovery code?'}
+                      <span className="h-px flex-1 bg-amber-200 dark:bg-amber-900" />
+                    </div>
+                    <button
+                      onClick={handleRequestTransfer}
+                      disabled={transferLoading || recoveryLoading}
+                      className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white rounded-app-btn text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      {transferLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                      {isAr ? 'إرسال طلب مراجعة إلى الإدارة' : 'Request an admin review'}
+                    </button>
+                  </div>
                 )}
 
                 {transferMessage && (
@@ -457,6 +507,45 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 )}
               </div>
 
+              {recoveryCode && (
+                <div className="bg-amber-50 dark:bg-amber-950/25 border-2 border-amber-300 dark:border-amber-800 rounded-app-card p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="text-sm font-black text-amber-950 dark:text-amber-200">
+                        {isAr ? 'احفظ رمز استرداد حسابك الآن' : 'Save your account recovery code now'}
+                      </h3>
+                      <p className="text-[11px] font-bold text-amber-700 dark:text-amber-500 mt-1 leading-relaxed">
+                        {isAr ? 'سيظهر هذا الرمز مرة واحدة فقط. احتفظ بلقطة شاشة أو اكتبه في مكان آمن، ولا تشاركه مع أي طالب.' : 'This code is shown only once. Save a screenshot or write it somewhere safe, and do not share it.'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-slate-950 border border-amber-200 dark:border-amber-900 rounded-app-btn p-3 text-center" dir="ltr">
+                    <span className="font-black tracking-widest text-sm text-slate-900 dark:text-white select-all">{recoveryCode}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(recoveryCode);
+                      setRecoverySaved(true);
+                    }}
+                    className="w-full py-3 rounded-app-btn bg-amber-500 hover:bg-amber-600 text-white text-xs font-black flex items-center justify-center gap-2 active:scale-95 transition-all"
+                  >
+                    <Copy className="w-4 h-4" />
+                    {isAr ? 'نسخ الرمز' : 'Copy code'}
+                  </button>
+                  <label className="flex items-start gap-2 text-xs font-black text-amber-950 dark:text-amber-200 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={recoverySaved}
+                      onChange={e => setRecoverySaved(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 accent-emerald-600"
+                    />
+                    <span>{isAr ? 'أؤكد أنني حفظت الرمز في مكان آمن' : 'I confirm that I saved the code safely'}</span>
+                  </label>
+                </div>
+              )}
+
               {/* Feature list */}
               <div className="space-y-3">
                 {features.map((f, i) => (
@@ -480,7 +569,8 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
                 onClick={handleStart}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-xl shadow-emerald-900/50 flex items-center justify-center gap-2"
+                disabled={!!recoveryCode && !recoverySaved}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-xl shadow-emerald-900/50 flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
                 {isAr ? 'ابدأ رحلتك الآن!' : 'Start Your Journey!'}

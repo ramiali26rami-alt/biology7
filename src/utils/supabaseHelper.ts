@@ -55,7 +55,7 @@ export async function registerStudent(
   name: string,
   phone: string,
   governorate: string
-): Promise<{ success: boolean; message: string; isPremium?: boolean; needsTransfer?: boolean }> {
+): Promise<{ success: boolean; message: string; isPremium?: boolean; needsTransfer?: boolean; recoveryCode?: string }> {
   try {
     await ensureAuthenticatedSession();
     const deviceId = getDeviceUuid();
@@ -70,7 +70,12 @@ export async function registerStudent(
 
     if (data?.success) {
       saveStudentLocally(formattedPhone, data.student);
-      return { success: true, message: data.message, isPremium: !!data.student?.isPremium };
+      return {
+        success: true,
+        message: data.message,
+        isPremium: !!data.student?.isPremium,
+        recoveryCode: data.recoveryCode
+      };
     }
 
     if (data?.needsTransfer) {
@@ -80,7 +85,12 @@ export async function registerStudent(
       });
       if (!transferError && transferData?.success) {
         saveStudentLocally(formattedPhone, transferData.student);
-        return { success: true, message: transferData.message, isPremium: !!transferData.student?.isPremium };
+        return {
+          success: true,
+          message: transferData.message,
+          isPremium: !!transferData.student?.isPremium,
+          recoveryCode: transferData.recoveryCode
+        };
       }
     }
 
@@ -92,6 +102,61 @@ export async function registerStudent(
   } catch (error: any) {
     logger.error('Error registering student:', error);
     return { success: false, message: (localStorage.getItem('lang') === 'en' ? 'Registration failed: ' : 'فشل التسجيل: ') + (error.message || 'Network error') };
+  }
+}
+
+/** Transfer the account immediately when the student proves ownership with the one-time recovery code. */
+export async function recoverStudentAccount(
+  phone: string,
+  recoveryCode: string
+): Promise<{ success: boolean; message: string; isPremium?: boolean; recoveryCode?: string; locked?: boolean }> {
+  const formattedPhone = phone.trim();
+  const isEn = localStorage.getItem('lang') === 'en';
+  try {
+    await ensureAuthenticatedSession();
+    const { data, error } = await supabase.rpc('transfer_with_recovery_code', {
+      student_phone: formattedPhone,
+      new_device_id: getDeviceUuid(),
+      recovery_code: recoveryCode.trim()
+    });
+    if (error) throw error;
+    if (data?.success) {
+      saveStudentLocally(formattedPhone, data.student);
+    }
+    return {
+      success: !!data?.success,
+      message: data?.message || (isEn ? 'Unable to verify the recovery code.' : 'تعذر التحقق من رمز الاسترداد.'),
+      isPremium: !!data?.student?.isPremium,
+      recoveryCode: data?.recoveryCode,
+      locked: !!data?.locked
+    };
+  } catch (error: any) {
+    logger.error('Error recovering student account:', error);
+    return {
+      success: false,
+      message: isEn ? 'Unable to recover the account right now.' : 'تعذر استرداد الحساب حالياً.'
+    };
+  }
+}
+
+/** Create a new recovery code for the student already bound to this session. */
+export async function rotateMyRecoveryCode(): Promise<{ success: boolean; message: string; recoveryCode?: string }> {
+  const isEn = localStorage.getItem('lang') === 'en';
+  try {
+    await ensureAuthenticatedSession();
+    const { data, error } = await supabase.rpc('rotate_recovery_code');
+    if (error) throw error;
+    return {
+      success: !!data?.success,
+      message: data?.message || (isEn ? 'Unable to create a recovery code.' : 'تعذر إنشاء رمز الاسترداد.'),
+      recoveryCode: data?.recoveryCode
+    };
+  } catch (error: any) {
+    logger.error('Error rotating recovery code:', error);
+    return {
+      success: false,
+      message: isEn ? 'Unable to create a recovery code right now.' : 'تعذر إنشاء رمز الاسترداد حالياً.'
+    };
   }
 }
 
