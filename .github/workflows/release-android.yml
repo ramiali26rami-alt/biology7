@@ -93,7 +93,9 @@ jobs:
           TAG="android-v${VERSION_NAME}"
           APK_NAME="biology7-v${VERSION_NAME}.apk"
           cp android/app/build/outputs/apk/release/app-release.apk "$APK_NAME"
-          apksigner verify --verbose --print-certs "$APK_NAME"
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK_NAME"
           SHA256=$(sha256sum "$APK_NAME" | awk '{print $1}')
           APK_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${APK_NAME}"
           jq -n \
