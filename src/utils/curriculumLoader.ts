@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { supabase } from './supabaseClient';
+import { ensureAuthenticatedSession, supabase } from './supabaseClient';
 import { decryptCurriculumData, SecureStorage } from './security';
 
 export async function loadCurriculum(bypassCache = false): Promise<any> {
   // 1. Supabase Cloud First: Fetch latest live curriculum from cloud database
   try {
+    await ensureAuthenticatedSession();
     const { data: cloudConfig, error: cloudErr } = await supabase
       .from('system_settings')
       .select('value')

@@ -24,7 +24,7 @@ import { AppWrapper } from './AppWrapper';
 import { checkAndUpdate } from './utils/autoUpdate';
 import { loadCurriculum } from './utils/curriculumLoader';
 import { checkStudentSubscription, syncUnsavedQuizResults } from './utils/supabaseHelper';
-import { supabase } from './utils/supabaseClient';
+import { isAdminUser, supabase } from './utils/supabaseClient';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(() => {
@@ -56,12 +56,12 @@ export default function App() {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setIsAdminAuthenticated(!!session?.user);
+      setIsAdminAuthenticated(isAdminUser(session?.user));
     };
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAdminAuthenticated(!!session?.user);
+      setIsAdminAuthenticated(isAdminUser(session?.user));
     });
 
     return () => {
@@ -257,7 +257,14 @@ export default function App() {
           />
         );
       case 'admin-dashboard':
-        if (isAdminAuthenticated === false) {
+        if (isAdminAuthenticated === null) {
+          return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-500 font-bold">
+              {lang === 'ar' ? 'جاري التحقق من جلسة المسؤول...' : 'Verifying admin session...'}
+            </div>
+          );
+        }
+        if (!isAdminAuthenticated) {
           return (
             <AdminLoginModal 
               onLoginSuccess={() => {

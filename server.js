@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
 import { handleApiRequest, triggerBackupAfterSave } from './src/server/apiMiddleware.js';
 
 dotenv.config();
@@ -44,7 +45,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,x-admin-passcode,x-gemini-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization,X-Requested-With,content-type,x-gemini-key');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // FIX: إضافة Security Headers لحماية إضافية
@@ -110,11 +111,21 @@ function resolveSafePath(base, inputPath) {
   return target;
 }
 
-/** Helper: Admin Passcode Check */
-function checkAdminAuth(req, res) {
-  const passcode = req.headers['x-admin-passcode'];
-  const adminPasscode = process.env.ADMIN_PASSCODE;
-  if (!passcode || !adminPasscode || passcode !== adminPasscode) {
+const authClient = createClient(
+  process.env.SUPABASE_URL || 'https://plppzszhsvgocmpseahp.supabase.co',
+  process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_KZjLLGAHIXWpx98edVatMg_1MO2wkQx',
+  { auth: { persistSession: false, autoRefreshToken: false } }
+);
+
+/** Verify the Supabase JWT and its server-controlled admin role. */
+async function checkAdminAuth(req, res) {
+  const authorization = req.headers.authorization || '';
+  const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  const { data, error } = token
+    ? await authClient.auth.getUser(token)
+    : { data: { user: null }, error: new Error('Missing bearer token') };
+
+  if (error || data.user?.app_metadata?.role !== 'admin') {
     res.status(401).json({ error: 'Unauthorized' });
     return false;
   }
@@ -123,7 +134,7 @@ function checkAdminAuth(req, res) {
 
 // 1. Shared API middleware (version, backups)
 app.use(async (req, res, next) => {
-  await handleApiRequest(req, res, () => next());
+  await handleApiRequest(req, res, () => next(), () => checkAdminAuth(req, res));
 });
 
 // Helper to re-scan public assets
@@ -268,7 +279,7 @@ app.get('/api/get-config', async (req, res) => {
 
 // ─── POST /api/publish-update ───
 app.post('/api/publish-update', async (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     let currentLessonsCount = 0;
     if (KV.isConfigured()) {
@@ -302,7 +313,7 @@ app.post('/api/publish-update', async (req, res) => {
 
 // ─── POST /api/save-config ───
 app.post('/api/save-config', async (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const data = req.body;
     let savedToKv = false;
@@ -350,7 +361,7 @@ app.post('/api/save-config', async (req, res) => {
 
 // ─── POST /api/reset-curriculum-to-default ───
 app.post('/api/reset-curriculum-to-default', async (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     let deleted = false;
     if (KV.isConfigured()) {
@@ -366,6 +377,7 @@ app.post('/api/reset-curriculum-to-default', async (req, res) => {
 
 // ─── POST /api/generate-quiz ───
 app.post('/api/generate-quiz', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const {
       lessonTitleAr,
@@ -459,6 +471,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
 // ─── POST /api/analyze-diagram ───
 app.post('/api/analyze-diagram', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const { imageBase64, mimeType } = req.body;
     if (!imageBase64) {
@@ -602,8 +615,8 @@ const saveKeysAtomic = (filePath, data) => {
 };
 
 // ─── GET /api/activation-keys ───
-app.get('/api/activation-keys', (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+app.get('/api/activation-keys', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
   let keys = [];
   if (fs.existsSync(keysFilePath)) {
@@ -617,8 +630,8 @@ app.get('/api/activation-keys', (req, res) => {
 });
 
 // ─── POST /api/generate-keys ───
-app.post('/api/generate-keys', (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+app.post('/api/generate-keys', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const { count } = req.body;
     const keysCount = Number(count) || 10;
@@ -705,8 +718,8 @@ app.post('/api/activate-key', rateLimit(15 * 60 * 1000, 10), (req, res) => {
 });
 
 // ─── POST /api/reset-key-device ───
-app.post('/api/reset-key-device', (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+app.post('/api/reset-key-device', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const { key } = req.body;
     if (!key || !key.trim()) {
@@ -744,8 +757,8 @@ app.post('/api/reset-key-device', (req, res) => {
 });
 
 // ─── POST /api/save-file ───
-app.post('/api/save-file', (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+app.post('/api/save-file', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const { filePath, content } = req.body;
     const fullPath = resolveSafePath(publicDir, filePath);
@@ -760,8 +773,8 @@ app.post('/api/save-file', (req, res) => {
 
 
 // ─── POST /api/upload-binary ───
-app.post('/api/upload-binary', (req, res) => {
-  if (!checkAdminAuth(req, res)) return;
+app.post('/api/upload-binary', async (req, res) => {
+  if (!(await checkAdminAuth(req, res))) return;
   try {
     const { filePath, contentBase64 } = req.body;
 

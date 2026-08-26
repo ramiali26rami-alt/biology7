@@ -11,7 +11,8 @@ import type { IncomingMessage, ServerResponse } from 'http';
 export async function handleApiRequest(
   req: IncomingMessage,
   res: ServerResponse,
-  next: () => void
+  next: () => void,
+  authorizeAdmin?: () => Promise<boolean>
 ): Promise<void> {
 
   // ─── GET /api/curriculum-version ───
@@ -60,6 +61,7 @@ export async function handleApiRequest(
 
   // ─── GET /api/backups ───
   if (req.url === '/api/backups' && req.method === 'GET') {
+    if (!authorizeAdmin || !(await authorizeAdmin())) return;
     try {
       const backups = fs.existsSync('backups')
         ? fs.readdirSync('backups')

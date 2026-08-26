@@ -12,8 +12,9 @@ serve(async (req) => {
   }
 
   try {
+    const authorization = req.headers.get('Authorization')
     const { phone, deviceId } = await req.json()
-    if (!phone || !deviceId) {
+    if (!authorization || !phone || !deviceId) {
       return new Response(JSON.stringify({ success: false, message: 'Invalid payload' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
@@ -22,61 +23,17 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authorization } } }
     )
 
-    // 1. Check if there is an approved request for this phone and this device
-    const { data: approvedReq } = await supabase
-      .from('device_transfer_requests')
-      .select('*')
-      .eq('phone', phone)
-      .eq('new_device_id', deviceId)
-      .eq('status', 'approved')
-      .maybeSingle()
+    const { data, error } = await supabase.rpc('handle_device_transfer', {
+      student_phone: phone,
+      new_device_id: deviceId
+    })
+    if (error) throw error
 
-    if (approvedReq) {
-      // Complete the transfer
-      await supabase.from('students').update({ device_id: deviceId }).eq('phone', phone)
-      await supabase.from('device_transfer_requests').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', approvedReq.id)
-      return new Response(JSON.stringify({ success: true, message: 'تم تفعيل حسابك على هذا الجهاز بعد موافقة الأستاذ!' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    // 2. Check if the last completed transfer was < 60 days ago
-    const { data: lastTransfers } = await supabase
-      .from('device_transfer_requests')
-      .select('*')
-      .eq('phone', phone)
-      .in('status', ['approved', 'completed'])
-      .order('requested_at', { ascending: false })
-
-    if (lastTransfers && lastTransfers.length > 0) {
-      const lastTransferDate = new Date(lastTransfers[0].completed_at || lastTransfers[0].requested_at)
-      const daysDiff = (Date.now() - lastTransferDate.getTime()) / (1000 * 60 * 60 * 24)
-      if (daysDiff < 60) {
-        const remainingDays = Math.ceil(60 - daysDiff)
-        return new Response(JSON.stringify({
-          success: false,
-          needsTransfer: true,
-          message: `هذا الحساب تم نقله مؤخراً. لا يمكنك النقل التلقائي مجدداً إلا بعد ${remainingDays} يوماً. يمكنك تقديم طلب نقل للمراجعة اليدوية.`
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-      }
-    }
-
-    // 3. Auto-transfer allowed!
-    await supabase.from('students').update({ device_id: deviceId }).eq('phone', phone)
-    await supabase.from('device_transfer_requests').insert([{
-      phone,
-      new_device_id: deviceId,
-      reason: 'نقل تلقائي (كل شهرين)',
-      status: 'completed',
-      completed_at: new Date().toISOString()
-    }])
-
-    return new Response(JSON.stringify({ success: true, message: 'تم نقل الحساب تلقائياً للجهاز الجديد بنجاح!' }), {
+    return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 

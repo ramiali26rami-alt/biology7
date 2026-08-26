@@ -38,7 +38,7 @@ import { ScreenId, Lesson, VideoChapter, Flashcard, GlossaryItem, ConfigQuestion
 import { translations, Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
 import { validateExcelData } from '../utils/excelValidator';
-import { supabase } from '../utils/supabaseClient';
+import { getAdminAuthHeaders, supabase } from '../utils/supabaseClient';
 
 import { SecureStorage } from '../utils/security';
 import { Capacitor } from '@capacitor/core';
@@ -151,11 +151,12 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
     // 3. Optional local server endpoint save
     try {
+      const adminHeaders = await getAdminAuthHeaders();
       await fetch(getAbsoluteUrl('/api/save-config'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+          ...adminHeaders
         },
         body: JSON.stringify(lessonsToSave)
       });

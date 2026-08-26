@@ -3,13 +3,18 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
+import { createClient } from '@supabase/supabase-js';
 import { 
   handleApiRequest, 
   triggerBackupAfterSave 
 } from './src/server/apiMiddleware';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** Helper: collect full request body */
 function readBody(req: any): Promise<string> {
@@ -73,11 +78,21 @@ function resolveSafePath(base: string, inputPath: string): string {
   return target;
 }
 
-/** Admin Passcode Check helper */
-function checkAdminAuth(req: any, res: any): boolean {
-  const passcode = req.headers['x-admin-passcode'];
-  const adminPasscode = process.env.ADMIN_PASSCODE;
-  if (!passcode || !adminPasscode || passcode !== adminPasscode) {
+const authClient = createClient(
+  process.env.SUPABASE_URL || 'https://plppzszhsvgocmpseahp.supabase.co',
+  process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_KZjLLGAHIXWpx98edVatMg_1MO2wkQx',
+  { auth: { persistSession: false, autoRefreshToken: false } }
+);
+
+/** Verify the Supabase JWT and its server-controlled admin role. */
+async function checkAdminAuth(req: any, res: any): Promise<boolean> {
+  const authorization = req.headers.authorization || '';
+  const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  const { data, error } = token
+    ? await authClient.auth.getUser(token)
+    : { data: { user: null }, error: new Error('Missing bearer token') };
+
+  if (error || data.user?.app_metadata?.role !== 'admin') {
     jsonRes(res, { error: 'Unauthorized' }, 401);
     return false;
   }
@@ -94,7 +109,12 @@ export default defineConfig(() => {
         configureServer(server: any) {
           server.middlewares.use(async (req: any, res: any, next: any) => {
             let nextCalled = false;
-            await handleApiRequest(req, res, () => { nextCalled = true; });
+            await handleApiRequest(
+              req,
+              res,
+              () => { nextCalled = true; },
+              () => checkAdminAuth(req, res)
+            );
             if (!nextCalled) return;
 
             const publicDir = path.resolve(__dirname, 'public');
@@ -203,7 +223,7 @@ export default defineConfig(() => {
             if (req.method === 'OPTIONS') {
               res.setHeader('Access-Control-Allow-Origin', '*');
               res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-              res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-passcode');
+              res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, x-gemini-key');
               res.statusCode = 204;
               res.end();
               return;
@@ -211,7 +231,7 @@ export default defineConfig(() => {
 
             // ─── POST /api/save-config ────────────────────────────────────
             if (req.url === '/api/save-config' && req.method === 'POST') {
-              if (!checkAdminAuth(req, res)) return;
+              if (!(await checkAdminAuth(req, res))) return;
               const body = await readBody(req);
               try {
                 const data = JSON.parse(body);
@@ -324,6 +344,7 @@ export default defineConfig(() => {
 
             // ─── POST /api/generate-quiz ──────────────────────────────────
             if (req.url === '/api/generate-quiz' && req.method === 'POST') {
+              if (!(await checkAdminAuth(req, res))) return;
               const body = await readBody(req);
               try {
                 const {
@@ -427,7 +448,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── GET /api/activation-keys ──────────────────────────────────
             if (req.url === '/api/activation-keys' && req.method === 'GET') {
-              if (!checkAdminAuth(req, res)) return;
+              if (!(await checkAdminAuth(req, res))) return;
               const keysFilePath = resolveSafePath(dataDir, 'activation_keys.json');
               let keys = [];
               if (fs.existsSync(keysFilePath)) {
@@ -443,7 +464,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── POST /api/generate-keys ───────────────────────────────────
             if (req.url === '/api/generate-keys' && req.method === 'POST') {
-              if (!checkAdminAuth(req, res)) return;
+              if (!(await checkAdminAuth(req, res))) return;
               const body = await readBody(req);
               try {
                 const { count } = JSON.parse(body);
@@ -538,7 +559,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── POST /api/reset-key-device ─────────────────────────────────
             if (req.url === '/api/reset-key-device' && req.method === 'POST') {
-              if (!checkAdminAuth(req, res)) return;
+              if (!(await checkAdminAuth(req, res))) return;
               const body = await readBody(req);
               try {
                 const { key } = JSON.parse(body);
@@ -581,7 +602,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── POST /api/save-file ──────────────────────────────────────
             if (req.url === '/api/save-file' && req.method === 'POST') {
-              if (!checkAdminAuth(req, res)) return;
+              if (!(await checkAdminAuth(req, res))) return;
               const body = await readBody(req);
               try {
                 const { filePath, content } = JSON.parse(body);
@@ -599,7 +620,7 @@ Ensure the returned output conforms exactly to the ConfigQuestion schema.`;
 
             // ─── POST /api/upload-binary ──────────────────────────────────
             if (req.url === '/api/upload-binary' && req.method === 'POST') {
-              if (!checkAdminAuth(req, res)) return;
+              if (!(await checkAdminAuth(req, res))) return;
               const body = await readBody(req);
               try {
                 const { filePath, contentBase64 } = JSON.parse(body);

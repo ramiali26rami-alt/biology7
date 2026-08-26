@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../utils/supabaseClient';
+import { isAdminUser, supabase } from '../../utils/supabaseClient';
 import { Loader2, Lock, Mail, ShieldAlert } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Language } from '../../utils/translations';
@@ -13,7 +13,6 @@ interface AdminLoginModalProps {
 export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminLoginModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [passcode, setPasscode] = useState(localStorage.getItem('admin_passcode') || '');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -21,34 +20,24 @@ export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminL
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const enteredPass = passcode.trim() || password.trim();
-    if (!enteredPass && !email.trim()) return;
+    if (!email.trim() || !password.trim()) return;
 
     setLoading(true);
     setErrorMsg('');
 
     try {
-      // 1. Check if Supabase email/password provided
-      if (email.trim() && password.trim()) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: password.trim(),
-        });
-        if (!error && data?.user) {
-          localStorage.setItem('admin_passcode', enteredPass || password.trim());
-          onLoginSuccess();
-          return;
-        }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
+      });
+      if (error) throw error;
+
+      if (!isAdminUser(data.user)) {
+        await supabase.auth.signOut();
+        throw new Error('This account does not have administrator privileges.');
       }
 
-      // 2. Direct Passcode Authentication fallback
-      if (enteredPass) {
-        localStorage.setItem('admin_passcode', enteredPass);
-        onLoginSuccess();
-        return;
-      }
-
-      throw new Error('Authentication failed');
+      onLoginSuccess();
     } catch (err: any) {
       console.error('Admin Login Error:', err);
       setErrorMsg(
@@ -115,24 +104,6 @@ export default function AdminLoginModal({ onLoginSuccess, onBack, lang }: AdminL
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 rounded-app-btn pr-11 pl-4 py-3.5 text-slate-800 dark:text-white font-bold text-sm focus:outline-none transition-colors"
-                disabled={loading}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-black text-slate-650 dark:text-slate-300 block px-1">
-              {isAr ? 'رمز مرور السيرفر (ADMIN_PASSCODE):' : 'Server Passcode (ADMIN_PASSCODE):'}
-            </label>
-            <div className="relative">
-              <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                required
-                value={passcode}
-                onChange={e => setPasscode(e.target.value)}
-                placeholder="Secure Passcode"
-                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 rounded-app-btn pr-11 pl-4 py-3.5 text-slate-850 dark:text-white font-bold text-sm focus:outline-none transition-colors"
                 disabled={loading}
               />
             </div>

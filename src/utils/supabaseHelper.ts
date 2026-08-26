@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { ensureAuthenticatedSession, supabase } from './supabaseClient';
 import { SecureStorage, checkPremiumStatus, setPremiumUnlockedState } from './security';
 import { logger } from './logger';
 
@@ -25,9 +25,29 @@ export function getDeviceUuid(): string {
   if (!uuid) {
     // Calling SecureStorage will initialize client_device_uuid securely
     SecureStorage.getItem('client_device_uuid');
-    uuid = localStorage.getItem('client_device_uuid') || '';
+    uuid = localStorage.getItem('client_device_uuid');
+  }
+  if (!uuid) {
+    uuid = crypto.randomUUID();
+    localStorage.setItem('client_device_uuid', uuid);
   }
   return uuid;
+}
+
+function saveStudentLocally(phone: string, student: any): void {
+  const name = student?.name || '';
+  const governorate = student?.governorate || '';
+  const isPremium = !!student?.isPremium;
+  localStorage.setItem('student_name', name);
+  localStorage.setItem('student_phone', phone);
+  localStorage.setItem('student_governorate', governorate);
+  SecureStorage.setItem('premium_status', JSON.stringify({
+    unlocked: isPremium,
+    activatedAt: Date.now(),
+    deviceUuid: getDeviceUuid()
+  }));
+  SecureStorage.setItem('student_name', name);
+  setPremiumUnlockedState(isPremium);
 }
 
 // Register or restore a student with automatic 60-day device transfer checking
@@ -37,113 +57,38 @@ export async function registerStudent(
   governorate: string
 ): Promise<{ success: boolean; message: string; isPremium?: boolean; needsTransfer?: boolean }> {
   try {
+    await ensureAuthenticatedSession();
     const deviceId = getDeviceUuid();
     const formattedPhone = phone.trim();
+    const { data, error } = await supabase.rpc('register_or_restore_student', {
+      student_name: name.trim(),
+      student_phone: formattedPhone,
+      student_governorate: governorate.trim(),
+      student_device_id: deviceId
+    });
+    if (error) throw error;
 
-    // Check if student with this phone number already exists
-    const { data: existingStudent, error: checkError } = await supabase
-      .from('students')
-      .select('*')
-      .eq('phone', formattedPhone)
-      .maybeSingle();
+    if (data?.success) {
+      saveStudentLocally(formattedPhone, data.student);
+      return { success: true, message: data.message, isPremium: !!data.student?.isPremium };
+    }
 
-    if (checkError) throw checkError;
-
-    if (existingStudent) {
-      if (existingStudent.device_id === deviceId) {
-        // Device matches! Restore profile locally
-        localStorage.setItem('student_name', existingStudent.name);
-        localStorage.setItem('student_phone', formattedPhone);
-        localStorage.setItem('student_governorate', existingStudent.governorate || '');
-        
-        const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
-        SecureStorage.setItem('premium_status', JSON.stringify({
-          unlocked: existingStudent.is_premium,
-          activatedAt: Date.now(),
-          deviceUuid
-        }));
-        SecureStorage.setItem('student_name', existingStudent.name);
-        setPremiumUnlockedState(existingStudent.is_premium);
-        
-        return { 
-          success: true, 
-          message: localStorage.getItem('lang') === 'en' ? 'Account restored successfully!' : 'تمت استعادة حسابك بنجاح!', 
-          isPremium: existingStudent.is_premium 
-        };
-      } else {
-        // Device mismatch! Call Postgres RPC function to process device transfer rules (e.g. 60-day check)
-        const { data: transferResult, error: transferError } = await supabase.rpc('handle_device_transfer', {
-          student_phone: formattedPhone,
-          new_device_id: deviceId
-        });
-
-        if (transferError || !transferResult) {
-          throw new Error(transferResult?.message || transferError?.message || 'Device transfer verification failed');
-        }
-
-        if (transferResult.success) {
-          // Automatic or approved transfer completed! Log student in
-          localStorage.setItem('student_name', existingStudent.name);
-          localStorage.setItem('student_phone', formattedPhone);
-          localStorage.setItem('student_governorate', existingStudent.governorate || '');
-          
-          const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
-          SecureStorage.setItem('premium_status', JSON.stringify({
-            unlocked: existingStudent.is_premium,
-            activatedAt: Date.now(),
-            deviceUuid
-          }));
-          SecureStorage.setItem('student_name', existingStudent.name);
-          setPremiumUnlockedState(existingStudent.is_premium);
-
-          return {
-            success: true,
-            message: transferResult.message || (localStorage.getItem('lang') === 'en' ? 'Account transferred successfully!' : 'تم نقل حسابك للجهاز الجديد بنجاح!'),
-            isPremium: existingStudent.is_premium
-          };
-        } else {
-          // Transfer blocked (needs manual approval or was requested too early)
-          return {
-            success: false,
-            needsTransfer: true,
-            message: transferResult.message || (localStorage.getItem('lang') === 'en' 
-              ? 'This number is registered on another device. You can request a transfer.'
-              : 'هذا الرقم مسجّل على جهاز آخر. يمكنك تقديم طلب نقل الحساب.')
-          };
-        }
+    if (data?.needsTransfer) {
+      const { data: transferData, error: transferError } = await supabase.rpc('handle_device_transfer', {
+        student_phone: formattedPhone,
+        new_device_id: deviceId
+      });
+      if (!transferError && transferData?.success) {
+        saveStudentLocally(formattedPhone, transferData.student);
+        return { success: true, message: transferData.message, isPremium: !!transferData.student?.isPremium };
       }
     }
 
-    // New student: insert record
-    const newStudent: StudentProfile = {
-      phone: formattedPhone,
-      name: name.trim(),
-      governorate: governorate.trim(),
-      device_id: deviceId,
-      is_premium: false
+    return {
+      success: false,
+      needsTransfer: !!data?.needsTransfer,
+      message: data?.message || (localStorage.getItem('lang') === 'en' ? 'Registration failed.' : 'تعذر إكمال التسجيل.')
     };
-
-    const { error: insertError } = await supabase
-      .from('students')
-      .insert([newStudent]);
-
-    if (insertError) throw insertError;
-
-    // Save profile locally
-    localStorage.setItem('student_name', newStudent.name);
-    localStorage.setItem('student_phone', formattedPhone);
-    localStorage.setItem('student_governorate', newStudent.governorate);
-    
-    const deviceUuid = localStorage.getItem('client_device_uuid') || 'default';
-    SecureStorage.setItem('premium_status', JSON.stringify({
-      unlocked: false,
-      activatedAt: Date.now(),
-      deviceUuid
-    }));
-    SecureStorage.setItem('student_name', newStudent.name);
-    setPremiumUnlockedState(false);
-
-    return { success: true, message: localStorage.getItem('lang') === 'en' ? 'Registration completed successfully!' : 'تم التسجيل بنجاح!' };
   } catch (error: any) {
     logger.error('Error registering student:', error);
     return { success: false, message: (localStorage.getItem('lang') === 'en' ? 'Registration failed: ' : 'فشل التسجيل: ') + (error.message || 'Network error') };
@@ -158,42 +103,17 @@ export async function requestDeviceTransfer(
   const newDeviceId = getDeviceUuid();
   const isEn = localStorage.getItem('lang') === 'en';
   try {
-    // Check if there is already a pending transfer request for this phone number
-    const { data: pendingReq } = await supabase
-      .from('device_transfer_requests')
-      .select('*')
-      .eq('phone', phone.trim())
-      .eq('status', 'pending')
-      .maybeSingle();
-
-    if (pendingReq) {
-      return {
-        success: false,
-        message: isEn 
-          ? 'You already have a pending transfer request under review.'
-          : 'لديك طلب نقل معلق قيد المراجعة بالفعل.'
-      };
-    }
-
-    const { data, error } = await supabase
-      .from('device_transfer_requests')
-      .insert([{
-        phone: phone.trim(),
-        new_device_id: newDeviceId,
-        reason,
-        status: 'pending',
-        requested_at: new Date().toISOString()
-      }])
-      .select('id')
-      .single();
-
+    await ensureAuthenticatedSession();
+    const { data, error } = await supabase.rpc('request_device_transfer', {
+      student_phone: phone.trim(),
+      new_device_id: newDeviceId,
+      transfer_reason: reason
+    });
     if (error) throw error;
     return {
-      success: true,
-      requestId: data?.id,
-      message: isEn 
-        ? 'Device transfer request submitted successfully! It will be reviewed within 24 hours.'
-        : 'تم إرسال طلب نقل الجهاز بنجاح! سيتم مراجعته من قِبل الأستاذ خلال 24 ساعة.'
+      success: !!data?.success,
+      requestId: data?.requestId,
+      message: data?.message || (isEn ? 'Unable to submit the request.' : 'تعذر إرسال الطلب.')
     };
   } catch (error: any) {
     return {
@@ -209,6 +129,7 @@ export async function checkStudentSubscription(): Promise<boolean> {
   if (!phone) return checkPremiumStatus();
 
   try {
+    await ensureAuthenticatedSession();
     const { data, error } = await supabase
       .from('students')
       .select('is_premium')
@@ -279,6 +200,7 @@ export async function syncUnsavedQuizResults(): Promise<void> {
   if (queue.length === 0) return;
 
   try {
+    await ensureAuthenticatedSession();
     const { error } = await supabase
       .from('quiz_results')
       .insert(queue);
@@ -300,9 +222,9 @@ export async function claimActivationCode(code: string): Promise<{ success: bool
   }
 
   try {
+    await ensureAuthenticatedSession();
     const { data, error } = await supabase.rpc('claim_activation_code', {
-      code_to_claim: code.trim().toUpperCase(),
-      student_phone: phone
+      code_to_claim: code.trim().toUpperCase()
     });
 
     if (error) throw error;
@@ -331,62 +253,17 @@ export async function claimActivationCode(code: string): Promise<{ success: bool
 // Fetch leaderboard standings
 export async function getLeaderboard(): Promise<any[]> {
   try {
-    const { data: results, error: resultsError } = await supabase
-      .from('quiz_results')
-      .select('student_phone, score, total_questions, lesson_id');
-      
-    if (resultsError) throw resultsError;
-    
-    const { data: students, error: studentsError } = await supabase
-      .from('students')
-      .select('phone, name, governorate');
-      
-    if (studentsError) throw studentsError;
-
-    const studentMap: Record<string, { phone: string; name: string; governorate: string; quizzesCount: number; totalScore: number; totalQuestions: number; completedLessons: Set<string> }> = {};
-    
-    students.forEach(s => {
-      studentMap[s.phone] = {
-        phone: s.phone,
-        name: s.name,
-        governorate: s.governorate || '',
-        quizzesCount: 0,
-        totalScore: 0,
-        totalQuestions: 0,
-        completedLessons: new Set()
-      };
-    });
-
-    results?.forEach(r => {
-      const phone = r.student_phone;
-      if (studentMap[phone]) {
-        studentMap[phone].quizzesCount += 1;
-        studentMap[phone].totalScore += r.score;
-        studentMap[phone].totalQuestions += r.total_questions;
-        if (r.lesson_id) {
-          studentMap[phone].completedLessons.add(r.lesson_id);
-        }
-      }
-    });
-
-    return Object.values(studentMap)
-      .filter(s => s.quizzesCount > 0)
-      .map(s => {
-        const accuracy = s.totalQuestions > 0 ? Math.round((s.totalScore / s.totalQuestions) * 100) : 0;
-        return {
-          name: s.name,
-          governorate: s.governorate,
-          lessonsCount: s.completedLessons.size,
-          quizzesCount: s.quizzesCount,
-          totalScore: s.totalScore,
-          accuracy: accuracy
-        };
-      })
-      .sort((a, b) => {
-        if (b.lessonsCount !== a.lessonsCount) return b.lessonsCount - a.lessonsCount;
-        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-        return b.accuracy - a.accuracy;
-      });
+    await ensureAuthenticatedSession();
+    const { data, error } = await supabase.rpc('get_leaderboard');
+    if (error) throw error;
+    return (data || []).map((row: any) => ({
+      name: row.name,
+      governorate: row.governorate,
+      lessonsCount: Number(row.lessons_count || 0),
+      quizzesCount: Number(row.quizzes_count || 0),
+      totalScore: Number(row.total_score || 0),
+      accuracy: Number(row.accuracy || 0)
+    }));
   } catch (error) {
     logger.error('Error fetching leaderboard:', error);
     return [];
@@ -396,33 +273,14 @@ export async function getLeaderboard(): Promise<any[]> {
 // Log a single question's answer correctness for analytics
 export async function logQuestionResult(questionId: string, lessonId: string, questionText: string, isCorrect: boolean): Promise<void> {
   try {
-    const { data, error } = await supabase
-      .from('question_analytics')
-      .select('wrong_count, correct_count')
-      .eq('question_id', questionId)
-      .maybeSingle();
-
+    await ensureAuthenticatedSession();
+    const { error } = await supabase.rpc('record_question_result', {
+      p_question_id: questionId,
+      p_lesson_id: lessonId,
+      p_question_text: questionText,
+      p_is_correct: isCorrect
+    });
     if (error) throw error;
-
-    if (data) {
-      await supabase
-        .from('question_analytics')
-        .update({
-          wrong_count: data.wrong_count + (isCorrect ? 0 : 1),
-          correct_count: data.correct_count + (isCorrect ? 1 : 0)
-        })
-        .eq('question_id', questionId);
-    } else {
-      await supabase
-        .from('question_analytics')
-        .insert([{
-          question_id: questionId,
-          lesson_id: lessonId,
-          question_text: questionText,
-          wrong_count: isCorrect ? 0 : 1,
-          correct_count: isCorrect ? 1 : 0
-        }]);
-    }
   } catch (err) {
     logger.error('Error logging question result:', err);
   }
@@ -462,7 +320,7 @@ export async function uploadMediaToSupabase(file: File, folder = 'curriculum'): 
     const path = `${folder}/${Date.now()}_${cleanFileName}`;
     
     const { data, error } = await supabase.storage
-      .from('media')
+      .from('biology-assets')
       .upload(path, file, {
         cacheControl: '3600',
         upsert: true
@@ -471,7 +329,7 @@ export async function uploadMediaToSupabase(file: File, folder = 'curriculum'): 
     if (error) throw error;
 
     const { data: publicData } = supabase.storage
-      .from('media')
+      .from('biology-assets')
       .getPublicUrl(path);
 
     return { success: true, url: publicData.publicUrl };

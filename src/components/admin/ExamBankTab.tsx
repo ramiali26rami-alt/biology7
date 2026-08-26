@@ -10,6 +10,7 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 import { getAbsoluteUrl } from '../../utils/urlHelper';
 import { Lesson, ConfigQuestion } from '../../types';
 import { SecureStorage } from '../../utils/security';
+import { getAdminAuthHeaders } from '../../utils/supabaseClient';
 
 interface ExamBankTabProps {
   lang: 'ar' | 'en';
@@ -35,14 +36,14 @@ export default function ExamBankTab({
 
   // Fetch backups on tab load
   useEffect(() => {
-    fetch(getAbsoluteUrl('/api/backups'), {
-      headers: {
-        'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
-      }
-    })
-      .then(r => r.json())
-      .then(d => setBackups(d.backups ?? []))
-      .catch(() => {});
+    void (async () => {
+      try {
+        const headers = await getAdminAuthHeaders();
+        const response = await fetch(getAbsoluteUrl('/api/backups'), { headers });
+        const data = await response.json();
+        setBackups(data.backups ?? []);
+      } catch {}
+    })();
   }, []);
 
   const handleCopyClipboard = () => {
@@ -78,11 +79,12 @@ export default function ExamBankTab({
 
   const handlePublishUpdate = async () => {
     try {
+      const adminHeaders = await getAdminAuthHeaders();
       const res = await fetch(getAbsoluteUrl('/api/publish-update'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+          ...adminHeaders
         }
       });
       if (res.ok) {

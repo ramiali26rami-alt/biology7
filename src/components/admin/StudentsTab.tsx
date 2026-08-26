@@ -12,7 +12,8 @@ import {
   CheckCircle2, 
   Sparkles,
   Smartphone,
-  Check
+  Check,
+  XCircle
 } from 'lucide-react';
 import { supabase } from '../../utils/supabaseClient';
 import { getDifficultQuestions } from '../../utils/supabaseHelper';
@@ -34,6 +35,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
   const [filterPremium, setFilterPremium] = useState('all');
   const [sortBy, setSortBy] = useState<'score_desc' | 'newest' | 'oldest' | 'quizzes_desc' | 'accuracy_desc' | 'name_asc'>('score_desc');
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
+  const [pendingTransfers, setPendingTransfers] = useState<any[]>([]);
 
   // Activation Codes States
   const [activationCodes, setActivationCodes] = useState<any[]>([]);
@@ -49,7 +51,36 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
     fetchStudents();
     fetchActivationCodes();
     fetchDiffQuestions();
+    fetchTransferRequests();
   }, []);
+
+  const fetchTransferRequests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('device_transfer_requests')
+        .select('id, phone, new_device_id, reason, status, requested_at')
+        .eq('status', 'pending')
+        .order('requested_at', { ascending: true });
+      if (error) throw error;
+      setPendingTransfers(data || []);
+    } catch (err) {
+      console.error('Error fetching device transfer requests:', err);
+    }
+  };
+
+  const handleReviewTransfer = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      const { error } = await supabase
+        .from('device_transfer_requests')
+        .update({ status, reviewed_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+      setPendingTransfers(prev => prev.filter(request => request.id !== id));
+    } catch (err) {
+      console.error('Error reviewing device transfer request:', err);
+      alert(lang === 'ar' ? 'تعذر تحديث طلب نقل الجهاز.' : 'Unable to update the transfer request.');
+    }
+  };
 
   const fetchDiffQuestions = async () => {
     setDiffQuestionsLoading(true);
@@ -142,7 +173,7 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
     try {
       const { error } = await supabase
         .from('students')
-        .update({ device_id: 'reset' })
+        .update({ device_id: 'reset', user_id: null })
         .eq('phone', phone);
       if (error) throw error;
       alert(lang === 'ar' ? 'تم إعادة ضبط الهاتف بنجاح! يمكن للطالب الآن التسجيل من هاتف جديد.' : 'Device reset successfully! The student can now register from a new phone.');
@@ -353,6 +384,38 @@ export default function StudentsTab({ lang, lessons }: StudentsTabProps) {
 
       {studentsSubTab === 'roster' && (
         <div className="space-y-6">
+          {pendingTransfers.length > 0 && (
+            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-app-card p-5 space-y-3">
+              <div>
+                <h3 className="font-black text-amber-900 dark:text-amber-300">
+                  {lang === 'ar' ? `طلبات نقل أجهزة معلقة (${pendingTransfers.length})` : `Pending device transfers (${pendingTransfers.length})`}
+                </h3>
+                <p className="text-xs font-bold text-amber-700 dark:text-amber-500 mt-1">
+                  {lang === 'ar' ? 'بعد الموافقة يعيد الطالب محاولة التسجيل من جهازه الجديد لإتمام النقل.' : 'After approval, the student retries registration on the new device to complete the transfer.'}
+                </p>
+              </div>
+              <div className="space-y-2">
+                {pendingTransfers.map(request => (
+                  <div key={request.id} className="bg-white dark:bg-slate-900 rounded-app-btn border border-amber-100 dark:border-amber-900/50 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="text-xs">
+                      <div className="font-black text-slate-900 dark:text-white">{request.phone}</div>
+                      <div className="text-slate-500 mt-1">{request.reason || (lang === 'ar' ? 'تغيير الجهاز' : 'Device change')}</div>
+                      <div className="text-[10px] text-slate-400 mt-1">{new Date(request.requested_at).toLocaleString(lang === 'ar' ? 'ar-YE' : 'en-US')}</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => handleReviewTransfer(request.id, 'approved')} className="px-3 py-2 rounded-app-btn bg-emerald-600 text-white text-xs font-black inline-flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> {lang === 'ar' ? 'موافقة' : 'Approve'}
+                      </button>
+                      <button onClick={() => handleReviewTransfer(request.id, 'rejected')} className="px-3 py-2 rounded-app-btn bg-rose-600 text-white text-xs font-black inline-flex items-center gap-1">
+                        <XCircle className="w-3.5 h-3.5" /> {lang === 'ar' ? 'رفض' : 'Reject'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Main Students List & Management Card */}
           <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-app-card p-6 shadow-sm space-y-5">
             {/* Header & Actions */}

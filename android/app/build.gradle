@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def releaseKeystorePath = System.getenv('ALHAYAA_KEYSTORE_PATH')
+def releaseKeystorePassword = System.getenv('ALHAYAA_KEYSTORE_PASSWORD')
+def releaseKeyAlias = System.getenv('ALHAYAA_KEY_ALIAS')
+def releaseKeyPassword = System.getenv('ALHAYAA_KEY_PASSWORD')
+def hasReleaseSigning = releaseKeystorePath && releaseKeystorePassword && releaseKeyAlias && releaseKeyPassword
+
 android {
     namespace = "com.biotech.biology"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -17,21 +23,26 @@ android {
         }
     }
     signingConfigs {
-        release {
-            storeFile file('app-release-key.jks')
-            storePassword 'Alhayaa2026SecureKey'
-            keyAlias 'alhayaa_key'
-            keyPassword 'Alhayaa2026SecureKey'
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(releaseKeystorePath)
+                storePassword releaseKeystorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
         }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.release
             minifyEnabled false
             debuggable true
         }
         release {
-            signingConfig signingConfigs.release
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.warn('Release signing is not configured. Set ALHAYAA_KEYSTORE_* environment variables before publishing.')
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

@@ -12,8 +12,9 @@ serve(async (req) => {
   }
 
   try {
-    const { code, phone } = await req.json()
-    if (!code || !phone) {
+    const authorization = req.headers.get('Authorization')
+    const { code } = await req.json()
+    if (!authorization || !code) {
       return new Response(JSON.stringify({ success: false, message: 'Invalid payload' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
@@ -22,48 +23,16 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authorization } } }
     )
 
-    // Check if code exists and is not used
-    const { data: codeData } = await supabase
-      .from('activation_codes')
-      .select('*')
-      .eq('code', code.trim().toUpperCase())
-      .maybeSingle()
+    const { data, error } = await supabase.rpc('claim_activation_code', {
+      code_to_claim: code.trim().toUpperCase()
+    })
+    if (error) throw error
 
-    if (!codeData) {
-      return new Response(JSON.stringify({ success: false, message: 'رمز التفعيل هذا غير موجود!' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    if (codeData.is_used) {
-      return new Response(JSON.stringify({ success: false, message: 'رمز التفعيل هذا مستخدم مسبقاً!' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    // Mark code as used
-    await supabase
-      .from('activation_codes')
-      .update({
-        is_used: true,
-        used_by_phone: phone,
-        used_at: new Date().toISOString()
-      })
-      .eq('code', codeData.code)
-
-    // Set student as premium
-    await supabase
-      .from('students')
-      .update({ is_premium: true })
-      .eq('phone', phone)
-
-    return new Response(JSON.stringify({
-      success: true,
-      message: 'تهانينا! تم تفعيل الباقة الكاملة بنجاح! 🌟'
-    }), {
+    return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 

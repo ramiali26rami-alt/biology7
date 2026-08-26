@@ -29,8 +29,8 @@
    VITE_SUPABASE_ANON_KEY=مفتاح_supabase_العام
    VITE_SERVER_URL=http://localhost:3000
    GEMINI_API_KEY=مفتاح_gemini_api_key
-   ADMIN_PASSCODE=رمز_لوحة_التحكم_الخاص_بك
    ```
+   دخول المالك يعتمد على مستخدم Supabase يحمل `app_metadata.role = admin`، وليس على رمز مخزّن في المتصفح. راجع `supabase/SECURITY_ROLLOUT.md` قبل التطبيق.
 3. تشغيل الواجهة محلياً للتطوير:
    ```bash
    npm run dev
@@ -48,9 +48,7 @@
 ### متغيرات البيئة المطلوبة على Vercel:
 * `SUPABASE_URL`
 * `SUPABASE_ANON_KEY`
-* `SUPABASE_SERVICE_ROLE_KEY`
 * `GEMINI_API_KEY`
-* `ADMIN_PASSCODE`
 * `KV_URL` (لإصدارات وتحديثات المنهج)
 * `KV_REST_API_URL`
 * `KV_REST_API_TOKEN`

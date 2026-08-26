@@ -8,6 +8,7 @@ import {
 
 import { translations } from '../../utils/translations';
 import { getAbsoluteUrl } from '../../utils/urlHelper';
+import { getAdminAuthHeaders } from '../../utils/supabaseClient';
 import { Lesson, VideoChapter, Flashcard, ConfigQuestion, MindmapNode } from '../../types';
 import DOMPurify from 'dompurify';
 import { supabase } from '../../utils/supabaseClient';
@@ -145,12 +146,13 @@ export default function LessonsTab({
     setAiStatusMsg(null);
 
     try {
+      const adminHeaders = await getAdminAuthHeaders();
       const res = await fetch(getAbsoluteUrl('/api/generate-quiz'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-gemini-key': localApiKey,
-          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+          ...adminHeaders
         },
         body: JSON.stringify({
           lessonTitleAr: editingLesson.titleAr,

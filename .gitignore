@@ -1,4 +1,6 @@
 node_modules/
+.npm-cache/
+android/.gradle-user/
 build/
 dist/
 coverage/
@@ -9,3 +11,5 @@ coverage/
 backups/
 backups.zip
 *.zip
+*.jks
+*.keystore

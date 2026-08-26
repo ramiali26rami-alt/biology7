@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { supabase } from './supabaseClient';
+import { ensureAuthenticatedSession, supabase } from './supabaseClient';
 import { SecureStorage } from './security';
 import { clearAllAssetCache } from './cacheManager';
 
@@ -13,6 +13,7 @@ export async function checkAndUpdate(): Promise<{
   error: boolean;
 }> {
   try {
+    await ensureAuthenticatedSession();
     const { data: cloudConfig, error: cloudErr } = await supabase
       .from('system_settings')
       .select('value, updated_at')

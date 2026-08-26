@@ -8,7 +8,7 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 
 import { getAbsoluteUrl } from '../../utils/urlHelper';
 import { Lesson } from '../../types';
-import { supabase } from '../../utils/supabaseClient';
+import { getAdminAuthHeaders, supabase } from '../../utils/supabaseClient';
 
 interface SystemSettingsTabProps {
   activeTab: 'keys' | 'helper';
@@ -63,11 +63,12 @@ export default function SystemSettingsTab({
       const defaultData = await defaultRes.json();
 
       // 2. Post the default data directly to server save-config to overwrite the KV store
+      const adminHeaders = await getAdminAuthHeaders();
       const saveRes = await fetch(getAbsoluteUrl('/api/save-config'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+          ...adminHeaders
         },
         body: JSON.stringify(defaultData)
       });
@@ -558,13 +559,14 @@ export default function SystemSettingsTab({
         try {
           const base64data = (reader.result as string).split(',')[1];
           const mimeType = blob.type || 'image/png';
+          const adminHeaders = await getAdminAuthHeaders();
 
           const apiRes = await fetch(getAbsoluteUrl('/api/analyze-diagram'), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'x-gemini-key': localApiKey,
-              'x-admin-passcode': localStorage.getItem('admin_passcode') || ''
+              ...adminHeaders
             },
             body: JSON.stringify({ imageBase64: base64data, mimeType })
           });
