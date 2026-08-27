@@ -54,7 +54,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
   const [studentName, setStudentName] = useState('');
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [studiedToday, setStudiedToday] = useState(true);      // assume true to avoid flash
   const [streakBannerDismissed, setStreakBannerDismissed] = useState(false);
   const [notifStatus, setNotifStatus] = useState<'default'|'granted'|'denied'|'unsupported'>('unsupported');
@@ -248,21 +248,25 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
   const chevronIcon = lang === 'ar' ? <ArrowLeft className="w-5 h-5 text-emerald-500" /> : <ArrowRight className="w-5 h-5 text-emerald-500" />;
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bio-dashboard-shell dark:bg-slate-950 dark:text-slate-100 pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
-      <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
+      <header className="bio-topbar fixed top-0 w-full z-50 border-b flex items-center justify-between px-5 h-16">
         <div className="flex items-center gap-3">
           <div 
             onClick={() => onNavigate('student-profile', 'push')}
             className="w-11 h-11 flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
           >
-            <div className="w-9 h-9 rounded-full overflow-hidden border border-emerald-500">
-              <img src={avatarUrl} className="w-full h-full object-cover" alt="Student avatar" />
+            <div className="bio-avatar">
+              {avatarUrl ? (
+                <img src={avatarUrl} className="w-full h-full object-cover" alt={lang === 'ar' ? 'صورة الطالب' : 'Student avatar'} />
+              ) : (
+                <span>{studentName.trim().charAt(0) || (lang === 'ar' ? 'أ' : 'B')}</span>
+              )}
             </div>
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-bold uppercase tracking-wider">{t.biologyAcademy}</span>
-            <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200 block">{studentName}</span>
+            <span className="bio-eyebrow block">{t.biologyAcademy}</span>
+            <span className="text-sm font-extrabold text-[var(--bio-ink)] dark:text-slate-200 block mt-0.5">{studentName}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -301,13 +305,23 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
       <main className="pt-18 px-5 max-w-2xl mx-auto space-y-4">
         
         {/* Welcome Section */}
-        <section className="mt-2">
-          <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">
+        <section className="bio-dashboard-intro mt-2">
+          <div className="relative z-10 flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <span className="bio-eyebrow">{lang === 'ar' ? 'مختبرك اليومي' : 'Your daily lab'}</span>
+              <h2 className="text-2xl font-black text-white leading-tight mt-3">
             {t.welcomeStudent}
-          </h2>
-          <p className="text-slate-500 dark:text-slate-450 text-xs font-semibold mt-0.5">
-            {lang === 'ar' ? 'استعد لاجتياز امتحانات الشهادة الثانوية بتفوق تام في مادة الأحياء.' : 'Gear up to conquer your third-year biology exams with total confidence.'}
-          </p>
+              </h2>
+              <p className="text-[color:rgba(255,253,247,0.72)] text-xs font-medium mt-2 leading-relaxed max-w-sm">
+                {lang === 'ar' ? 'كل درس يقرّبك من فهم الحياة… ومن الدرجة الكاملة.' : 'Every lesson takes you closer to understanding life — and a perfect score.'}
+              </p>
+            </div>
+            <img
+              src="/splash.png"
+              className="bio-dashboard-logo shrink-0 relative z-10"
+              alt={lang === 'ar' ? 'شعار تطبيق الأحياء' : 'Biology app logo'}
+            />
+          </div>
         </section>
 
         {/* Streak At Risk Banner */}
@@ -404,7 +418,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         {/* Premium Banner (Dashboard CTA) */}
         {!premiumUnlocked && (
           <section 
-            className="bg-gradient-to-r from-emerald-500 to-teal-655 text-white p-3.5 rounded-app-card shadow-md shadow-emerald-500/10 relative overflow-hidden transition-all duration-[250ms]"
+            className="bio-lab-banner bio-lab-banner--premium text-white p-4 relative overflow-hidden transition-all duration-[250ms]"
           >
             <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
             <div className="relative z-10 flex flex-col gap-2">
@@ -439,7 +453,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
         {/* AI Biology Tutor General Banner */}
         <section 
-          className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white p-3.5 rounded-app-card shadow-md shadow-indigo-500/10 relative overflow-hidden transition-all duration-[250ms]"
+          className="bio-lab-banner bio-lab-banner--tutor text-white p-4 relative overflow-hidden transition-all duration-[250ms]"
         >
           <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
           <div className="relative z-10 flex flex-col gap-2">
@@ -448,10 +462,10 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
               className="flex items-center justify-between cursor-pointer select-none"
             >
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-100 animate-pulse shrink-0" />
-                <h3 className="font-black text-xs tracking-wide text-indigo-100">{t.aiTutorPromptGeneral}</h3>
+                <Sparkles className="w-4 h-4 text-[var(--bio-lime)] animate-pulse shrink-0" />
+                <h3 className="font-black text-xs tracking-wide text-white">{t.aiTutorPromptGeneral}</h3>
               </div>
-              <ChevronDown className={`w-4 h-4 text-indigo-100 transition-transform ${isTutorPromptExpanded ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-[var(--bio-lime)] transition-transform ${isTutorPromptExpanded ? 'rotate-180' : ''}`} />
             </div>
             
             {isTutorPromptExpanded && (
@@ -475,7 +489,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
         <section className="grid grid-cols-2 gap-3">
           
           {/* Bento Stats 1: Streak */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center gap-3">
+          <div className="bio-stat-card p-3.5 flex items-center gap-3">
             <span className="w-9 h-9 bg-amber-50 dark:bg-amber-950/50 rounded-app-btn text-amber-500 flex items-center justify-center shrink-0">
               <Flame className="w-5 h-5 fill-amber-500" />
             </span>
@@ -486,7 +500,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           </div>
 
           {/* Bento Stats 2: Completion Rate */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center gap-3">
+          <div className="bio-stat-card p-3.5 flex items-center gap-3">
             <span className="w-9 h-9 bg-emerald-50 dark:bg-emerald-950/50 rounded-app-btn text-emerald-500 flex items-center justify-center shrink-0">
               <TrendingUp className="w-5 h-5" />
             </span>
@@ -519,7 +533,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Units Syllabus Navigation Card */}
             <div 
               onClick={() => onNavigate('units-navigation', 'push')}
-              className="card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="bio-menu-card card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-app-btn bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-200 shrink-0">
@@ -535,7 +549,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
             {/* Leaderboard Card */}
             <div 
               onClick={() => onNavigate('leaderboard', 'push')}
-              className="card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
+              className="bio-menu-card card-premium p-4 flex items-center justify-between hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all active:scale-[0.99] group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-app-btn bg-rose-50 dark:bg-rose-950/45 text-rose-600 dark:text-rose-300 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors duration-200 shrink-0">
@@ -585,7 +599,7 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
           const fact = facts[dayOfYear % facts.length];
 
           return (
-            <section className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-app-card shadow-xl shadow-slate-200/20 dark:shadow-none relative overflow-hidden">
+            <section className="bio-editorial-card p-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-5">
                 <Sparkles className="w-16 h-16 text-emerald-500" />
               </div>
@@ -613,10 +627,10 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
       </main>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/30 z-50">
+      <nav className="bio-bottom-nav fixed flex justify-around items-center px-3 py-2.5 z-50">
         <button 
           onClick={() => onNavigate('main-dashboard', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="bio-bottom-nav__active flex flex-col items-center justify-center rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <Compass className="w-5 h-5 mb-0.5" />
           <span className="text-xs">{t.home}</span>
@@ -694,9 +708,6 @@ export default function MainDashboardScreen({ onNavigate, lang, onQuizNavigate, 
 
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-950/20">
-                <div className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 p-2 rounded-app-btn font-mono text-center shrink-0">
-                  Debug - LocalStorage Server URL: "{localStorage.getItem('server_url') || 'none'}" | Env URL: "{import.meta.env.VITE_SERVER_URL || 'none'}"
-                </div>
                 {tutorMessages.map((msg, i) => (
                   <div
                     key={i}

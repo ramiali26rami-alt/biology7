@@ -144,31 +144,33 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/50 dark:from-slate-950 dark:via-emerald-950 dark:to-slate-900 flex flex-col items-center justify-center px-6 font-sans overflow-hidden relative transition-colors duration-300"
+      className="bio-onboarding-shell font-sans transition-colors duration-300"
       dir={isAr ? 'rtl' : 'ltr'}
     >
-      {/* Ambient background blobs */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 dark:bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="w-full max-w-md relative z-10">
+      <div className="bio-onboarding-wrap">
 
         {/* Logo / Welcome Graphic */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex flex-col items-center mb-8"
+          className="bio-onboarding-hero"
         >
-          <img 
-            src="/splash.png" 
-            className="w-[310px] h-[310px] object-contain mb-2 filter drop-shadow-[0_15px_30px_rgba(16,185,129,0.1)] dark:drop-shadow-[0_15px_35px_rgba(34,211,238,0.25)] dark:invert dark:hue-rotate-180 brightness-[1.05] contrast-[1.05] transition-all duration-300" 
-            alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'} 
+          <img
+            src="/splash.png"
+            className="bio-original-logo"
+            alt={isAr ? 'الأحياء - التعلم التفاعلي' : 'Al-Ahya Interactive Learning'}
           />
-          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-bold mt-1">
+          <p className="bio-grade-pill">
             {isAr ? 'الصف الثالث الثانوي — اليمن' : '3rd Secondary — Yemen'}
           </p>
         </motion.div>
+
+        <div className="bio-step-track" aria-label={isAr ? 'تقدم التسجيل' : 'Registration progress'}>
+          {STEPS.map((item, index) => (
+            <span key={item} data-active={index <= STEPS.indexOf(step)} />
+          ))}
+        </div>
 
         {/* Step content */}
         <AnimatePresence mode="wait">
@@ -181,7 +183,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.3 }}
-              className="space-y-6"
+              className="bio-onboarding-panel space-y-6"
             >
               <div className="text-center space-y-2">
                 <h2 className="text-xl font-black text-slate-800 dark:text-white">
@@ -232,7 +234,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
 
               <button
                 onClick={() => setStep('name')}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                className="bio-primary-action w-full font-black py-4 text-sm active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 {isAr ? 'التالي' : 'Next'}
                 {isAr
@@ -265,7 +267,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.3 }}
-              className="space-y-6"
+              className="bio-onboarding-panel space-y-6"
             >
               <div className="text-center space-y-2">
                 <h2 className="text-xl font-black text-slate-800 dark:text-white">
@@ -307,7 +309,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 </button>
                 <button
                   onClick={handleNameNext}
-                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                  className="bio-primary-action flex-1 font-black py-4 text-sm active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   {isAr ? 'التالي' : 'Next'}
                   {isAr
@@ -326,7 +328,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.3 }}
-              className="space-y-6"
+              className="bio-onboarding-panel space-y-6"
             >
               <div className="text-center space-y-2">
                 <h2 className="text-xl font-black text-slate-800 dark:text-white">
@@ -452,7 +454,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 </button>
                 <button
                   onClick={handleRegister}
-                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-lg shadow-emerald-900/40 flex items-center justify-center gap-2"
+                  className="bio-primary-action flex-1 font-black py-4 text-sm active:scale-95 transition-all flex items-center justify-center gap-2"
                   disabled={regLoading}
                 >
                   {regLoading ? (
@@ -481,7 +483,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.35 }}
-              className="space-y-6"
+              className="bio-onboarding-panel space-y-6"
             >
               <div className="text-center space-y-2">
                 <motion.div
@@ -570,7 +572,7 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
                 transition={{ delay: 0.5 }}
                 onClick={handleStart}
                 disabled={!!recoveryCode && !recoverySaved}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-black py-4 rounded-app-btn text-sm active:scale-95 transition-all shadow-xl shadow-emerald-900/50 flex items-center justify-center gap-2"
+                className="bio-primary-action w-full disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed font-black py-4 text-sm active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <Sparkles className="w-4 h-4" />
                 {isAr ? 'ابدأ رحلتك الآن!' : 'Start Your Journey!'}
@@ -579,22 +581,6 @@ export default function WelcomeScreen({ onNavigate, lang, setLang }: WelcomeScre
           )}
 
         </AnimatePresence>
-
-        {/* Step dots indicator */}
-        <div className="flex justify-center gap-2 mt-8">
-          {STEPS.map((s, i) => (
-            <div
-              key={s}
-              className={`rounded-full transition-all duration-300 ${
-                STEPS.indexOf(step) === i
-                  ? 'w-6 h-2 bg-emerald-500'
-                  : STEPS.indexOf(step) > i
-                  ? 'w-2 h-2 bg-emerald-700 dark:bg-emerald-800'
-                  : 'w-2 h-2 bg-slate-300 dark:bg-slate-700'
-              }`}
-            />
-          ))}
-        </div>
 
       </div>
 

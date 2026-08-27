@@ -163,10 +163,10 @@ export default function App() {
   useEffect(() => {
     // Sync current font size
     const sizeMap: Record<string, string> = {
-      small: '14px',
-      normal: '16px',
-      large: '18.5px',
-      xlarge: '21px'
+      small: '15px',
+      normal: '17px',
+      large: '19px',
+      xlarge: '21.5px'
     };
     document.documentElement.style.fontSize = sizeMap[fontSize] || '16px';
     localStorage.setItem('font_size', fontSize);
@@ -426,7 +426,11 @@ export default function App() {
             animate={variants.animate}
             exit={variants.exit}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="min-h-screen w-full relative"
+            className={`min-h-screen w-full relative ${
+              currentScreen === 'admin-dashboard' || currentScreen === 'admin-login'
+                ? ''
+                : 'student-reading-scale'
+            }`}
           >
             <React.Suspense fallback={<ScreenSkeleton />}>
               {renderScreen()}
