@@ -6,6 +6,7 @@
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import CryptoJS from 'crypto-js';
+import { SecureStorage } from './security';
 
 // Get device-specific cryptographic key
 const getRuntimeKey = (): string => {
@@ -96,6 +97,19 @@ class IndexedDBCache {
 }
 
 const webCache = new IndexedDBCache();
+
+/** Current published curriculum timestamp, used only to refresh replace-in-place assets. */
+export function getCurriculumAssetVersion(): string {
+  const version = SecureStorage.getItem('curriculum_updated_at');
+  return typeof version === 'string' && version ? version : 'initial';
+}
+
+/** Adds an internal cache-busting value without changing the stored file name. */
+export function withAssetVersion(url: string, version: string): string {
+  if (!url || url.startsWith('data:') || url.startsWith('blob:')) return url;
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${encodeURIComponent(version)}`;
+}
 
 // Helper to convert arrayBuffer to base64
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -198,9 +212,18 @@ export async function cacheAsset(lessonId: string, fileName: string, serverUrl: 
 /**
  * Decrypts a cached asset in-memory and returns a temporary blob URL for rendering.
  */
-export async function getCachedAssetUrl(lessonId: string, fileName: string, fallbackUrl?: string): Promise<string> {
+export async function getCachedAssetUrl(
+  lessonId: string,
+  fileName: string,
+  fallbackUrl?: string,
+  cacheVersion?: string
+): Promise<string> {
   const cleanFileName = fileName.replace(/\\|\//g, '_');
-  const cacheKey = `lessons/${lessonId}/${cleanFileName}`;
+  const versionSuffix = cacheVersion ? `@${cacheVersion}` : '';
+  const cacheKey = `lessons/${lessonId}/${cleanFileName}${versionSuffix}`;
+  const versionedFallbackUrl = fallbackUrl && cacheVersion
+    ? withAssetVersion(fallbackUrl, cacheVersion)
+    : fallbackUrl;
 
   try {
     let encryptedStr: string | null = null;
@@ -221,9 +244,9 @@ export async function getCachedAssetUrl(lessonId: string, fileName: string, fall
     }
 
     if (!encryptedStr) {
-      if (fallbackUrl) {
+      if (versionedFallbackUrl) {
         // Fallback to direct network URL if not cached
-        return fallbackUrl;
+        return versionedFallbackUrl;
       }
       throw new Error(`Asset ${fileName} is not cached and no fallback URL was provided.`);
     }
@@ -249,7 +272,7 @@ export async function getCachedAssetUrl(lessonId: string, fileName: string, fall
     return URL.createObjectURL(blob);
   } catch (err) {
     console.error(`Error retrieving cached asset ${fileName}:`, err);
-    if (fallbackUrl) return fallbackUrl;
+    if (versionedFallbackUrl) return versionedFallbackUrl;
     throw err;
   }
 }
