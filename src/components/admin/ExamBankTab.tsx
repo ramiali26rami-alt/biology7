@@ -17,13 +17,19 @@ interface ExamBankTabProps {
   lessons: Lesson[];
   setLessons: React.Dispatch<React.SetStateAction<Lesson[]>>;
   saveAllToServer: (lessonsToSave: Lesson[]) => Promise<void>;
+  onPublish: () => Promise<void>;
+  publishStatus: 'idle' | 'publishing' | 'published' | 'error';
+  canPublish: boolean;
 }
 
 export default function ExamBankTab({
   lang,
   lessons,
   setLessons,
-  saveAllToServer
+  saveAllToServer,
+  onPublish,
+  publishStatus,
+  canPublish
 }: ExamBankTabProps) {
   const [copied, setCopied] = useState(false);
   const [backups, setBackups] = useState<string[]>([]);
@@ -74,30 +80,6 @@ export default function ExamBankTab({
       window.location.reload();
     } catch (e) {
       alert(lang === 'ar' ? 'فشل إعادة المزامنة' : 'Re-sync failed');
-    }
-  };
-
-  const handlePublishUpdate = async () => {
-    try {
-      const adminHeaders = await getAdminAuthHeaders();
-      const res = await fetch(getAbsoluteUrl('/api/publish-update'), {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...adminHeaders
-        }
-      });
-      if (res.ok) {
-        const resData = await res.json();
-        alert(lang === 'ar' 
-          ? `📢 تم نشر التحديث بنجاح لجميع هواتف الطلاب! (رقم الإصدار الجديد: ${resData.version || 'محدث'})` 
-          : `📢 Update published successfully to all students! (New Version: ${resData.version || 'updated'})`
-        );
-      } else {
-        throw new Error('Server returned non-200');
-      }
-    } catch (e) {
-      alert(lang === 'ar' ? 'فشل نشر التحديث' : 'Publishing update failed');
     }
   };
 
@@ -697,11 +679,11 @@ export default function ExamBankTab({
       <div className="bg-emerald-500 text-white p-6 rounded-app-dialog shadow-xl shadow-emerald-500/20 relative overflow-hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="absolute -top-12 -left-12 w-36 h-36 bg-white/10 rounded-full blur-2xl"></div>
         <div className="relative z-10 space-y-2">
-          <h3 className="font-black text-lg">{lang === 'ar' ? 'تحميل ملف lessons_config.json' : 'Download lessons_config.json'}</h3>
+          <h3 className="font-black text-lg">{lang === 'ar' ? 'نسخة احتياطية من المسودة' : 'Draft backup'}</h3>
           <p className="text-xs text-emerald-100 font-semibold max-w-lg leading-relaxed">
             {lang === 'ar'
-              ? 'قم بتحميل الملف المحدث واستبدله مباشرة بالملف الموجود في مجلد public في مشروعك ثم أعد رفع الموقع.'
-              : 'Replace the existing public/lessons_config.json file in your project folders, then deploy.'}
+              ? 'نزّل نسخة JSON للاحتفاظ بها أو مشاركتها مع المبرمج. النشر للطلاب يتم مباشرة من الزر المخصص ولا يحتاج إعادة رفع الموقع.'
+              : 'Download a JSON backup for safekeeping. Publishing to students is handled separately and does not require redeploying the site.'}
           </p>
         </div>
         <button
@@ -748,11 +730,16 @@ export default function ExamBankTab({
         </div>
 
         <button
-          onClick={handlePublishUpdate}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10"
+          onClick={() => void onPublish()}
+          disabled={!canPublish || publishStatus === 'publishing'}
+          className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-black text-xs px-5 py-3.5 rounded-app-btn active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10 disabled:shadow-none"
         >
           <Sparkles className="w-4 h-4" />
-          <span>{lang === 'ar' ? 'نشر وإرسال التحديث لجميع الهواتف 📢' : 'Publish & Broadcast Update to All Phones 📢'}</span>
+          <span>{publishStatus === 'publishing'
+            ? (lang === 'ar' ? 'جارٍ نشر المسودة...' : 'Publishing draft...')
+            : publishStatus === 'published'
+              ? (lang === 'ar' ? 'تم نشر المسودة للطلاب ✓' : 'Draft published ✓')
+              : (lang === 'ar' ? 'نشر المسودة للطلاب 📢' : 'Publish draft to students 📢')}</span>
         </button>
 
         <button

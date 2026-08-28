@@ -32,18 +32,21 @@ import {
   Target,
   Loader2,
   UserCheck,
-  LogOut
+  LogOut,
+  Send,
+  Cloud,
+  CloudOff,
+  RotateCcw
 } from 'lucide-react';
 import { ScreenId, Lesson, VideoChapter, Flashcard, GlossaryItem, ConfigQuestion } from '../types';
 import { translations, Language } from '../utils/translations';
 import { motion, AnimatePresence } from 'motion/react';
 import { validateExcelData } from '../utils/excelValidator';
-import { getAdminAuthHeaders, supabase } from '../utils/supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 
 import { SecureStorage } from '../utils/security';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import { getAbsoluteUrl } from '../utils/urlHelper';
 import StudentsTab from './admin/StudentsTab';
 import LessonsTab from './admin/LessonsTab';
 import ExamBankTab from './admin/ExamBankTab';
@@ -61,11 +64,22 @@ type EditorSubTab = 'basic' | 'chapters' | 'summary-flash' | 'quiz' | 'ministry-
 
 export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLessons }: AdminDashboardScreenProps) {
   const [activeTab, setActiveTab] = useState<TabType>('lessons-list');
+  const [draftLessons, setDraftLessons] = useState<Lesson[]>(lessons);
+  const [publishedLessons, setPublishedLessons] = useState<Lesson[]>(lessons);
+  const [draftSavedFingerprint, setDraftSavedFingerprint] = useState(() => JSON.stringify(lessons));
+  const [draftLoadStatus, setDraftLoadStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'publishing' | 'published' | 'error'>('idle');
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [editingLessonIndex, setEditingLessonIndex] = useState<number | null>(null);
   const [editorSubTab, setEditorSubTab] = useState<EditorSubTab>('basic');
 
   const handleLogout = async () => {
+    if (hasUnsavedDraft) {
+      const shouldLogout = window.confirm(lang === 'ar'
+        ? 'توجد تعديلات غير محفوظة في المسودة. هل تريد تسجيل الخروج وفقدانها؟'
+        : 'The draft has unsaved changes. Sign out and discard them?');
+      if (!shouldLogout) return;
+    }
     await supabase.auth.signOut();
     window.location.href = '/';
   };
@@ -80,9 +94,69 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
+  const draftFingerprint = JSON.stringify(draftLessons);
+  const publishedFingerprint = JSON.stringify(publishedLessons);
+  const hasUnsavedDraft = draftFingerprint !== draftSavedFingerprint;
+  const hasUnpublishedChanges = draftFingerprint !== publishedFingerprint;
+
+  useEffect(() => {
+    if (!hasUnsavedDraft) return;
+
+    const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', warnBeforeLeaving);
+    return () => window.removeEventListener('beforeunload', warnBeforeLeaving);
+  }, [hasUnsavedDraft]);
+
+  const handleLeaveAdmin = () => {
+    if (hasUnsavedDraft) {
+      const shouldLeave = window.confirm(lang === 'ar'
+        ? 'توجد تعديلات غير محفوظة في المسودة. هل تريد الخروج وفقدانها؟'
+        : 'The draft has unsaved changes. Leave and discard them?');
+      if (!shouldLeave) return;
+    }
+    onNavigate('student-profile', 'push_back');
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const { data, error } = await supabase
+        .from('system_settings')
+        .select('key, value')
+        .in('key', ['curriculum_data', 'curriculum_draft']);
+
+      if (cancelled) return;
+
+      if (error) {
+        console.warn('Failed to load curriculum draft:', error);
+        setDraftLoadStatus('error');
+        return;
+      }
+
+      const publishedRow = data?.find(row => row.key === 'curriculum_data');
+      const draftRow = data?.find(row => row.key === 'curriculum_draft');
+      const cloudPublished = Array.isArray(publishedRow?.value) ? publishedRow.value as Lesson[] : lessons;
+      const cloudDraft = Array.isArray(draftRow?.value) ? draftRow.value as Lesson[] : cloudPublished;
+
+      setPublishedLessons(cloudPublished);
+      setDraftLessons(cloudDraft);
+      setDraftSavedFingerprint(JSON.stringify(cloudDraft));
+      setDraftLoadStatus('ready');
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const errs: string[] = [];
-    (lessons || []).forEach(l => {
+    (draftLessons || []).forEach(l => {
       if (!l) return;
       if (!l.titleAr) errs.push(lang === 'ar' ? `الدرس (${l.id}) يفتقر للعنوان العربي.` : `Lesson (${l.id}) lacks Arabic title.`);
       if (!l.titleEn) errs.push(lang === 'ar' ? `الدرس (${l.id}) يفتقر للعنوان الإنجليزي.` : `Lesson (${l.id}) lacks English title.`);
@@ -92,7 +166,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
       }
     });
     setValidationErrors(errs);
-  }, [lessons, lang]);
+  }, [draftLessons, lang]);
 
 
 
@@ -117,7 +191,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
   const backIcon = isRtl ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
   const handleTriggerDownload = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lessons, null, 2));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(draftLessons, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute("download", `biology_curriculum_backup_${Date.now()}.json`);
@@ -126,44 +200,106 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     downloadAnchor.remove();
   };
 
-  // ── Save all lessons directly to Supabase cloud and local storage ───────────────────────────────
+  // Save the owner's working copy only. Students never read curriculum_draft.
   const saveAllToServer = async (lessonsToSave: Lesson[]) => {
     setSaveStatus('saving');
-    // 1. Save to local secure storage
     try {
-      SecureStorage.setItem('curriculum_data', lessonsToSave);
-    } catch (e) {
-      console.warn("Failed to write local secure storage cache:", e);
-    }
-
-    // 2. Save directly to Supabase cloud table for instant zero-rebuild live sync
-    try {
-      await supabase
+      SecureStorage.setItem('curriculum_draft', lessonsToSave);
+      const savedAt = new Date().toISOString();
+      const { error } = await supabase
         .from('system_settings')
         .upsert({ 
-          key: 'curriculum_data', 
+          key: 'curriculum_draft',
           value: lessonsToSave,
-          updated_at: new Date().toISOString()
+          updated_at: savedAt
         });
-    } catch (err) {
-      console.warn('Failed to upsert to Supabase system_settings:', err);
+
+      if (error) throw error;
+
+      setDraftLessons(lessonsToSave);
+      setDraftSavedFingerprint(JSON.stringify(lessonsToSave));
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 4000);
+    } catch (error) {
+      console.error('Failed to save curriculum draft:', error);
+      setSaveStatus('error');
+      throw error;
+    }
+  };
+
+  const publishDraft = async () => {
+    if (validationErrors.length > 0) {
+      alert(lang === 'ar'
+        ? 'لا يمكن النشر قبل معالجة ملاحظات سلامة المنهج الظاهرة في اللوحة.'
+        : 'Resolve the syllabus validation warnings before publishing.');
+      return;
     }
 
-    // 3. Optional local server endpoint save
+    setPublishStatus('publishing');
     try {
-      const adminHeaders = await getAdminAuthHeaders();
-      await fetch(getAbsoluteUrl('/api/save-config'), {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...adminHeaders
-        },
-        body: JSON.stringify(lessonsToSave)
-      });
-    } catch {}
+      await saveAllToServer(draftLessons);
 
-    setSaveStatus('saved');
-    setTimeout(() => setSaveStatus('idle'), 4000);
+      const publishedAt = new Date().toISOString();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const release = {
+        id: publishedAt,
+        published_at: publishedAt,
+        published_by: sessionData.session?.user.id ?? null,
+        lessons_count: draftLessons.length
+      };
+
+      // One bulk upsert keeps the backup, published curriculum and release marker together.
+      const { error } = await supabase
+        .from('system_settings')
+        .upsert([
+          {
+            key: 'curriculum_backup_latest',
+            value: { lessons: publishedLessons, backed_up_at: publishedAt },
+            updated_at: publishedAt
+          },
+          {
+            key: 'curriculum_data',
+            value: draftLessons,
+            updated_at: publishedAt
+          },
+          {
+            key: 'curriculum_release',
+            value: release,
+            updated_at: publishedAt
+          }
+        ]);
+
+      if (error) throw error;
+
+      SecureStorage.setItem('curriculum_data', draftLessons);
+      SecureStorage.setItem('curriculum_updated_at', publishedAt);
+      setPublishedLessons(draftLessons);
+      setLessons(draftLessons);
+      setPublishStatus('published');
+      setTimeout(() => setPublishStatus('idle'), 5000);
+    } catch (error) {
+      console.error('Failed to publish curriculum:', error);
+      setPublishStatus('error');
+      alert(lang === 'ar'
+        ? 'فشل نشر المنهج. بقيت المسودة محفوظة ولم تتغير نسخة الطلاب.'
+        : 'Publishing failed. The draft is safe and the student version was not changed.');
+    }
+  };
+
+  const restorePublishedToDraft = async () => {
+    const confirmed = window.confirm(lang === 'ar'
+      ? 'هل تريد حذف تعديلات المسودة واستعادة آخر نسخة منشورة للطلاب؟'
+      : 'Discard draft changes and restore the version currently published to students?');
+    if (!confirmed) return;
+
+    setDraftLessons(publishedLessons);
+    setEditingLesson(null);
+    setEditingLessonIndex(null);
+    try {
+      await saveAllToServer(publishedLessons);
+    } catch {
+      setDraftLessons(draftLessons);
+    }
   };
 
   return (
@@ -172,7 +308,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md">
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => onNavigate('student-profile', 'push_back')} 
+            onClick={handleLeaveAdmin}
             aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
             className="active:scale-95 tap-target p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
@@ -245,7 +381,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               <BookOpen className="w-4 h-4" />
               <span>{lang === 'ar' ? 'قائمة المنهج' : 'Syllabus List'}</span>
               <span className="ms-auto bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-sans">
-                {lessons.length}
+                {draftLessons.length}
               </span>
             </button>
 
@@ -253,8 +389,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               onClick={() => {
                 if (editingLesson && editingLessonIndex !== null) {
                   setActiveTab('lesson-editor');
-                } else if (lessons.length > 0) {
-                  setEditingLesson(lessons[0]);
+                } else if (draftLessons.length > 0) {
+                  setEditingLesson(draftLessons[0]);
                   setEditingLessonIndex(0);
                   setActiveTab('lesson-editor');
                 } else {
@@ -275,8 +411,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               onClick={() => {
                 if (editingLesson && editingLessonIndex !== null) {
                   setActiveTab('preview');
-                } else if (lessons.length > 0) {
-                  setEditingLesson(lessons[0]);
+                } else if (draftLessons.length > 0) {
+                  setEditingLesson(draftLessons[0]);
                   setEditingLessonIndex(0);
                   setActiveTab('preview');
                 } else {
@@ -375,7 +511,7 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 {lang === 'ar' ? 'معرّفات الدروس النشطة بالذاكرة:' : 'Active Lesson IDs in Memory:'}
               </span>
               <div className="flex flex-wrap gap-1">
-                {lessons.map((l, i) => (
+                {draftLessons.map((l, i) => (
                   <span key={i} className="text-[9px] font-bold font-sans bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-app-btn text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-750">
                     {i + 1}: {l.id || '❔'}
                   </span>
@@ -387,6 +523,85 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
 
         {/* Dynamic Editor / Dashboard Panel */}
         <section className="lg:col-span-3 space-y-6">
+          <div className="overflow-hidden rounded-app-card border border-emerald-200/70 bg-white shadow-lg shadow-emerald-950/5 dark:border-emerald-900/70 dark:bg-slate-900">
+            <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-app-btn ${
+                  draftLoadStatus === 'error'
+                    ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400'
+                    : hasUnpublishedChanges
+                      ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
+                      : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
+                }`}>
+                  {draftLoadStatus === 'error' ? <CloudOff className="h-5 w-5" /> : <Cloud className="h-5 w-5" />}
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-sm font-black text-slate-900 dark:text-white">
+                      {lang === 'ar' ? 'مساحة إعداد المنهج' : 'Curriculum workspace'}
+                    </h2>
+                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${
+                      hasUnsavedDraft
+                        ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400'
+                        : hasUnpublishedChanges
+                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400'
+                          : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400'
+                    }`}>
+                      {hasUnsavedDraft
+                        ? (lang === 'ar' ? 'تعديلات غير محفوظة' : 'Unsaved changes')
+                        : hasUnpublishedChanges
+                          ? (lang === 'ar' ? 'مسودة محفوظة غير منشورة' : 'Saved draft, not published')
+                          : (lang === 'ar' ? 'مطابق للنسخة المنشورة' : 'Matches published version')}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs font-bold leading-relaxed text-slate-500 dark:text-slate-400">
+                    {lang === 'ar'
+                      ? 'الحفظ يحمي عملك داخل المسودة فقط. لن يرى الطلاب أي تغيير حتى تضغط نشر للطلاب.'
+                      : 'Saving updates the private draft only. Students see changes only after publishing.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+                {hasUnpublishedChanges ? (
+                  <button
+                    type="button"
+                    onClick={() => void restorePublishedToDraft()}
+                    disabled={saveStatus === 'saving' || publishStatus === 'publishing'}
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-app-btn px-3 py-2.5 text-xs font-black text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    <span>{lang === 'ar' ? 'استعادة المنشور' : 'Restore published'}</span>
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => void saveAllToServer(draftLessons).catch(() => undefined)}
+                  disabled={saveStatus === 'saving' || draftLoadStatus === 'loading'}
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-app-btn border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+                >
+                  {saveStatus === 'saving' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  <span>{saveStatus === 'saved' ? (lang === 'ar' ? 'تم حفظ المسودة' : 'Draft saved') : (lang === 'ar' ? 'حفظ المسودة' : 'Save draft')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void publishDraft()}
+                  disabled={publishStatus === 'publishing' || validationErrors.length > 0 || draftLoadStatus !== 'ready'}
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-app-btn bg-emerald-600 px-5 py-2.5 text-xs font-black text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none dark:disabled:bg-slate-700"
+                  title={validationErrors.length > 0 ? (lang === 'ar' ? 'عالج ملاحظات سلامة المنهج قبل النشر' : 'Resolve validation warnings before publishing') : undefined}
+                >
+                  {publishStatus === 'publishing' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  <span>{publishStatus === 'published' ? (lang === 'ar' ? 'تم النشر للطلاب' : 'Published') : (lang === 'ar' ? 'نشر للطلاب' : 'Publish to students')}</span>
+                </button>
+              </div>
+            </div>
+            {saveStatus === 'error' ? (
+              <div className="border-t border-rose-100 bg-rose-50 px-4 py-2.5 text-xs font-bold text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-400">
+                {lang === 'ar' ? 'تعذر حفظ المسودة. لم يتم عرض نجاح وهمي ويمكنك المحاولة مجدداً.' : 'Draft save failed. Nothing was reported as saved; please retry.'}
+              </div>
+            ) : null}
+          </div>
+
           <AnimatePresence mode="wait">
             
             {/* TAB 1: Lessons List Management */}
@@ -395,8 +610,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 lang={lang}
-                lessons={lessons}
-                setLessons={setLessons}
+                lessons={draftLessons}
+                setLessons={setDraftLessons}
                 saveAllToServer={saveAllToServer}
                 saveStatus={saveStatus}
                 editingLesson={editingLesson}
@@ -411,9 +626,12 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
                         {activeTab === 'export' && (
               <ExamBankTab
                 lang={lang}
-                lessons={lessons}
-                setLessons={setLessons}
+                lessons={draftLessons}
+                setLessons={setDraftLessons}
                 saveAllToServer={saveAllToServer}
+                onPublish={publishDraft}
+                publishStatus={publishStatus}
+                canPublish={validationErrors.length === 0 && draftLoadStatus === 'ready'}
               />
             )}
 
@@ -421,8 +639,8 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               <SystemSettingsTab
                 activeTab={activeTab}
                 lang={lang}
-                lessons={lessons}
-                setLessons={setLessons}
+                lessons={draftLessons}
+                setLessons={setDraftLessons}
                 saveAllToServer={saveAllToServer}
               />
             )}
@@ -431,14 +649,14 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
               <SystemSettingsTab
                 activeTab={activeTab}
                 lang={lang}
-                lessons={lessons}
-                setLessons={setLessons}
+                lessons={draftLessons}
+                setLessons={setDraftLessons}
                 saveAllToServer={saveAllToServer}
               />
             )}
 
                         {activeTab === 'students' && (
-              <StudentsTab lang={lang} lessons={lessons} />
+              <StudentsTab lang={lang} lessons={draftLessons} />
             )}
 
           </AnimatePresence>

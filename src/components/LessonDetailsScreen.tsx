@@ -402,16 +402,20 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
   const checkIfDownloaded = async () => {
     if (!lesson) return;
     try {
-      let cached = true;
-      if (lesson.pdfFile) {
+      const canCachePdf = Boolean(lesson.pdfFile && (!lesson.pdfLocked || premiumUnlocked));
+      const canCacheDiagram = Boolean(lesson.diagramFile && (!lesson.diagramLocked || premiumUnlocked));
+      const canCacheMindmap = Boolean(lesson.mindmapFile && (!lesson.mindmapLocked || premiumUnlocked));
+      let cached = canCachePdf || canCacheDiagram || canCacheMindmap;
+
+      if (canCachePdf) {
         const ok = await isAssetCached(lesson.id, lesson.pdfFile);
         if (!ok) cached = false;
       }
-      if (lesson.diagramFile) {
+      if (canCacheDiagram) {
         const ok = await isAssetCached(lesson.id, lesson.diagramFile);
         if (!ok) cached = false;
       }
-      if (lesson.mindmapFile) {
+      if (canCacheMindmap) {
         const ok = await isAssetCached(lesson.id, lesson.mindmapFile);
         if (!ok) cached = false;
       }
@@ -427,8 +431,6 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
       markVisited(lesson.id);
       setMapLoading(true);
       setMapError(false);
-      checkIfDownloaded();
-      
       const savedErrors = SecureStorage.getItem(`lesson_errors_${lesson.id}`) || [];
       setErrorQuestions(savedErrors);
 
@@ -448,6 +450,19 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
     }
   }, [lesson?.id]);
 
+  useEffect(() => {
+    void checkIfDownloaded();
+  }, [
+    lesson?.id,
+    lesson?.pdfFile,
+    lesson?.pdfLocked,
+    lesson?.diagramFile,
+    lesson?.diagramLocked,
+    lesson?.mindmapFile,
+    lesson?.mindmapLocked,
+    premiumUnlocked
+  ]);
+
   // Quiz Timer implementation
   useEffect(() => {
     if (timerActive && timeLeft > 0 && !quizFinished) {
@@ -466,13 +481,24 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
     if (!lesson) return;
     setDownloading(true);
     try {
-      if (lesson.pdfFile) {
+      const canCachePdf = Boolean(lesson.pdfFile && (!lesson.pdfLocked || premiumUnlocked));
+      const canCacheDiagram = Boolean(lesson.diagramFile && (!lesson.diagramLocked || premiumUnlocked));
+      const canCacheMindmap = Boolean(lesson.mindmapFile && (!lesson.mindmapLocked || premiumUnlocked));
+
+      if (!canCachePdf && !canCacheDiagram && !canCacheMindmap) {
+        alert(lang === 'ar'
+          ? 'لا توجد ملفات متاحة للتنزيل ضمن صلاحية هذا الحساب.'
+          : 'No lesson files are available to download with this account.');
+        return;
+      }
+
+      if (canCachePdf) {
         await cacheAsset(lesson.id, lesson.pdfFile, getAssetUrl(lesson.pdfFile));
       }
-      if (lesson.diagramFile) {
+      if (canCacheDiagram) {
         await cacheAsset(lesson.id, lesson.diagramFile, getAssetUrl(lesson.diagramFile));
       }
-      if (lesson.mindmapFile) {
+      if (canCacheMindmap) {
         await cacheAsset(lesson.id, lesson.mindmapFile, getAssetUrl(lesson.mindmapFile));
       }
       setIsDownloaded(true);
@@ -488,7 +514,6 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
   const handleViewPdf = async () => {
     if (!lesson || !lesson.pdfFile) return;
     if (lesson.pdfLocked && !premiumUnlocked) {
-      alert(lang === 'ar' ? 'عذراً، هذه المذكرة مغلقة للمشتركين فقط.' : 'Sorry, this lecture note is locked for premium subscribers.');
       onNavigate('student-profile', 'push');
       return;
     }
@@ -931,8 +956,15 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
               )}
 
               {exploreSubTab === 'pdf' && lesson.pdfFile && (
-                <section className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-emerald-900 p-6 rounded-app-card shadow-sm animate-fadeIn">
-                  <div className="flex items-center justify-between">
+                <section className="relative min-h-[124px] bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-slate-900 border border-emerald-100 dark:border-emerald-900 p-6 rounded-app-card shadow-sm animate-fadeIn overflow-hidden">
+                  {lesson.pdfLocked && !premiumUnlocked ? (
+                    <LockedOverlay
+                      messageAr="ملف PDF لهذا الدرس متاح للمشتركين"
+                      messageEn="This lesson PDF is available to premium subscribers."
+                      onUnlockClick={() => onNavigate('student-profile', 'push')}
+                    />
+                  ) : (
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-3">
                       <span className="p-2 bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 rounded-app-card font-black text-xs">
                         PDF
@@ -942,9 +974,9 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           {lang === 'ar' ? `مذكرة الدرس الأكاديمية` : `Academic Lecture Notes`}
                         </h4>
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">
-                          {lesson.pdfLocked && !premiumUnlocked
-                            ? (lang === 'ar' ? 'تطلب تفعيل الحساب لفتح الملف 🔒' : 'Requires account activation 🔒')
-                            : (lang === 'ar' ? 'تفتح مباشرة في الذاكرة المؤمنة' : 'Decrypted in-memory on the fly')}
+                          {lesson.pdfLocked
+                            ? (lang === 'ar' ? 'متاحة ضمن الاشتراك المدفوع' : 'Included with premium access')
+                            : (lang === 'ar' ? 'متاحة مجاناً لجميع الطلاب' : 'Free for every student')}
                         </p>
                       </div>
                     </div>
@@ -958,13 +990,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           <span>{lang === 'ar' ? 'جاري التحضير...' : 'Decrypting...'}</span>
                         </>
-                      ) : (lesson.pdfLocked && !premiumUnlocked) ? (
-                        <span>{lang === 'ar' ? 'فتح الملف 🔒' : 'Open File 🔒'}</span>
                       ) : (
                         <span>{lang === 'ar' ? 'عرض المذكرة 👁️' : 'View Notes 👁️'}</span>
                       )}
                     </button>
                   </div>
+                  )}
                 </section>
               )}
             </div>

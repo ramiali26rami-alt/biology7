@@ -49,7 +49,7 @@ export default function SystemSettingsTab({
   const [dbResetMsg, setDbResetMsg] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const handleResetCurriculumToDefault = async () => {
-    if (!window.confirm(lang === 'ar' ? 'هل أنت متأكد من رغبتك في إعادة ضبط المنهج بالكامل للملف الافتراضي؟ سيؤدي ذلك لحذف أي تعديلات أجريتها عبر لوحة التحكم.' : 'Are you sure you want to reset the curriculum to the default configuration? All modifications made from the admin dashboard will be deleted.')) {
+    if (!window.confirm(lang === 'ar' ? 'هل تريد استبدال المسودة بالمنهج الافتراضي؟ لن تتغير نسخة الطلاب حتى تضغط «نشر للطلاب».' : 'Replace the draft with the default curriculum? Students are unaffected until you publish.')) {
       return;
     }
     setDbResetLoading(true);
@@ -62,34 +62,18 @@ export default function SystemSettingsTab({
       }
       const defaultData = await defaultRes.json();
 
-      // 2. Post the default data directly to server save-config to overwrite the KV store
-      const adminHeaders = await getAdminAuthHeaders();
-      const saveRes = await fetch(getAbsoluteUrl('/api/save-config'), {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          ...adminHeaders
-        },
-        body: JSON.stringify(defaultData)
-      });
-
-      if (saveRes.ok) {
-        // Clear local browser cache storage
-        try {
-          localStorage.removeItem('curriculum_data');
-          sessionStorage.clear();
-        } catch(e){}
-        
-        setDbResetMsg({
-          type: 'success',
-          text: lang === 'ar' ? 'تمت إعادة تعيين المنهج للملف الافتراضي بنجاح! سيتم إعادة تحميل الصفحة لتطبيق التغييرات.' : 'Curriculum reset successfully! Page will reload to apply changes.'
-        });
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      } else {
-        throw new Error('Server save returned an error');
+      // Reset the private draft only. The student version changes only after publishing.
+      if (!Array.isArray(defaultData)) {
+        throw new Error('Default curriculum is not an array');
       }
+      setLessons(defaultData);
+      await saveAllToServer(defaultData);
+      setDbResetMsg({
+        type: 'success',
+        text: lang === 'ar'
+          ? 'تم تحميل المنهج الافتراضي داخل المسودة. راجعه ثم اضغط «نشر للطلاب» لتطبيقه.'
+          : 'The default curriculum is now in the draft. Review it, then publish when ready.'
+      });
     } catch (err: any) {
       console.error(err);
       setDbResetMsg({

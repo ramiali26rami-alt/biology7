@@ -1,4 +1,4 @@
-const CACHE = 'biology-app-v31';
+const CACHE = 'biology-app-v32';
 const OFFLINE_URL = '/';
 
 // On install: cache the app shell
@@ -57,6 +57,28 @@ self.addEventListener('fetch', e => {
           return response;
         })
         .catch(() => caches.match(e.request).then(cached => cached || new Response('Offline', { status: 503 })))
+    );
+    return;
+  }
+
+  // App pages must prefer the network so a newly deployed index.html is
+  // visible immediately. Fall back to the cached shell only when offline.
+  // Hashed JS/CSS assets below can safely remain cache-first.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request)
+        .then(response => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(e.request).then(cached =>
+            cached || caches.match(OFFLINE_URL) || new Response('Offline', { status: 503 })
+          )
+        )
     );
     return;
   }

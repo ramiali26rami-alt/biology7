@@ -62,6 +62,37 @@ class IndexedDBCache {
       req.onerror = () => reject(req.error);
     });
   }
+
+  async deleteByPrefix(prefix: string): Promise<void> {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      const store = tx.objectStore(this.storeName);
+      const request = store.openCursor();
+
+      request.onsuccess = () => {
+        const cursor = request.result;
+        if (!cursor) return;
+        if (typeof cursor.key === 'string' && cursor.key.startsWith(prefix)) {
+          cursor.delete();
+        }
+        cursor.continue();
+      };
+      request.onerror = () => reject(request.error);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async clear(): Promise<void> {
+    const db = await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      tx.objectStore(this.storeName).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
 }
 
 const webCache = new IndexedDBCache();
@@ -237,13 +268,32 @@ export async function clearAllAssetCache(): Promise<void> {
         });
       } catch (e) {}
     } else {
-      const db = await webCache['init']?.();
-      if (db) {
-        const tx = db.transaction('AssetsStore', 'readwrite');
-        tx.objectStore('AssetsStore').clear();
-      }
+      await webCache.clear();
     }
   } catch (err) {
     console.warn('Error clearing asset cache:', err);
+  }
+}
+
+/** Clears cached files for one lesson without disturbing the rest of the curriculum. */
+export async function clearLessonAssetCache(lessonId: string): Promise<void> {
+  if (!lessonId) return;
+
+  try {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Filesystem.rmdir({
+          path: `lessons/${lessonId}`,
+          directory: Directory.Data,
+          recursive: true
+        });
+      } catch {
+        // The lesson may not have cached files yet.
+      }
+    } else {
+      await webCache.deleteByPrefix(`lessons/${lessonId}/`);
+    }
+  } catch (err) {
+    console.warn(`Error clearing asset cache for lesson ${lessonId}:`, err);
   }
 }

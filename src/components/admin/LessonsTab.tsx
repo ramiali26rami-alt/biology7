@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   BookOpen, Lock, Unlock, Edit, Eye, Trash2, Plus,
   Save, FolderOpen, RefreshCw, CheckCircle, PlusCircle, Sparkles,
-  Info, Check, ChevronLeft, ChevronRight
+  Info, Check, ChevronLeft, ChevronRight, Loader2, Search, Copy
 } from 'lucide-react';
 
 import { translations } from '../../utils/translations';
@@ -38,6 +38,7 @@ export default function LessonsTab({
   lessons,
   setLessons,
   saveAllToServer,
+  saveStatus,
   editingLesson,
   setEditingLesson,
   editingLessonIndex,
@@ -60,6 +61,9 @@ export default function LessonsTab({
   // File upload state
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const [lessonSearch, setLessonSearch] = useState('');
+  const [recentlyAddedItem, setRecentlyAddedItem] = useState<string | null>(null);
+  const recentlyAddedItemRef = useRef<HTMLDivElement | null>(null);
 
   // Detected server folders for auto-linking
   const [detectedFolders, setDetectedFolders] = useState<{ path: string, name: string, files: string[] }[]>([]);
@@ -91,6 +95,22 @@ export default function LessonsTab({
   useEffect(() => {
     setActiveQuizIdx(0);
   }, [editingLesson?.id]);
+
+  useEffect(() => {
+    if (!recentlyAddedItem) return;
+
+    const frameId = window.requestAnimationFrame(() => {
+      recentlyAddedItemRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const firstEditableField = recentlyAddedItemRef.current?.querySelector<HTMLElement>('input:not([readonly]), textarea, select');
+      firstEditableField?.focus();
+    });
+    const timerId = window.setTimeout(() => setRecentlyAddedItem(null), 2500);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timerId);
+    };
+  }, [recentlyAddedItem]);
 
   const validateSyllabus = () => {
     const errors: string[] = [];
@@ -230,52 +250,40 @@ export default function LessonsTab({
     return labels[num - 1] || `الوحدة ${num}`;
   };
 
+  const getNextLessonId = (targetUnit: number) => {
+    const lessonNumbers = lessons
+      .map(lesson => lesson.id.match(new RegExp(`^u${targetUnit}-l(\\d+)$`)))
+      .filter((match): match is RegExpMatchArray => Boolean(match))
+      .map(match => Number(match[1]));
+    const nextLessonNumber = lessonNumbers.length > 0 ? Math.max(...lessonNumbers) + 1 : 1;
+    return `u${targetUnit}-l${nextLessonNumber}`;
+  };
+
   const handleCreateNewLesson = (unitNum: any = 1) => {
     const targetUnit = typeof unitNum === 'number' ? unitNum : 1;
-    const newId = `lesson-${Date.now()}`;
-    const unitTitle = getUnitTitleByNum(targetUnit);
-    const unitSubtitle = getUnitSubtitleByNum(targetUnit);
+    const newId = getNextLessonId(targetUnit);
 
     const newLesson: Lesson = {
       id: newId,
       unit: targetUnit,
-      folder: `${unitSubtitle} - ${unitTitle}/الدرس الجديد`,
-      titleAr: "مفهوم بيولوجي جديد",
-      titleEn: "New Biological Concept",
-      pdfFile: "الدرس الجديد.pdf",
-      diagramFile: "الدرس الجديد.png",
+      folder: `u${targetUnit}/${newId}`,
+      titleAr: "",
+      titleEn: "",
+      pdfFile: "",
+      diagramFile: "",
       summaryFile: "",
       mindmapFile: "",
       quizFile: "",
       ministryExamFile: "",
       locked: false,
-      videoUrl: "https://www.youtube.com/embed/6m6uT0284xI",
-      videoChapters: [
-        { time: "00:00", titleAr: "مقدمة", titleEn: "Introduction", descAr: "بداية الشرح", descEn: "Start of chapter" }
-      ],
-      summaryPointsAr: ["البروتوبلازم هو أساس الحياة وعلينا دراسة تطور الأجهزة."],
-      summaryPointsEn: ["Protoplasm is the base of life, coordination evolves in complexity."],
-      flashcards: [
-        { qAr: "أين تقع الغدة؟", qEn: "Where is the gland located?", aAr: "فوق الأعضاء المستهدفة.", aEn: "Above the target organs." }
-      ],
-      glossary: [
-        { term: "Biotech", descAr: "التكنولوجيا الحيوية وتطبيقاتها.", descEn: "Biotechnological integrations." }
-      ],
-      quiz: [
-        {
-          id: 1,
-          type: "tf",
-          textAr: "الإحساس في الكائنات البسيطة خلوي عام.",
-          textEn: "Irritability in simple organisms is general cellular.",
-          options: [
-            { key: "T", textAr: "✔️ صح", textEn: "True" },
-            { key: "F", textAr: "❌ خطأ", textEn: "False" }
-          ],
-          correctKey: "T",
-          explanationAr: "صح. لعدم وجود خلايا عصبية متخصصة في الأميبا.",
-          explanationEn: "True. Due to lack of specialized neurones in Amoeba."
-        }
-      ]
+      pdfLocked: false,
+      videoUrl: "",
+      videoChapters: [],
+      summaryPointsAr: [],
+      summaryPointsEn: [],
+      flashcards: [],
+      glossary: [],
+      quiz: []
     };
 
     const newIdx = lessons.length;
@@ -286,23 +294,46 @@ export default function LessonsTab({
     setActiveTab('lesson-editor');
   };
 
-  const handleSaveLessonEdit = () => {
+  const handleDuplicateLesson = (lesson: Lesson) => {
+    const newId = getNextLessonId(Number(lesson.unit) || 1);
+    const duplicatedLesson: Lesson = {
+      ...JSON.parse(JSON.stringify(lesson)),
+      id: newId,
+      folder: `u${lesson.unit}/${newId}`,
+      titleAr: `${lesson.titleAr} - نسخة`,
+      titleEn: lesson.titleEn ? `${lesson.titleEn} - Copy` : ''
+    };
+    const newIndex = lessons.length;
+    setLessons(previous => [...previous, duplicatedLesson]);
+    setEditingLesson(duplicatedLesson);
+    setEditingLessonIndex(newIndex);
+    setEditorSubTab('basic');
+    setActiveTab('lesson-editor');
+  };
+
+  const handleSaveLessonEdit = async () => {
     if (!editingLesson || editingLessonIndex === null) return;
     const updatedLessons = lessons.map((l, idx) => idx === editingLessonIndex ? editingLesson : l);
     setLessons(updatedLessons);
     validateSyllabus();
-    saveAllToServer(updatedLessons);
-    setActiveTab('lessons-list');
+    try {
+      await saveAllToServer(updatedLessons);
+      setActiveTab('lessons-list');
+    } catch {
+      // Keep the editor open so the owner can retry without losing work.
+    }
   };
 
   const handleDeleteLesson = (id: string) => {
-    const msg = lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذا الدرس نهائياً؟' : 'Are you sure you want to delete this lesson permanently?';
+    const msg = lang === 'ar'
+      ? 'هل تريد حذف هذا الدرس من المسودة؟ لن يتغير تطبيق الطلاب حتى تنشر المسودة.'
+      : 'Delete this lesson from the draft? Students are unaffected until you publish.';
     if (window.confirm(msg)) {
       const updatedLessons = lessons.filter(l => l.id !== id);
       setLessons(updatedLessons);
       setEditingLesson(null);
       setEditingLessonIndex(null);
-      saveAllToServer(updatedLessons);
+      void saveAllToServer(updatedLessons).catch(() => undefined);
     }
   };
 
@@ -350,17 +381,34 @@ export default function LessonsTab({
     updateEditingLessonField('videoChapters', chapters);
   };
 
+  const createEditorItemId = (prefix: string) =>
+    `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+  const getNextQuestionId = (questions: ConfigQuestion[]) =>
+    questions.reduce((highestId, question) => Math.max(highestId, Number(question.id) || 0), 0) + 1;
+
+  const insertAfter = <T,>(items: T[], item: T, afterIndex?: number): T[] => {
+    if (typeof afterIndex !== 'number' || afterIndex < 0 || afterIndex >= items.length) {
+      return [...items, item];
+    }
+    const updatedItems = [...items];
+    updatedItems.splice(afterIndex + 1, 0, item);
+    return updatedItems;
+  };
+
   // Flashcards Mutators
-  const addFlashcard = () => {
+  const addFlashcard = (afterIndex?: number) => {
     if (!editingLesson) return;
     const cards = [...(editingLesson.flashcards || [])];
-    cards.push({
+    const card: Flashcard = {
+      id: createEditorItemId('card'),
       qAr: '',
       qEn: '',
       aAr: '',
       aEn: ''
-    });
-    updateEditingLessonField('flashcards', cards);
+    };
+    updateEditingLessonField('flashcards', insertAfter(cards, card, afterIndex));
+    setRecentlyAddedItem(`flashcard:${card.id}`);
   };
 
   const updateFlashcard = (index: number, key: keyof Flashcard, value: any) => {
@@ -383,22 +431,66 @@ export default function LessonsTab({
   };
 
   // Mindmap Nodes Mutators
-  const addMindmapNode = () => {
+  const getMindmapDescendantIds = (nodes: MindmapNode[], nodeId: string) => {
+    const descendantIds = new Set<string>();
+    let foundNewDescendant = true;
+    while (foundNewDescendant) {
+      foundNewDescendant = false;
+      nodes.forEach(node => {
+        if (node.parentId === nodeId || (node.parentId && descendantIds.has(node.parentId))) {
+          if (!descendantIds.has(node.id)) {
+            descendantIds.add(node.id);
+            foundNewDescendant = true;
+          }
+        }
+      });
+    }
+    return descendantIds;
+  };
+
+  const getMindmapPath = (nodes: MindmapNode[], node: MindmapNode) => {
+    const nodeById = new Map(nodes.map(item => [item.id, item]));
+    const path: MindmapNode[] = [node];
+    const visited = new Set([node.id]);
+    let parentId = node.parentId;
+
+    while (parentId && !visited.has(parentId)) {
+      const parent = nodeById.get(parentId);
+      if (!parent) break;
+      path.unshift(parent);
+      visited.add(parent.id);
+      parentId = parent.parentId;
+    }
+    return path;
+  };
+
+  const addMindmapNode = (parentId?: string, afterIndex?: number) => {
     if (!editingLesson) return;
     const nodes = [...(editingLesson.mindmap || [])];
-    nodes.push({
-      id: `node-${Date.now()}`,
+    const node: MindmapNode = {
+      id: createEditorItemId('node'),
       textAr: '',
       textEn: '',
       details: '',
-      parentId: ''
-    });
-    updateEditingLessonField('mindmap', nodes);
+      parentId: parentId || undefined
+    };
+    updateEditingLessonField('mindmap', insertAfter(nodes, node, afterIndex));
+    setRecentlyAddedItem(`mindmap:${node.id}`);
   };
 
   const updateMindmapNode = (index: number, key: string, value: any) => {
     if (!editingLesson) return;
     const nodes = [...(editingLesson.mindmap || [])];
+    if (key === 'parentId' && value) {
+      const currentNode = nodes[index];
+      const descendantIds = getMindmapDescendantIds(nodes, currentNode.id);
+      if (value === currentNode.id || descendantIds.has(value)) {
+        alert(lang === 'ar'
+          ? 'لا يمكن جعل العنصر تابعاً لنفسه أو لأحد فروعه الفرعية.'
+          : 'A node cannot be moved under itself or one of its descendants.');
+        return;
+      }
+    }
     if (key === 'textAr') {
       nodes[index] = { ...nodes[index], textAr: value, textEn: value };
     } else if (key === 'details') {
@@ -411,6 +503,14 @@ export default function LessonsTab({
 
   const deleteMindmapNode = (index: number) => {
     if (!editingLesson) return;
+    const nodeToDelete = (editingLesson.mindmap || [])[index];
+    const hasChildren = (editingLesson.mindmap || []).some(node => node.parentId === nodeToDelete?.id);
+    if (hasChildren) {
+      alert(lang === 'ar'
+        ? 'هذا الفرع يحتوي فروعاً فرعية. انقلها أو احذفها أولاً قبل حذف الفرع الأب.'
+        : 'This branch has child nodes. Move or delete them before deleting the parent branch.');
+      return;
+    }
     const nodes = (editingLesson.mindmap || []).filter((_, i) => i !== index);
     updateEditingLessonField('mindmap', nodes);
   };
@@ -437,11 +537,11 @@ export default function LessonsTab({
   };
 
   // Quiz Question Mutators
-  const addQuizQuestion = () => {
+  const addQuizQuestion = (afterIndex?: number) => {
     if (!editingLesson) return;
     const quiz = [...(editingLesson.quiz || [])];
-    quiz.push({
-      id: quiz.length + 1,
+    const question: ConfigQuestion = {
+      id: getNextQuestionId(quiz),
       type: 'tf',
       textAr: '',
       textEn: '',
@@ -452,16 +552,17 @@ export default function LessonsTab({
       correctKey: 'T',
       explanationAr: '',
       explanationEn: ''
-    });
-    updateEditingLessonField('quiz', quiz);
+    };
+    updateEditingLessonField('quiz', insertAfter(quiz, question, afterIndex));
+    setRecentlyAddedItem(`quiz:${question.id}`);
   };
 
   // Ministry Question Mutators
-  const addMinistryQuestion = () => {
+  const addMinistryQuestion = (afterIndex?: number) => {
     if (!editingLesson) return;
     const ministryExams = [...(editingLesson.ministryExams || [])];
-    ministryExams.push({
-      id: ministryExams.length + 1,
+    const question: ConfigQuestion = {
+      id: getNextQuestionId(ministryExams),
       type: 'tf',
       textAr: '',
       textEn: '',
@@ -472,8 +573,9 @@ export default function LessonsTab({
       correctKey: 'T',
       explanationAr: '',
       explanationEn: ''
-    });
-    updateEditingLessonField('ministryExams', ministryExams);
+    };
+    updateEditingLessonField('ministryExams', insertAfter(ministryExams, question, afterIndex));
+    setRecentlyAddedItem(`ministry:${question.id}`);
   };
 
   const updateMinistryQuestion = (index: number, key: string, value: any) => {
@@ -554,6 +656,34 @@ export default function LessonsTab({
     input.onchange = async () => {
       const file = input.files?.[0];
       if (file) {
+        const extension = `.${file.name.split('.').pop()?.toLocaleLowerCase() || ''}`;
+        const isPdf = extension === '.pdf' || file.type === 'application/pdf';
+        const isImage = file.type.startsWith('image/');
+        const isHtml = extension === '.html' || extension === '.htm';
+        const maxFileSize = isPdf ? 50 * 1024 * 1024 : 15 * 1024 * 1024;
+
+        if (isHtml) {
+          alert(lang === 'ar'
+            ? 'رفع ملفات HTML غير مفعّل في التخزين السحابي لأسباب أمنية. استخدم رابط الملف أو اربطه من مجلد الدرس الموجود.'
+            : 'HTML uploads are disabled in cloud storage for security. Paste the file URL or link an existing lesson folder.');
+          return;
+        }
+
+        if (!isPdf && !isImage) {
+          alert(lang === 'ar'
+            ? 'نوع الملف غير مدعوم. المسموح حاليًا: PDF أو صورة PNG/JPG/WEBP/GIF.'
+            : 'Unsupported file type. Current uploads accept PDF or PNG/JPG/WEBP/GIF images.');
+          return;
+        }
+
+        if (file.size > maxFileSize) {
+          const maxSizeMb = maxFileSize / (1024 * 1024);
+          alert(lang === 'ar'
+            ? `حجم الملف كبير. الحد الأقصى ${maxSizeMb} ميجابايت.`
+            : `File is too large. Maximum size is ${maxSizeMb} MB.`);
+          return;
+        }
+
         setUploadingField(fieldName as string);
         setUploadSuccess(null);
         
@@ -566,18 +696,11 @@ export default function LessonsTab({
             const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
             const storagePath = `${cleanFolder}/${Date.now()}_${cleanFileName}`;
 
-            // 2. Try 'media' bucket first, fallback to 'biology-assets'
-            let targetBucket = 'media';
-            let uploadRes = await supabase.storage
+            // 2. Upload directly to the configured curriculum asset bucket.
+            const targetBucket = 'biology-assets';
+            const uploadRes = await supabase.storage
               .from(targetBucket)
               .upload(storagePath, file, { cacheControl: '3600', upsert: true });
-
-            if (uploadRes.error) {
-              targetBucket = 'biology-assets';
-              uploadRes = await supabase.storage
-                .from(targetBucket)
-                .upload(storagePath, file, { cacheControl: '3600', upsert: true });
-            }
 
             if (uploadRes.error) {
               throw new Error(uploadRes.error.message);
@@ -611,6 +734,19 @@ export default function LessonsTab({
 
   const isRtl = lang === 'ar';
   const ChevronIcon = isRtl ? ChevronLeft : ChevronRight;
+  const normalizedLessonSearch = lessonSearch.trim().toLocaleLowerCase('ar');
+  const visibleLessons = lessons.filter(lesson => {
+    if (!normalizedLessonSearch) return true;
+    return lesson.titleAr.toLocaleLowerCase('ar').includes(normalizedLessonSearch)
+      || lesson.titleEn.toLocaleLowerCase().includes(normalizedLessonSearch)
+      || lesson.id.toLocaleLowerCase().includes(normalizedLessonSearch);
+  });
+  const editingChecklist = editingLesson ? [
+    { label: lang === 'ar' ? 'العنوان' : 'Title', complete: Boolean(editingLesson.titleAr.trim()) },
+    { label: 'PDF', complete: Boolean(editingLesson.pdfFile.trim()) },
+    { label: lang === 'ar' ? 'الملخص' : 'Summary', complete: editingLesson.summaryPointsAr.length > 0 },
+    { label: lang === 'ar' ? 'التدريب' : 'Practice', complete: editingLesson.quiz.length > 0 }
+  ] : [];
 
   return (
     <AnimatePresence mode="wait">
@@ -629,7 +765,7 @@ export default function LessonsTab({
                 {lang === 'ar' ? 'هيكل الوحدات والدروس' : 'Syllabus Structure'}
               </h2>
               <p className="text-xs text-slate-400 font-bold">
-                {lang === 'ar' ? 'عرض الدروس المتاحة وقفلها وإدارتها' : 'Manage access status, lock premium lessons'}
+                {lang === 'ar' ? 'إدارة مسودات الدروس ومعاينتها قبل النشر' : 'Manage and preview lesson drafts before publishing'}
               </p>
             </div>
             <button
@@ -641,11 +777,30 @@ export default function LessonsTab({
             </button>
           </div>
 
+          <label className="relative block">
+            <Search className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="search"
+              value={lessonSearch}
+              onChange={event => setLessonSearch(event.target.value)}
+              placeholder={lang === 'ar' ? 'ابحث بعنوان الدرس أو المعرّف...' : 'Search by title or lesson ID...'}
+              className="w-full rounded-app-btn border border-slate-200 bg-white py-3 pe-10 ps-4 text-xs font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+            />
+          </label>
+
+          {normalizedLessonSearch && visibleLessons.length === 0 && (
+            <div className="rounded-app-card border border-dashed border-slate-200 bg-white px-4 py-8 text-center text-xs font-bold text-slate-400 dark:border-slate-800 dark:bg-slate-900">
+              {lang === 'ar' ? 'لا توجد دروس مطابقة لعبارة البحث.' : 'No lessons match your search.'}
+            </div>
+          )}
+
           <div className="space-y-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(unitNum => {
-              const unitLessons = lessons.filter(l => Number(l.unit) === unitNum);
+              const unitLessons = visibleLessons.filter(lesson => Number(lesson.unit) === unitNum);
               const unitTitle = getUnitTitleByNum(unitNum);
               const unitSubtitle = getUnitSubtitleByNum(unitNum);
+
+              if (normalizedLessonSearch && unitLessons.length === 0) return null;
 
               return (
                 <div key={unitNum} className="border border-slate-100 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/30 dark:bg-slate-900/10">
@@ -675,7 +830,14 @@ export default function LessonsTab({
                     ) : (
                       unitLessons.map((lesson) => {
                         const originalIndex = lessons.findIndex(l => l.id === lesson.id);
-                        const lessonName = lesson.folder.split('/')[1] || lesson.titleAr;
+                        const lessonName = lesson.titleAr || lesson.folder.split('/')[1] || lesson.id;
+                        const completedFields = [
+                          Boolean(lesson.titleAr?.trim()),
+                          Boolean(lesson.pdfFile?.trim()),
+                          lesson.summaryPointsAr.length > 0,
+                          lesson.quiz.length > 0
+                        ].filter(Boolean).length;
+                        const completionPercentage = completedFields * 25;
 
                         return (
                           <div 
@@ -711,17 +873,31 @@ export default function LessonsTab({
                                       </>
                                     )}
                                   </button>
+                                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-black ${
+                                    completionPercentage === 100
+                                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                                      : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                                  }`}>
+                                    {completionPercentage}% {lang === 'ar' ? 'مكتمل' : 'complete'}
+                                  </span>
                                 </div>
                                 <h4 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1">
                                   {lessonName}
                                 </h4>
                                 <p className="text-[10px] text-slate-455 dark:text-slate-500 font-bold mt-0.5 font-sans">
-                                  ID: {lesson.id} • {lesson.quiz.length} أسئلة • {lesson.videoChapters.length} فصول فيديو
+                                  ID: {lesson.id} • {lesson.quiz.length} أسئلة • {lesson.pdfFile ? 'PDF مرفوع' : 'PDF مطلوب'}
                                 </p>
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-end gap-2 shrink-0">
+                            <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
+                              <button
+                                onClick={() => handleDuplicateLesson(lesson)}
+                                className="bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/60 text-sky-600 dark:text-sky-400 p-2.5 rounded-app-btn transition-colors active:scale-95 cursor-pointer"
+                                title={lang === 'ar' ? 'نسخ الدرس كمسودة جديدة' : 'Duplicate as a new draft'}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
                               <button
                                 onClick={() => {
                                   setEditingLesson(lesson);
@@ -752,7 +928,7 @@ export default function LessonsTab({
                               <button
                                 onClick={() => handleDeleteLesson(lesson.id)}
                                 className="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-455 p-2.5 rounded-app-btn transition-colors active:scale-95 cursor-pointer"
-                                title={lang === 'ar' ? 'حذف الدرس نهائياً' : 'Delete lesson'}
+                                title={lang === 'ar' ? 'حذف من المسودة' : 'Delete from draft'}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -779,40 +955,58 @@ export default function LessonsTab({
           className="space-y-4"
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-app-card border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div>
+            <div className="min-w-0">
               <span className="text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-full uppercase">
                 {lang === 'ar' ? 'تحرير نشط' : 'Active Editor'}
               </span>
               <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm mt-1.5">
-                {editingLesson.titleAr}
+                {editingLesson.titleAr || editingLesson.id}
               </h3>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {editingChecklist.map(item => (
+                  <span
+                    key={item.label}
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[9px] font-black ${
+                      item.complete
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                        : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                    }`}
+                  >
+                    {item.complete ? <Check className="h-3 w-3" /> : <Info className="h-3 w-3" />}
+                    {item.label}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setActiveTab('lessons-list')}
                 className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-app-btn font-bold text-xs active:scale-95 transition-transform"
               >
-                {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                {lang === 'ar' ? 'رجوع للقائمة' : 'Back to list'}
               </button>
               <button
-                onClick={handleSaveLessonEdit}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-app-btn font-black text-xs active:scale-95 transition-transform flex items-center gap-1.5 shadow-md shadow-emerald-550/20"
+                onClick={() => void handleSaveLessonEdit()}
+                disabled={saveStatus === 'saving'}
+                className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-app-btn font-black text-xs active:scale-95 transition-transform flex items-center gap-1.5 shadow-md shadow-emerald-550/20 disabled:shadow-none"
               >
-                <Save className="w-4 h-4" />
-                <span>{lang === 'ar' ? 'حفظ المنهج' : 'Save Changes'}</span>
+                {saveStatus === 'saving' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{saveStatus === 'saving'
+                  ? (lang === 'ar' ? 'جارٍ الحفظ...' : 'Saving...')
+                  : (lang === 'ar' ? 'حفظ المسودة' : 'Save Draft')}</span>
               </button>
             </div>
           </div>
 
           <div className="flex border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-app-card p-2 gap-1 overflow-x-auto shadow-sm">
-            {(['basic', 'chapters', 'summary-flash', 'quiz', 'ministry-quiz', 'files'] as EditorSubTab[]).map(sub => {
+            {(['basic', 'summary-flash', 'quiz', 'ministry-quiz', 'files'] as EditorSubTab[]).map(sub => {
               const labels: Record<EditorSubTab, string> = {
-                'basic': lang === 'ar' ? '📖 الأساسيات' : 'Basics',
+                'basic': lang === 'ar' ? '1. الأساسيات وPDF' : '1. Basics & PDF',
                 'chapters': lang === 'ar' ? '🎬 فصول الفيديو' : 'Chapters',
-                'summary-flash': lang === 'ar' ? '📝 التلخيص والبطاقات' : 'Summary/Cards',
-                'quiz': lang === 'ar' ? '❓ بنك الاختبار' : 'Quiz Editor',
-                'ministry-quiz': lang === 'ar' ? '🏛️ الأسئلة الوزارية' : 'Ministry Exams',
-                'files': lang === 'ar' ? '📁 تحرير الملفات' : 'File Editor'
+                'summary-flash': lang === 'ar' ? '2. الملخص والبطاقات' : '2. Summary & Cards',
+                'quiz': lang === 'ar' ? '3. التدريب' : '3. Practice',
+                'ministry-quiz': lang === 'ar' ? '4. الوزاري' : '4. Ministry',
+                'files': lang === 'ar' ? '5. الملفات والصلاحيات' : '5. Files & Access'
               };
               return (
                 <button
@@ -843,20 +1037,28 @@ export default function LessonsTab({
                   <input 
                     type="text" 
                     value={editingLesson.id} 
-                    onChange={(e) => updateEditingLessonField('id', e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    readOnly
+                    aria-readonly="true"
+                    className="w-full cursor-not-allowed bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold text-slate-500 focus:outline-none"
                     required
                   />
+                  <p className="mt-1.5 text-[10px] font-bold text-slate-400">
+                    {lang === 'ar' ? 'يُنشأ تلقائياً ولا يمكن تغييره لحماية نتائج الطلاب.' : 'Generated automatically and locked to protect student results.'}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'رقم الوحدة (Unit)' : 'Unit Number'}</label>
                   <input 
                     type="number" 
                     value={editingLesson.unit} 
-                    onChange={(e) => updateEditingLessonField('unit', parseInt(e.target.value) || 1)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
+                    readOnly
+                    aria-readonly="true"
+                    className="w-full cursor-not-allowed bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold text-slate-500 focus:outline-none"
                     required
                   />
+                  <p className="mt-1.5 text-[10px] font-bold text-slate-400">
+                    {lang === 'ar' ? 'لنقل درس إلى وحدة أخرى أنشئ نسخة جديدة حفاظاً على سجلاته.' : 'Create a new copy to move a lesson without breaking its records.'}
+                  </p>
                 </div>
               </div>
 
@@ -961,13 +1163,16 @@ export default function LessonsTab({
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'رابط فيديو يوتيوب (Embed URL)' : 'YouTube Video Embed URL'}</label>
+                <label className="block text-xs font-extrabold text-slate-400 mb-1.5">{lang === 'ar' ? 'رابط شرح YouTube (اختياري)' : 'YouTube explanation link (optional)'}</label>
                 <input 
                   type="text" 
                   value={editingLesson.videoUrl} 
                   onChange={(e) => updateEditingLessonField('videoUrl', e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-app-btn px-4 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
                 />
+                <p className="mt-1.5 text-[10px] font-bold text-slate-400">
+                  {lang === 'ar' ? 'اتركه فارغاً إذا لم يكن للدرس شرح فيديو.' : 'Leave empty when the lesson has no video explanation.'}
+                </p>
               </div>
 
               <h5 className="font-extrabold text-xs text-slate-450 dark:text-slate-400 pt-2">{lang === 'ar' ? 'أسماء ملفات الملحقات (داخل مجلد الدرس)' : 'Attachment Filenames (Inside Lesson Directory)'}</h5>
@@ -1244,7 +1449,7 @@ export default function LessonsTab({
                 <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                   <button
                     type="button"
-                    onClick={addFlashcard}
+                    onClick={() => addFlashcard()}
                     className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -1262,7 +1467,15 @@ export default function LessonsTab({
                 ) : (
                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
                     {editingLesson.flashcards.map((card, idx) => (
-                      <div key={(card as any).id || idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
+                      <div
+                        key={card.id || idx}
+                        ref={recentlyAddedItem === `flashcard:${card.id}` ? recentlyAddedItemRef : undefined}
+                        className={`bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border space-y-3 relative transition-all ${
+                          recentlyAddedItem === `flashcard:${card.id}`
+                            ? 'border-emerald-400 ring-2 ring-emerald-400/20 shadow-lg'
+                            : 'border-slate-150 dark:border-slate-800/80'
+                        }`}
+                      >
                         <button
                           type="button"
                           onClick={() => deleteFlashcard(idx)}
@@ -1271,6 +1484,20 @@ export default function LessonsTab({
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
+
+                        <div className="flex items-center justify-between border-b border-slate-200/70 pb-2 pe-8 dark:border-slate-800">
+                          <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black text-emerald-700 dark:text-emerald-400">
+                            {lang === 'ar' ? `البطاقة رقم ${idx + 1}` : `Card #${idx + 1}`}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => addFlashcard(idx)}
+                            className="inline-flex items-center gap-1 rounded-app-btn px-2.5 py-1.5 text-[10px] font-black text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/30"
+                          >
+                            <PlusCircle className="h-3.5 w-3.5" />
+                            {lang === 'ar' ? 'إضافة بطاقة بعدها' : 'Add after'}
+                          </button>
+                        </div>
 
                         <div className="text-right">
                           <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'السؤال:' : 'Question:'}</label>
@@ -1302,11 +1529,11 @@ export default function LessonsTab({
                 <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                   <button
                     type="button"
-                    onClick={addMindmapNode}
+                    onClick={() => addMindmapNode()}
                     className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>{lang === 'ar' ? 'إضافة عنصر خارطة' : 'Add Mindmap Node'}</span>
+                    <span>{lang === 'ar' ? 'إضافة فرع رئيسي' : 'Add Root Branch'}</span>
                   </button>
                   <h4 className="font-black text-sm text-emerald-600 dark:text-emerald-400">
                     {lang === 'ar' ? 'تحرير نقاط وهيكل الخارطة الذهنية التفاعلية' : 'Mindmap Hierarchical Editor'}
@@ -1320,7 +1547,16 @@ export default function LessonsTab({
                 ) : (
                   <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
                     {editingLesson.mindmap.map((node, idx) => (
-                      <div key={node.id || idx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-3 relative">
+                      <div
+                        key={node.id || idx}
+                        ref={recentlyAddedItem === `mindmap:${node.id}` ? recentlyAddedItemRef : undefined}
+                        style={{ marginInlineStart: `${Math.min(getMindmapPath(editingLesson.mindmap || [], node).length - 1, 3) * 16}px` }}
+                        className={`bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border space-y-3 relative transition-all ${
+                          recentlyAddedItem === `mindmap:${node.id}`
+                            ? 'border-emerald-400 ring-2 ring-emerald-400/20 shadow-lg'
+                            : 'border-slate-150 dark:border-slate-800/80'
+                        }`}
+                      >
                         <button
                           type="button"
                           onClick={() => deleteMindmapNode(idx)}
@@ -1330,14 +1566,40 @@ export default function LessonsTab({
                           <Trash2 className="w-4 h-4" />
                         </button>
 
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-2 pe-8 dark:border-slate-800">
+                          <div className="flex flex-wrap items-center gap-1 text-[10px] font-black text-slate-500 dark:text-slate-400">
+                            <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-emerald-700 dark:text-emerald-400">
+                              {getMindmapPath(editingLesson.mindmap || [], node).length === 1
+                                ? (lang === 'ar' ? 'فرع رئيسي' : 'Root')
+                                : (lang === 'ar'
+                                  ? `فرع فرعي — المستوى ${getMindmapPath(editingLesson.mindmap || [], node).length}`
+                                  : `Child — level ${getMindmapPath(editingLesson.mindmap || [], node).length}`)}
+                            </span>
+                            <span>
+                              {getMindmapPath(editingLesson.mindmap || [], node)
+                                .map(pathNode => pathNode.textAr || pathNode.textEn || (lang === 'ar' ? 'بدون عنوان' : 'Untitled'))
+                                .join(' ← ')}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => addMindmapNode(node.id, idx)}
+                            className="inline-flex items-center gap-1 rounded-app-btn px-2.5 py-1.5 text-[10px] font-black text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/30"
+                          >
+                            <PlusCircle className="h-3.5 w-3.5" />
+                            {lang === 'ar' ? 'إضافة فرع تابع' : 'Add child'}
+                          </button>
+                        </div>
+
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-right">
                           <div className="sm:col-span-1">
                             <label className="block text-[10px] font-black text-slate-400 mb-1">{lang === 'ar' ? 'معرّف الفرع (Node ID):' : 'Node ID:'}</label>
                             <input
                               type="text"
                               value={node.id}
-                              onChange={(e) => updateMindmapNode(idx, 'id', e.target.value)}
-                              className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-emerald-500"
+                              readOnly
+                              aria-readonly="true"
+                              className="w-full cursor-not-allowed bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2 text-xs font-mono font-bold text-slate-500 focus:outline-none"
                             />
                           </div>
                           
@@ -1350,7 +1612,7 @@ export default function LessonsTab({
                             >
                               <option value="">{lang === 'ar' ? '-- العنصر الرئيسي (Root) --' : '-- Root Node --'}</option>
                               {editingLesson.mindmap
-                                .filter((_, nIdx) => nIdx !== idx)
+                                .filter((candidate, nIdx) => nIdx !== idx && !getMindmapDescendantIds(editingLesson.mindmap || [], node.id).has(candidate.id))
                                 .map(n => (
                                   <option key={n.id} value={n.id}>
                                     {n.id} ({n.textAr || n.textEn})
@@ -1394,7 +1656,7 @@ export default function LessonsTab({
               <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                 <button
                   type="button"
-                  onClick={addQuizQuestion}
+                  onClick={() => addQuizQuestion()}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -1507,7 +1769,15 @@ export default function LessonsTab({
               ) : (
                 <div className="space-y-6 max-h-[550px] overflow-y-auto pr-1">
                   {editingLesson.quiz.map((q, qIdx) => (
-                    <div key={qIdx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-4 relative">
+                    <div
+                      key={`quiz-${q.id}-${qIdx}`}
+                      ref={recentlyAddedItem === `quiz:${q.id}` ? recentlyAddedItemRef : undefined}
+                      className={`bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border space-y-4 relative transition-all ${
+                        recentlyAddedItem === `quiz:${q.id}`
+                          ? 'border-emerald-400 ring-2 ring-emerald-400/20 shadow-lg'
+                          : 'border-slate-150 dark:border-slate-800/80'
+                      }`}
+                    >
                       <button
                         type="button"
                         onClick={() => deleteQuizQuestion(qIdx)}
@@ -1519,9 +1789,20 @@ export default function LessonsTab({
 
                       {/* Question Type Selection & Question Index */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
-                          {lang === 'ar' ? `السؤال رقم ${qIdx + 1}` : `Question #${qIdx + 1}`}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                            {lang === 'ar' ? `السؤال رقم ${qIdx + 1}` : `Question #${qIdx + 1}`}
+                          </span>
+                          <span className="text-[9px] font-bold text-slate-400">ID: {q.id}</span>
+                          <button
+                            type="button"
+                            onClick={() => addQuizQuestion(qIdx)}
+                            className="inline-flex items-center gap-1 rounded-app-btn px-2 py-1 text-[9px] font-black text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/30"
+                          >
+                            <PlusCircle className="h-3 w-3" />
+                            {lang === 'ar' ? 'إضافة بعده' : 'Add after'}
+                          </button>
+                        </div>
                         
                         <div className="flex items-center gap-2">
                           <label className="text-[10px] font-black text-slate-400">
@@ -1577,6 +1858,37 @@ export default function LessonsTab({
                           className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500"
                         />
                       </div>
+
+                      {/* Optional diagram linked to this lesson quiz question */}
+                      <div className="text-right">
+                        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                          <label className="block text-[10px] font-black text-slate-400">
+                            {lang === 'ar' ? 'اسم ملف أو رابط رسم السؤال (اختياري):' : 'Question diagram file or URL (optional):'}
+                          </label>
+                          {editingLesson.diagramFile && !q.questionImage && (
+                            <button
+                              type="button"
+                              onClick={() => updateQuizQuestion(qIdx, 'questionImage', editingLesson.diagramFile)}
+                              className="rounded-app-btn bg-sky-50 px-2.5 py-1 text-[9px] font-black text-sky-600 hover:bg-sky-100 dark:bg-sky-950/30 dark:text-sky-400"
+                            >
+                              {lang === 'ar' ? 'استخدام رسم الدرس' : 'Use lesson diagram'}
+                            </button>
+                          )}
+                        </div>
+                        <input
+                          type="text"
+                          placeholder={editingLesson.diagramFile || (lang === 'ar' ? 'مثال: q-u1-l1.webp' : 'e.g. q-u1-l1.webp')}
+                          value={q.questionImage || ''}
+                          onChange={(e) => updateQuizQuestion(qIdx, 'questionImage', e.target.value)}
+                          className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-app-btn px-3 py-2.5 text-xs font-bold focus:outline-none focus:border-emerald-500 font-mono"
+                        />
+                        <span className="mt-1 block text-[9px] font-semibold text-slate-400">
+                          {lang === 'ar'
+                            ? 'يمكن كتابة اسم ملف داخل مجلد الدرس أو لصق رابط صورة مباشر.'
+                            : 'Enter a filename from the lesson folder or paste a direct image URL.'}
+                        </span>
+                      </div>
+
                       {/* Options / Answer Input based on Type */}
                       {q.type === 'tf' ? (
                         <div className="space-y-2 text-right">
@@ -1688,7 +2000,7 @@ export default function LessonsTab({
               <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-2">
                 <button
                   type="button"
-                  onClick={addMinistryQuestion}
+                  onClick={() => addMinistryQuestion()}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs px-3.5 py-2 rounded-app-btn active:scale-95 transition-all flex items-center gap-1 cursor-pointer border-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
@@ -1706,7 +2018,15 @@ export default function LessonsTab({
               ) : (
                 <div className="space-y-6 max-h-[550px] overflow-y-auto pr-1">
                   {editingLesson.ministryExams.map((q, qIdx) => (
-                    <div key={qIdx} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border border-slate-150 dark:border-slate-800/80 space-y-4 relative">
+                    <div
+                      key={`ministry-${q.id}-${qIdx}`}
+                      ref={recentlyAddedItem === `ministry:${q.id}` ? recentlyAddedItemRef : undefined}
+                      className={`bg-slate-50 dark:bg-slate-950 p-4 rounded-app-card border space-y-4 relative transition-all ${
+                        recentlyAddedItem === `ministry:${q.id}`
+                          ? 'border-emerald-400 ring-2 ring-emerald-400/20 shadow-lg'
+                          : 'border-slate-150 dark:border-slate-800/80'
+                      }`}
+                    >
                       <button
                         type="button"
                         onClick={() => deleteMinistryQuestion(qIdx)}
@@ -1718,9 +2038,20 @@ export default function LessonsTab({
 
                       {/* Question Type Selection & Question Index */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
-                          {lang === 'ar' ? `السؤال الوزاري رقم ${qIdx + 1}` : `Ministry Question #${qIdx + 1}`}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                            {lang === 'ar' ? `السؤال الوزاري رقم ${qIdx + 1}` : `Ministry Question #${qIdx + 1}`}
+                          </span>
+                          <span className="text-[9px] font-bold text-slate-400">ID: {q.id}</span>
+                          <button
+                            type="button"
+                            onClick={() => addMinistryQuestion(qIdx)}
+                            className="inline-flex items-center gap-1 rounded-app-btn px-2 py-1 text-[9px] font-black text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-950/30"
+                          >
+                            <PlusCircle className="h-3 w-3" />
+                            {lang === 'ar' ? 'إضافة بعده' : 'Add after'}
+                          </button>
+                        </div>
                         
                         <div className="flex items-center gap-2">
                           <label className="text-[10px] font-black text-slate-400">
@@ -1938,7 +2269,7 @@ export default function LessonsTab({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {[
-                  { key: 'pdfLocked', labelAr: 'قفل ملف الـ PDF', labelEn: 'Lock PDF file' },
+                  { key: 'pdfLocked', labelAr: 'حماية ملف PDF', labelEn: 'Protect PDF' },
                   { key: 'mindmapLocked', labelAr: 'قفل الخارطة الذهنية', labelEn: 'Lock Mindmap' },
                   { key: 'diagramLocked', labelAr: 'قفل الرسم التوضيحي', labelEn: 'Lock Diagram' },
                   { key: 'quizLocked', labelAr: 'قفل الكويز التفاعلي', labelEn: 'Lock Quiz' },
@@ -1950,6 +2281,13 @@ export default function LessonsTab({
                       <button
                         type="button"
                         onClick={() => updateEditingLessonField(item.key as any, !isLocked)}
+                        aria-pressed={isLocked}
+                        aria-label={lang === 'ar'
+                          ? `${isLocked ? 'فتح' : 'حماية'} ${item.labelAr}`
+                          : `${isLocked ? 'Unlock' : 'Protect'} ${item.labelEn}`}
+                        title={lang === 'ar'
+                          ? `${isLocked ? 'اجعلها مجانية' : 'اجعلها للمشتركين فقط'}`
+                          : `${isLocked ? 'Make free' : 'Premium only'}`}
                         className={`p-2 rounded-full transition-all active:scale-95 cursor-pointer border-0 ${
                           isLocked 
                             ? 'bg-rose-500/10 text-rose-500' 
@@ -1972,6 +2310,15 @@ export default function LessonsTab({
                     </div>
                   );
                 })}
+              </div>
+
+              <div className="flex items-start gap-2 rounded-app-btn border border-sky-100 bg-sky-50/70 p-3 text-[10px] font-bold leading-relaxed text-sky-700 dark:border-sky-900/60 dark:bg-sky-950/20 dark:text-sky-300">
+                <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                <p>
+                  {lang === 'ar'
+                    ? 'جميع ملفات PDF الحالية تبقى مفتوحة. لن يصبح أي ملف للمشتركين إلا عندما تفعّل حمايته هنا ثم تحفظ المسودة وتنشرها.'
+                    : 'All current PDFs remain free. A PDF becomes premium only after you enable protection here, save the draft, and publish it.'}
+                </p>
               </div>
             </div>
           )}

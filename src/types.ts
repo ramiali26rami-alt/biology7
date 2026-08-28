@@ -27,6 +27,7 @@ export interface VideoChapter {
 }
 
 export interface Flashcard {
+  id?: string;
   qAr: string;
   qEn: string;
   aAr: string;
