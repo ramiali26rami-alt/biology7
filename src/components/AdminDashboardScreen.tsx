@@ -164,6 +164,34 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
       if (l.quiz && l.quiz.length === 0) {
         errs.push(lang === 'ar' ? `الدرس (${l.id}) لا يحتوي على أسئلة اختبار.` : `Lesson (${l.id}) has no quiz questions.`);
       }
+
+      const validateQuestionSet = (questions: ConfigQuestion[] | undefined, labelAr: string, labelEn: string) => {
+        if (!questions?.length) return;
+
+        const seenIds = new Set<string>();
+        questions.forEach((question, index) => {
+          const questionId = String(question.id ?? '').trim();
+          if (!question.textAr?.trim()) {
+            errs.push(lang === 'ar'
+              ? `الدرس (${l.id}): ${labelAr} رقم ${index + 1} بلا نص.`
+              : `Lesson (${l.id}): ${labelEn} #${index + 1} has no text.`);
+          }
+          if (!questionId) {
+            errs.push(lang === 'ar'
+              ? `الدرس (${l.id}): ${labelAr} رقم ${index + 1} بلا معرّف ثابت.`
+              : `Lesson (${l.id}): ${labelEn} #${index + 1} has no stable ID.`);
+          } else if (seenIds.has(questionId)) {
+            errs.push(lang === 'ar'
+              ? `الدرس (${l.id}): المعرّف ${questionId} مكرر في ${labelAr}.`
+              : `Lesson (${l.id}): ID ${questionId} is duplicated in ${labelEn}.`);
+          } else {
+            seenIds.add(questionId);
+          }
+        });
+      };
+
+      validateQuestionSet(l.quiz, 'أسئلة التدريب', 'practice questions');
+      validateQuestionSet(l.ministryExams, 'الأسئلة الوزارية', 'ministry questions');
     });
     setValidationErrors(errs);
   }, [draftLessons, lang]);
@@ -666,4 +694,5 @@ export default function AdminDashboardScreen({ onNavigate, lang, lessons, setLes
     </div>
   );
 }
+
 
