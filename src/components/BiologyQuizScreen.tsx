@@ -26,7 +26,7 @@ import { markQuizDone, getLessonProgress } from '../utils/progress';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
 import { VirtualizedList } from './VirtualizedList';
 import LazyImage from './common/LazyImage';
-import { getCachedAssetUrl } from '../utils/cacheManager';
+import { getCachedAssetUrl, getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
 import { 
   playClickSound, 
   playCorrectSound, 
@@ -61,26 +61,27 @@ interface QuestionImageProps {
 function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
   const lang = typeof localStorage !== 'undefined' ? (localStorage.getItem('lang') || 'ar') : 'ar';
+  const assetVersion = getCurriculumAssetVersion();
 
   useEffect(() => {
     let active = true;
     const loadImg = async () => {
       if (!fileName) return;
       if (fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')) {
-        if (active) setImgUrl(fileName);
+        if (active) setImgUrl(withAssetVersion(fileName, assetVersion));
         return;
       }
       try {
         const fallback = `/${folder}/${fileName}`;
-        const url = await getCachedAssetUrl(lessonId, fileName, fallback);
+        const url = await getCachedAssetUrl(lessonId, fileName, fallback, assetVersion);
         if (active) setImgUrl(url);
       } catch (e) {
-        if (active) setImgUrl(`/${folder}/${fileName}`);
+        if (active) setImgUrl(withAssetVersion(`/${folder}/${fileName}`, assetVersion));
       }
     };
     loadImg();
     return () => { active = false; };
-  }, [lessonId, folder, fileName]);
+  }, [lessonId, folder, fileName, assetVersion]);
 
   if (!imgUrl) return null;
 

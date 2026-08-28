@@ -50,7 +50,7 @@ import { VirtualizedList } from './VirtualizedList';
 import { MindMapVisualizer } from './MindMapVisualizer';
 import { InteractiveDiagramVisualizer } from './InteractiveDiagramVisualizer';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
-import { isAssetCached, cacheAsset, getCachedAssetUrl } from '../utils/cacheManager';
+import { isAssetCached, cacheAsset, getCachedAssetUrl, getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
 import { motion, AnimatePresence } from 'motion/react';
 import { Capacitor } from '@capacitor/core';
 import LazyImage from './common/LazyImage';
@@ -65,26 +65,27 @@ interface QuestionImageProps {
 
 function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
+  const assetVersion = getCurriculumAssetVersion();
 
   useEffect(() => {
     let active = true;
     const loadImg = async () => {
       if (!fileName) return;
       if (fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')) {
-        if (active) setImgUrl(fileName);
+        if (active) setImgUrl(withAssetVersion(fileName, assetVersion));
         return;
       }
       try {
         const fallback = `/${folder}/${fileName}`;
-        const url = await getCachedAssetUrl(lessonId, fileName, fallback);
+        const url = await getCachedAssetUrl(lessonId, fileName, fallback, assetVersion);
         if (active) setImgUrl(url);
       } catch (e) {
-        if (active) setImgUrl(`/${folder}/${fileName}`);
+        if (active) setImgUrl(withAssetVersion(`/${folder}/${fileName}`, assetVersion));
       }
     };
     loadImg();
     return () => { active = false; };
-  }, [lessonId, folder, fileName]);
+  }, [lessonId, folder, fileName, assetVersion]);
 
   if (!imgUrl) return null;
 
