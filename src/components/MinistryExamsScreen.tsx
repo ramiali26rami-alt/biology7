@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
-import { getCachedAssetUrl, getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
+import { getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
 import LazyImage from './common/LazyImage';
 import { checkPremiumStatus } from '../utils/security';
 import { markQuizDone } from '../utils/progress';
@@ -41,23 +41,15 @@ function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps)
   const assetVersion = getCurriculumAssetVersion();
 
   useEffect(() => {
-    let active = true;
-    const loadImg = async () => {
-      if (!fileName) return;
-      if (fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')) {
-        if (active) setImgUrl(withAssetVersion(fileName, assetVersion));
-        return;
-      }
-      try {
-        const fallback = `/${folder}/${fileName}`;
-        const url = await getCachedAssetUrl(lessonId, fileName, fallback, assetVersion);
-        if (active) setImgUrl(url);
-      } catch (e) {
-        if (active) setImgUrl(withAssetVersion(`/${folder}/${fileName}`, assetVersion));
-      }
-    };
-    loadImg();
-    return () => { active = false; };
+    if (!fileName) {
+      setImgUrl('');
+      return;
+    }
+
+    const source = fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')
+      ? fileName
+      : `/${folder}/${fileName}`;
+    setImgUrl(withAssetVersion(source, assetVersion));
   }, [lessonId, folder, fileName, assetVersion]);
 
   if (!imgUrl) return null;
