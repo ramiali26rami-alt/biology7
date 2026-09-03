@@ -65,8 +65,19 @@ function scan() {
     folders
   };
 
-  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
-  console.log(`✅ Scan complete! Detected ${folders.length} folders. Written to ${OUTPUT_FILE}`);
+  const serializedOutput = JSON.stringify(output, null, 2);
+  const existingOutput = fs.existsSync(OUTPUT_FILE)
+    ? fs.readFileSync(OUTPUT_FILE, 'utf8')
+    : null;
+  const outputIsCurrent = existingOutput !== null
+    && JSON.stringify(JSON.parse(existingOutput)) === JSON.stringify(output);
+
+  if (!outputIsCurrent) {
+    fs.writeFileSync(OUTPUT_FILE, serializedOutput);
+    console.log(`✅ Scan complete! Detected ${folders.length} folders. Written to ${OUTPUT_FILE}`);
+  } else {
+    console.log(`✅ Scan complete! Detected ${folders.length} folders. Asset index is already current.`);
+  }
 }
 
 scan();

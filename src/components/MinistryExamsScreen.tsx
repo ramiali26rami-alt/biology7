@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ScreenId, Lesson } from '../types';
 import { translations, Language } from '../utils/translations';
-import { getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
+import { getCurriculumAssetVersion, getQuestionImageUrls } from '../utils/cacheManager';
 import LazyImage from './common/LazyImage';
 import { checkPremiumStatus } from '../utils/security';
 import { markQuizDone } from '../utils/progress';
@@ -38,18 +38,19 @@ interface QuestionImageProps {
 
 function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
+  const [fallbackUrl, setFallbackUrl] = useState<string>('');
   const assetVersion = getCurriculumAssetVersion();
 
   useEffect(() => {
     if (!fileName) {
       setImgUrl('');
+      setFallbackUrl('');
       return;
     }
 
-    const source = fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')
-      ? fileName
-      : `/${folder}/${fileName}`;
-    setImgUrl(withAssetVersion(source, assetVersion));
+    const urls = getQuestionImageUrls(folder, fileName, assetVersion);
+    setImgUrl(urls.src);
+    setFallbackUrl(urls.fallbackSrc || '');
   }, [lessonId, folder, fileName, assetVersion]);
 
   if (!imgUrl) return null;
@@ -58,6 +59,7 @@ function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps)
     <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2.5 rounded-app-card shadow-sm overflow-hidden my-2">
       <LazyImage 
         src={imgUrl} 
+        fallbackSrc={fallbackUrl}
         alt={lang === 'ar' ? 'مخطط السؤال الوزاري' : 'Ministry Exam Question Diagram'} 
         className="max-h-24 object-contain rounded-app-btn"
       />

@@ -63,10 +63,9 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
 
   const getUnitFullTitle = () => {
     const firstLesson = lessons.find(l => Number(l.unit) === selectedUnit);
-    if (!firstLesson) return lang === 'ar' ? `الوحدة ${selectedUnit}` : `Unit ${selectedUnit}`;
-    const unitTitle = lang === 'ar' ? firstLesson.unitNameAr : firstLesson.unitNameEn;
-    const unitNumberText = lang === 'ar' 
-      ? [
+    if (!firstLesson) return `الوحدة ${selectedUnit}`;
+    const unitTitle = firstLesson.unitNameAr;
+    const unitNumberText = [
           'الوحدة الأولى', 
           'الوحدة الثانية', 
           'الوحدة الثالثة', 
@@ -75,18 +74,18 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
           'الوحدة السادسة', 
           'الوحدة السابعة', 
           'الوحدة الثامنة'
-        ][selectedUnit - 1] || `الوحدة ${selectedUnit}`
-      : `Unit ${selectedUnit}`;
+        ][selectedUnit - 1] || `الوحدة ${selectedUnit}`;
     return `${unitNumberText}: ${unitTitle}`;
   };
 
   // Filter lessons belonging to the currently selected unit
   const unitLessons = lessons.filter(l => Number(l.unit) === selectedUnit);
+  const unitAccent = ['#e85d75', '#f59e0b', '#ef6351', '#9b6ad6', '#5577c9', '#08a77a', '#139b8f', '#3f83c5'][selectedUnit - 1] || '#08a77a';
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bio-catalog-shell dark:text-slate-100 pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
-      <header className="flex items-center px-6 h-16 w-full fixed top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-md shadow-slate-100/50 dark:shadow-none">
+      <header className="bio-topbar flex items-center px-6 h-16 w-full fixed top-0 z-50 border-b">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
             <button 
@@ -120,21 +119,25 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={lang === 'ar' ? 'ابحث عن درس...' : 'Search lessons...'}
-              className="w-full bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-app-btn px-4 py-3 text-sm font-bold text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors shadow-sm"
+              className="bio-search-field w-full border rounded-app-btn px-4 py-3 text-sm font-bold dark:text-white focus:outline-none transition-colors shadow-sm"
               dir={lang === 'ar' ? 'rtl' : 'ltr'}
             />
           </div>
         )}
         
         {/* Hero Branding Section */}
-        <div className="mb-1 mt-1">
-          <h2 className="text-md font-black text-emerald-600 dark:text-emerald-400 leading-tight">
+        <div className="bio-catalog-hero mb-1 mt-1">
+          <span className="bio-catalog-kicker relative z-10">{lang === 'ar' ? 'مسار الوحدة' : 'Unit pathway'}</span>
+          <h2 className="relative z-10 text-xl font-black text-white leading-snug mt-2">
             {getUnitFullTitle()}
           </h2>
+          <p className="relative z-10 text-xs text-emerald-50/75 font-bold mt-2">
+            {unitLessons.length} {lang === 'ar' ? 'دروس مرتبة ضمن هذه الوحدة' : 'lessons in this unit'}
+          </p>
         </div>
 
         {/* Compact Horizontal Statistics Bar */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-app-card shadow-sm flex items-center justify-between gap-4">
+        <div className="bio-learning-strip p-3 flex items-center justify-between gap-4">
           {/* Completion Rate */}
           <div className="flex items-center gap-2.5 flex-1">
             <span className="w-8 h-8 rounded-app-btn bg-emerald-55 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
@@ -196,37 +199,31 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
                 const q = searchQuery.toLowerCase();
                 return (
                   (lesson.folder.split('/')[1] || '').toLowerCase().includes(q) ||
-                  lesson.titleAr.toLowerCase().includes(q) ||
-                  lesson.titleEn.toLowerCase().includes(q)
+                  lesson.titleAr.toLowerCase().includes(q)
                 );
               })
               .map((lesson, idx) => {
               const isLocked = lesson.locked && !premiumUnlocked;
-              // Cycle colors for variety
-              const colorSchemes = [
-                { bg: 'bg-emerald-55 bg-emerald-50 dark:bg-emerald-950', text: 'text-emerald-600 dark:text-emerald-300', activeBg: 'group-hover:bg-emerald-500', iconBg: 'bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300' },
-                { bg: 'bg-purple-55 bg-purple-50 dark:bg-purple-950', text: 'text-purple-600 dark:text-purple-300', activeBg: 'group-hover:bg-purple-500', iconBg: 'bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-300' },
-                { bg: 'bg-blue-55 bg-blue-50 dark:bg-blue-950', text: 'text-blue-600 dark:text-blue-300', activeBg: 'group-hover:bg-blue-500', iconBg: 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300' }
-              ];
-              const scheme = colorSchemes[idx % colorSchemes.length];
 
               return (
                 <div 
                   key={lesson.id}
                   onClick={() => handleLessonClick(lesson)}
-                  className={`bg-white dark:bg-slate-900 border p-5 rounded-app-card flex items-center justify-between transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-sm group ${
+                  style={{ '--unit-accent': unitAccent } as React.CSSProperties}
+                  className={`bio-lesson-card p-5 flex items-center justify-between transition-all duration-200 active:scale-[0.99] cursor-pointer group ${
                     isLocked 
-                      ? 'border-slate-100 dark:border-slate-800/80 opacity-70'
-                      : `border-slate-100 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg`
+                      ? 'opacity-70'
+                      : ''
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-app-btn flex items-center justify-center group-hover:text-white transition-colors duration-200 ${scheme.iconBg} ${isLocked ? '' : scheme.activeBg}`}>
-                      <BookOpen className="w-6 h-6" />
+                    <div className="bio-lesson-index w-12 h-12 rounded-app-btn flex flex-col items-center justify-center transition-colors duration-200 shrink-0">
+                      <span className="text-[9px] font-black opacity-70">{lang === 'ar' ? 'درس' : 'L'}</span>
+                      <span className="text-base font-black leading-none">{idx + 1}</span>
                     </div>
                     <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
                       <h5 className={`font-black text-slate-800 dark:text-slate-100 text-[15px] mb-1 ${isLocked ? 'text-slate-500 dark:text-slate-450' : ''}`}>
-                        {lesson.folder.split('/')[1] || (lang === 'ar' ? lesson.titleAr : lesson.titleEn)}
+                        {lesson.folder.split('/')[1] || lesson.titleAr}
                       </h5>
                       <div className="flex items-center gap-2">
                         {(() => {
@@ -271,7 +268,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
       </main>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-300/30">
+      <nav className="bio-bottom-nav fixed z-50 flex justify-around items-center px-3 py-2.5">
         <button 
           onClick={() => onNavigate('main-dashboard', 'none')} 
           className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-emerald-500 transition-colors"
@@ -282,7 +279,7 @@ export default function LessonsListScreen({ onNavigate, lang, lessons, selectedU
 
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="bio-bottom-nav__active flex flex-col items-center justify-center rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>

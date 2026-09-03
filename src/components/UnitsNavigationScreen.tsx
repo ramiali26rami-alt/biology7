@@ -119,7 +119,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-rose-500 dark:text-rose-450 dark:text-rose-450 dark:text-rose-400',
       badgeBg: 'bg-rose-500',
       hoverBorder: 'hover:border-rose-500 dark:hover:border-rose-500',
-      hoverText: 'group-hover:text-rose-500'
+      hoverText: 'group-hover:text-rose-500',
+      accent: '#e85d75'
     },
     {
       // Unit 2: التنظيم الهرموني
@@ -129,7 +130,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-amber-500 dark:text-amber-400',
       badgeBg: 'bg-amber-500',
       hoverBorder: 'hover:border-amber-500 dark:hover:border-amber-500',
-      hoverText: 'group-hover:text-amber-500'
+      hoverText: 'group-hover:text-amber-500',
+      accent: '#f59e0b'
     },
     {
       // Unit 3: التكاثر
@@ -139,7 +141,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-red-500 dark:text-red-400',
       badgeBg: 'bg-red-500',
       hoverBorder: 'hover:border-red-500 dark:hover:border-red-500',
-      hoverText: 'group-hover:text-red-500'
+      hoverText: 'group-hover:text-red-500',
+      accent: '#ef6351'
     },
     {
       // Unit 4: أساسيات علم الوراثة
@@ -149,7 +152,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-purple-500 dark:text-purple-400',
       badgeBg: 'bg-purple-500',
       hoverBorder: 'hover:border-purple-500 dark:hover:border-purple-500',
-      hoverText: 'group-hover:text-purple-500'
+      hoverText: 'group-hover:text-purple-500',
+      accent: '#9b6ad6'
     },
     {
       // Unit 5: الوراثة الجزيئية
@@ -159,7 +163,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-indigo-500 dark:text-indigo-400',
       badgeBg: 'bg-indigo-500',
       hoverBorder: 'hover:border-indigo-500 dark:hover:border-indigo-500',
-      hoverText: 'group-hover:text-indigo-500'
+      hoverText: 'group-hover:text-indigo-500',
+      accent: '#5577c9'
     },
     {
       // Unit 6: التقانة الحيوية
@@ -169,7 +174,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-emerald-500 dark:text-emerald-400',
       badgeBg: 'bg-emerald-500',
       hoverBorder: 'hover:border-emerald-500 dark:hover:border-emerald-500',
-      hoverText: 'group-hover:text-emerald-500'
+      hoverText: 'group-hover:text-emerald-500',
+      accent: '#08a77a'
     },
     {
       // Unit 7: البيئة ومشكلاتها
@@ -179,7 +185,8 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-teal-500 dark:text-teal-400',
       badgeBg: 'bg-teal-500',
       hoverBorder: 'hover:border-teal-500 dark:hover:border-teal-500',
-      hoverText: 'group-hover:text-teal-500'
+      hoverText: 'group-hover:text-teal-500',
+      accent: '#139b8f'
     },
     {
       // Unit 8: تاريخ الأرض
@@ -189,16 +196,17 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       accentText: 'text-blue-500 dark:text-blue-400',
       badgeBg: 'bg-blue-500',
       hoverBorder: 'hover:border-blue-500 dark:hover:border-blue-500',
-      hoverText: 'group-hover:text-blue-500'
+      hoverText: 'group-hover:text-blue-500',
+      accent: '#3f83c5'
     }
   ];
 
   const backIcon = lang === 'ar' ? <ArrowRight className="w-6 h-6 rotate-180 text-emerald-500" /> : <ArrowLeft className="w-6 h-6 text-emerald-500" />;
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bio-catalog-shell dark:text-slate-100 pb-32 font-sans select-none transition-colors duration-[250ms]" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top App Bar */}
-      <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
+      <header className="bio-topbar fixed top-0 w-full z-50 border-b flex items-center justify-between px-6 h-16">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => onNavigate('main-dashboard', 'push_back')} 
@@ -220,12 +228,12 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       <main className="pt-20 px-6 max-w-2xl mx-auto space-y-6">
         
         {/* Intro */}
-        <div className="mt-4">
-          <span className="inline-block px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-full mb-2">
+        <div className="bio-catalog-hero mt-4">
+          <span className="bio-catalog-kicker relative z-10 mb-2">
             {t.biologyAcademy}
           </span>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">{t.biologySyllabusTitle}</h2>
-          <p className="text-slate-500 dark:text-slate-450 text-sm font-medium mt-1">{t.biologySyllabusDesc}</p>
+          <h2 className="relative z-10 text-2xl font-black text-white">{t.biologySyllabusTitle}</h2>
+          <p className="relative z-10 text-emerald-50/80 text-sm font-medium mt-1 max-w-md">{t.biologySyllabusDesc}</p>
         </div>
 
         {/* Locked/Premium Gating Modal Prompt */}
@@ -271,35 +279,35 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
             const lessonsCount = lessons.filter(l => Number(l.unit) === unitNum).length;
             const style = unitStyles[idx % unitStyles.length];
             const firstLesson = lessons.find(l => Number(l.unit) === unitNum);
-            const unitTitle = (lang === 'ar' ? firstLesson?.unitNameAr : firstLesson?.unitNameEn) || 
-              getFallbackUnitTitle(unitNum, lang);
+            const unitTitle = firstLesson?.unitNameAr || getFallbackUnitTitle(unitNum, 'ar');
 
             return (
               <div 
                 key={unitNum}
                 onClick={() => handleUnitClick(unitId)}
-                className={`bg-white dark:bg-slate-900 border p-3.5 rounded-app-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-3 ${
+                style={{ '--unit-accent': style.accent } as React.CSSProperties}
+                className={`bio-unit-card p-3.5 transition-all duration-200 cursor-pointer active:scale-[0.99] group flex items-center justify-between gap-3 ${
                   isLocked 
-                    ? 'border-slate-100 dark:border-slate-800 opacity-85' 
-                    : `border-slate-100 dark:border-slate-800 ${style.hoverBorder}`
+                    ? 'opacity-75'
+                    : ''
                 }`}
               >
                 <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                  <div className={`w-11 h-11 rounded-app-card flex items-center justify-center shrink-0 ${style.bg} ${style.text}`}>
+                  <div className="bio-unit-icon w-11 h-11 rounded-app-card flex items-center justify-center shrink-0">
                     {style.icon}
                   </div>
                   <div className="flex-1 min-w-0 text-right">
                     <span className={`block text-[10px] sm:text-[11px] font-black uppercase tracking-wide opacity-95 mb-0.5 ${style.accentText}`}>
                       {getUnitSubtitle(idx)}
                     </span>
-                    <h3 className={`text-sm sm:text-base font-black transition-colors text-slate-800 dark:text-white leading-snug ${style.hoverText}`}>
+                    <h3 className="text-sm sm:text-base font-black transition-colors text-slate-800 dark:text-white leading-snug">
                       {unitTitle}
                     </h3>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5 shrink-0">
                   {isLocked && <Lock className="w-3.5 h-3.5 text-amber-500" />}
-                  <span className={`text-[10px] font-black text-white px-2.5 py-0.5 rounded-app-btn shadow-sm shrink-0 ${style.badgeBg}`}>
+                  <span className="bio-unit-count text-[10px] font-black px-2.5 py-0.5 rounded-app-btn shadow-sm shrink-0">
                     {lessonsCount} {t.lessonsQuantity}
                   </span>
                 </div>
@@ -311,7 +319,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
       </main>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/30 z-50">
+      <nav className="bio-bottom-nav fixed flex justify-around items-center px-3 py-2.5 z-50">
         <button 
           onClick={() => onNavigate('main-dashboard', 'none')} 
           className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-emerald-500 transition-colors"
@@ -322,7 +330,7 @@ export default function UnitsNavigationScreen({ onNavigate, lang, lessons, onSel
         
         <button 
           onClick={() => onNavigate('units-navigation', 'none')} 
-          className="flex flex-col items-center justify-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
+          className="bio-bottom-nav__active flex flex-col items-center justify-center rounded-app-btn px-4 py-1.5 active:scale-90 transition-transform font-black"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-emerald-600" />
           <span className="text-xs">{t.myLessonsMenu}</span>

@@ -50,10 +50,11 @@ import { VirtualizedList } from './VirtualizedList';
 import { MindMapVisualizer } from './MindMapVisualizer';
 import { InteractiveDiagramVisualizer } from './InteractiveDiagramVisualizer';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
-import { isAssetCached, cacheAsset, getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
+import { isAssetCached, cacheAsset, getCurriculumAssetVersion, getQuestionImageUrls } from '../utils/cacheManager';
 import { motion, AnimatePresence } from 'motion/react';
 import { Capacitor } from '@capacitor/core';
 import LazyImage from './common/LazyImage';
+import CollapsibleExplanation from './common/CollapsibleExplanation';
 import { getAbsoluteUrl } from '../utils/urlHelper';
 
 interface QuestionImageProps {
@@ -65,18 +66,19 @@ interface QuestionImageProps {
 
 function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
+  const [fallbackUrl, setFallbackUrl] = useState<string>('');
   const assetVersion = getCurriculumAssetVersion();
 
   useEffect(() => {
     if (!fileName) {
       setImgUrl('');
+      setFallbackUrl('');
       return;
     }
 
-    const source = fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')
-      ? fileName
-      : `/${folder}/${fileName}`;
-    setImgUrl(withAssetVersion(source, assetVersion));
+    const urls = getQuestionImageUrls(folder, fileName, assetVersion);
+    setImgUrl(urls.src);
+    setFallbackUrl(urls.fallbackSrc || '');
   }, [lessonId, folder, fileName, assetVersion]);
 
   if (!imgUrl) return null;
@@ -85,6 +87,7 @@ function QuestionImage({ lessonId, folder, fileName, lang }: QuestionImageProps)
     <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2.5 rounded-app-card shadow-sm overflow-hidden my-3">
       <LazyImage 
         src={imgUrl} 
+        fallbackSrc={fallbackUrl}
         alt={lang === 'ar' ? 'مخطط السؤال' : 'Question Diagram'} 
         className="max-h-36 object-contain rounded-app-btn"
       />
@@ -662,6 +665,20 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
     setQuizFinished(true);
   };
 
+  const handleLessonBack = () => {
+    // The lesson quiz is embedded in this screen. Return to the point directly
+    // before it instead of leaving the lesson and opening the lessons list.
+    if (activeTab === 'test' && quizMode !== 'select') {
+      setTimerActive(false);
+      setQuizMode('select');
+      setQuizFinished(false);
+      setShowFeedback(false);
+      return;
+    }
+
+    onNavigate('lessons-list', 'push_back');
+  };
+
   // Add/Remove from Errors helper
   const addQuestionToErrors = (q: ConfigQuestion) => {
     if (errorQuestions.some(errQ => errQ.id === q.id)) return;
@@ -709,7 +726,7 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
       <header className="fixed top-0 w-full z-50 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-6 h-16 shadow-md shadow-slate-100/30 dark:shadow-none">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => onNavigate('lessons-list', 'push_back')} 
+            onClick={handleLessonBack}
             aria-label={lang === 'ar' ? 'رجوع' : 'Back'}
             className="active:scale-95 tap-target rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-800 dark:text-slate-200"
           >
@@ -1370,9 +1387,12 @@ export default function LessonDetailsScreen({ onNavigate, lang, lesson: propLess
                               <p className="font-extrabold text-xs">
                                 {isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText}
                               </p>
-                              <p className="text-[11px] opacity-90 mt-1 leading-relaxed font-bold">
-                                {lang === 'ar' ? activeQuestions[currentQuestionIndex].explanationAr : activeQuestions[currentQuestionIndex].explanationEn}
-                              </p>
+                              <CollapsibleExplanation
+                                key={activeQuestions[currentQuestionIndex].id}
+                                text={lang === 'ar' ? activeQuestions[currentQuestionIndex].explanationAr : activeQuestions[currentQuestionIndex].explanationEn}
+                                lang={lang}
+                                className="text-[11px] opacity-90 leading-relaxed font-bold"
+                              />
                             </div>
                           </div>
                         )}

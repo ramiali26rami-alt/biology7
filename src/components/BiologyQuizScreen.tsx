@@ -26,7 +26,8 @@ import { markQuizDone, getLessonProgress } from '../utils/progress';
 import { SecureStorage, checkPremiumStatus } from '../utils/security';
 import { VirtualizedList } from './VirtualizedList';
 import LazyImage from './common/LazyImage';
-import { getCurriculumAssetVersion, withAssetVersion } from '../utils/cacheManager';
+import CollapsibleExplanation from './common/CollapsibleExplanation';
+import { getCurriculumAssetVersion, getQuestionImageUrls } from '../utils/cacheManager';
 import { 
   playClickSound, 
   playCorrectSound, 
@@ -60,19 +61,20 @@ interface QuestionImageProps {
 
 function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
   const [imgUrl, setImgUrl] = useState<string>('');
+  const [fallbackUrl, setFallbackUrl] = useState<string>('');
   const lang = typeof localStorage !== 'undefined' ? (localStorage.getItem('lang') || 'ar') : 'ar';
   const assetVersion = getCurriculumAssetVersion();
 
   useEffect(() => {
     if (!fileName) {
       setImgUrl('');
+      setFallbackUrl('');
       return;
     }
 
-    const source = fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')
-      ? fileName
-      : `/${folder}/${fileName}`;
-    setImgUrl(withAssetVersion(source, assetVersion));
+    const urls = getQuestionImageUrls(folder, fileName, assetVersion);
+    setImgUrl(urls.src);
+    setFallbackUrl(urls.fallbackSrc || '');
   }, [lessonId, folder, fileName, assetVersion]);
 
   if (!imgUrl) return null;
@@ -81,6 +83,7 @@ function QuestionImage({ lessonId, folder, fileName }: QuestionImageProps) {
     <div className="w-full flex justify-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1.5 rounded-app-btn shadow-sm overflow-hidden my-2">
       <LazyImage 
         src={imgUrl} 
+        fallbackSrc={fallbackUrl}
         alt={lang === 'ar' ? 'رسم توضيحي للسؤال' : 'Question illustration Diagram'} 
         className="max-h-24 object-contain rounded-app-btn"
       />
@@ -663,9 +666,12 @@ export default function BiologyQuizScreen({ onNavigate, lang, lesson: propLesson
                       ? (lang === 'ar' ? '⏱️ انتهى وقت الإجابة على هذا السؤال!' : "⏱️ Time's up for this question!")
                       : (isAnswerCorrect ? t.correctAnswerText : t.wrongAnswerText)}
                   </p>
-                  <p className="text-[10px] opacity-90 mt-0.5 leading-relaxed font-bold">
-                    {currentQ.explanation}
-                  </p>
+                  <CollapsibleExplanation
+                    key={currentQ.id}
+                    text={currentQ.explanation}
+                    lang={lang}
+                    className="text-[10px] opacity-90 leading-relaxed font-bold"
+                  />
                 </div>
               </div>
             )}

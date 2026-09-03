@@ -1,13 +1,6 @@
 {
   "folders": [
     {
-      "path": "backups",
-      "name": "backups",
-      "files": [
-        "lessons_config_20260616_190632.json"
-      ]
-    },
-    {
       "path": "U1",
       "name": "U1",
       "files": [

@@ -1,5 +1,8 @@
 node_modules/
 .npm-cache/
+.npm-cache-preview/
+.vercel/
+.vercel-cli-data/
 android/.gradle-user/
 build/
 dist/

@@ -111,6 +111,27 @@ export function withAssetVersion(url: string, version: string): string {
   return `${url}${separator}v=${encodeURIComponent(version)}`;
 }
 
+/** Builds a question-image URL and a safe WEBP fallback for legacy extensionless links. */
+export function getQuestionImageUrls(folder: string, fileName: string, version: string): {
+  src: string;
+  fallbackSrc?: string;
+} {
+  const source = fileName.startsWith('http://') || fileName.startsWith('https://') || fileName.startsWith('//') || fileName.startsWith('data:')
+    ? fileName
+    : `/${folder}/${fileName}`;
+  const pathWithoutQuery = source.split(/[?#]/, 1)[0];
+  const lastSegment = pathWithoutQuery.split('/').pop() || '';
+  const suffixIndex = source.search(/[?#]/);
+  const sourcePath = suffixIndex >= 0 ? source.slice(0, suffixIndex) : source;
+  const sourceSuffix = suffixIndex >= 0 ? source.slice(suffixIndex) : '';
+  const fallbackSource = lastSegment.includes('.') ? undefined : `${sourcePath}.webp${sourceSuffix}`;
+
+  return {
+    src: withAssetVersion(source, version),
+    fallbackSrc: fallbackSource ? withAssetVersion(fallbackSource, version) : undefined
+  };
+}
+
 // Helper to convert arrayBuffer to base64
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   let binary = '';

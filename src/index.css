@@ -718,10 +718,109 @@ html, body {
   color: var(--bio-lime) !important;
 }
 
+/* Curriculum catalogue — the editorial extension of the dashboard identity. */
+.bio-catalog-shell {
+  min-height: 100vh;
+  color: var(--bio-ink);
+  background:
+    linear-gradient(rgba(10, 52, 59, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 52, 59, 0.035) 1px, transparent 1px),
+    var(--bio-paper);
+  background-size: 32px 32px;
+}
+
+.bio-catalog-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  color: var(--bio-paper-bright);
+  background: var(--bio-ink);
+  border-radius: 30px 30px 10px 30px;
+  box-shadow: 0 18px 38px rgba(10, 52, 59, 0.18);
+}
+
+.bio-catalog-hero::after {
+  content: "";
+  position: absolute;
+  width: 148px;
+  height: 148px;
+  inset-inline-end: -58px;
+  top: -72px;
+  border: 24px solid rgba(200, 241, 105, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.bio-catalog-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--bio-lime);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.bio-catalog-kicker::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.bio-unit-card,
+.bio-lesson-card {
+  background: rgba(255, 253, 247, 0.96) !important;
+  border: 1px solid rgba(10, 52, 59, 0.11) !important;
+  border-inline-start: 5px solid var(--unit-accent, var(--bio-leaf)) !important;
+  border-radius: 12px 24px 24px 12px !important;
+  box-shadow: 0 10px 28px rgba(10, 52, 59, 0.07) !important;
+}
+
+.bio-unit-card:hover,
+.bio-lesson-card:hover {
+  border-color: color-mix(in srgb, var(--unit-accent, var(--bio-leaf)) 55%, transparent) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 15px 32px rgba(10, 52, 59, 0.11) !important;
+}
+
+.bio-unit-icon,
+.bio-lesson-index {
+  color: var(--unit-accent, var(--bio-leaf));
+  background: color-mix(in srgb, var(--unit-accent, var(--bio-leaf)) 12%, var(--bio-paper-bright));
+}
+
+.bio-unit-count {
+  color: var(--bio-ink);
+  background: var(--bio-lime);
+}
+
+.bio-learning-strip {
+  background: rgba(255, 253, 247, 0.94) !important;
+  border: 1px solid rgba(10, 52, 59, 0.11) !important;
+  border-radius: 22px 22px 8px 22px !important;
+  box-shadow: 0 10px 26px rgba(10, 52, 59, 0.07);
+}
+
+.bio-search-field {
+  color: var(--bio-ink) !important;
+  background: var(--bio-paper-bright) !important;
+  border-color: rgba(10, 52, 59, 0.16) !important;
+}
+
+.bio-search-field:focus {
+  border-color: var(--bio-leaf) !important;
+  box-shadow: 0 0 0 4px rgba(8, 167, 122, 0.1);
+}
+
 .dark .bio-onboarding-shell,
-.dark .bio-dashboard-shell {
+.dark .bio-dashboard-shell,
+.dark .bio-catalog-shell {
   --bio-line: rgba(200, 241, 105, 0.08);
-  background-color: #061f25;
+  --bio-paper: #061f25;
+  --bio-paper-bright: #08272e;
+  --bio-ink: #f6f1e7;
+  background-color: var(--bio-paper);
   color: #f6f1e7;
 }
 
@@ -729,9 +828,21 @@ html, body {
 .dark .bio-stat-card,
 .dark .bio-menu-card,
 .dark .bio-editorial-card,
-.dark .bio-bottom-nav {
+.dark .bio-bottom-nav,
+.dark .bio-unit-card,
+.dark .bio-lesson-card,
+.dark .bio-learning-strip {
   background: rgba(8, 39, 46, 0.94) !important;
   border-color: rgba(200, 241, 105, 0.15) !important;
+}
+
+.dark .bio-catalog-shell {
+  background:
+    linear-gradient(rgba(200, 241, 105, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 241, 105, 0.025) 1px, transparent 1px),
+    var(--bio-paper);
+  background-size: 32px 32px;
+  color: #f6f1e7;
 }
 
 .dark .bio-original-logo {

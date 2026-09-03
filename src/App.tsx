@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ScreenId, Lesson } from './types';
 const StudentProfileScreen = React.lazy(() => import('./components/StudentProfileScreen'));
@@ -18,6 +18,7 @@ const MinistryExamsScreen = React.lazy(() => import('./components/MinistryExamsS
 const WelcomeScreen = React.lazy(() => import('./components/WelcomeScreen'));
 const AdminDashboardScreen = React.lazy(() => import('./components/AdminDashboardScreen'));
 const AdminLoginModal = React.lazy(() => import('./components/admin/AdminLoginModal'));
+const ResetPasswordScreen = React.lazy(() => import('./components/admin/ResetPasswordScreen'));
 const LeaderboardScreen = React.lazy(() => import('./components/LeaderboardScreen'));
 import { Language } from './utils/translations';
 import { AppWrapper } from './AppWrapper';
@@ -29,6 +30,7 @@ import { checkForAppUpdate, installAppUpdate, type AppUpdateManifest } from './u
 import { Download, Loader2, ShieldCheck, X } from 'lucide-react';
 
 export default function App() {
+  const isPasswordRecoveryPage = window.location.pathname === '/reset-password';
   const [currentScreen, setCurrentScreen] = useState<ScreenId>(() => {
     if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin')) {
       return 'admin-login';
@@ -57,6 +59,7 @@ export default function App() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [selectedUnit, setSelectedUnit] = useState<number>(1);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const navigationHistoryRef = useRef<ScreenId[]>([]);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -75,11 +78,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (isPasswordRecoveryPage) return;
     const timer = window.setTimeout(() => {
       checkForAppUpdate().then(setAppUpdate).catch(() => {});
     }, 2500);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [isPasswordRecoveryPage]);
 
   const handleInstallAppUpdate = async () => {
     if (!appUpdate) return;
@@ -112,6 +116,7 @@ export default function App() {
   }>({ show: false, newLessons: 0 });
 
   useEffect(() => {
+    if (isPasswordRecoveryPage) return;
     // Correct any stale or default server URL in localStorage
     const storedServer = localStorage.getItem('server_url');
     if (!storedServer || storedServer.includes('railway') || storedServer.includes('biology-server') || storedServer === 'none') {
@@ -127,9 +132,10 @@ export default function App() {
     // Check student subscription and sync offline results on boot
     checkStudentSubscription().catch(() => {});
     syncUnsavedQuizResults().catch(() => {});
-  }, []);
+  }, [isPasswordRecoveryPage]);
 
   useEffect(() => {
+    if (isPasswordRecoveryPage) return;
     checkAndUpdate().then(async (result) => {
       if (result.updated) {
         const updatedLessons = await loadCurriculum(true);
@@ -145,7 +151,7 @@ export default function App() {
         , 4000);
       }
     });
-  }, []);
+  }, [isPasswordRecoveryPage]);
 
   useEffect(() => {
     // Sync current dark theme
@@ -214,6 +220,19 @@ export default function App() {
   }, [currentScreen]);
 
   const handleNavigate = (targetScreen: ScreenId, transition?: 'push' | 'push_back' | 'none') => {
+    let destination = targetScreen;
+
+    if (transition === 'push_back') {
+      destination = navigationHistoryRef.current.pop() || targetScreen;
+    } else if (
+      currentScreen !== targetScreen &&
+      (transition === 'push' || targetScreen === 'biology-quiz')
+    ) {
+      // The quiz can be opened from several places. Remember the actual origin
+      // even when a caller uses a non-animated transition.
+      navigationHistoryRef.current.push(currentScreen);
+    }
+
     if (transition === 'push') {
       setTransitionDirection('forward');
     } else if (transition === 'push_back') {
@@ -221,10 +240,10 @@ export default function App() {
     } else {
       setTransitionDirection('none');
     }
-    setCurrentScreen(targetScreen);
+    setCurrentScreen(destination);
 
     // Auto-sync owner updates on navigation transitions
-    if (targetScreen === 'main-dashboard' || targetScreen === 'units-navigation') {
+    if (destination === 'main-dashboard' || destination === 'units-navigation') {
       checkAndUpdate().then(async (result) => {
         if (result.updated) {
           const updatedLessons = await loadCurriculum(true);
@@ -250,6 +269,10 @@ export default function App() {
   };
 
   const renderScreen = () => {
+    if (isPasswordRecoveryPage) {
+      return <ResetPasswordScreen />;
+    }
+
     switch (currentScreen) {
       case 'welcome':
         return <WelcomeScreen onNavigate={handleNavigate} lang={lang} setLang={setLang} />;
